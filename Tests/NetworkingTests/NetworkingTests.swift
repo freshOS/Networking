@@ -115,7 +115,7 @@ struct ConcreteJSONApi: Api {
     let client = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
     
     func fetchPost() -> AnyPublisher<Post, Error> {
-        return client.get("/todos/1")
+        return client.get("/posts/1")
     }
     
 }
