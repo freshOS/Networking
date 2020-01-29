@@ -100,6 +100,14 @@ extension Publisher where Output == Data {
             return model
         }.eraseToAnyPublisher()
     }
+    
+    public func toModels<T: Decodable>() -> AnyPublisher<[T], Error> {
+        return toModels(T.self)
+    }
+    
+    public func toModels<T: Decodable>(_ type:T.Type) -> AnyPublisher<[T], Error> {
+        return toModel([T].self)
+    }
 }
 
 

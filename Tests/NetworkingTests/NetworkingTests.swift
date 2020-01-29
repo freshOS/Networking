@@ -62,10 +62,22 @@ final class NetworkingTests: XCTestCase {
         })
         waitForExpectations(timeout: 3, handler: nil)
     }
+    
+    func testGetModels() {
+        let exp = expectation(description: "call")
+        let api: Api = ConcreteJSONApi()
+        
+        api.fetchPosts().then { posts in
+            print(posts)
+            exp.fulfill()
+        }
+        waitForExpectations(timeout: 3, handler: nil)
+    }
 
     static var allTests = [
         ("testUsagesGet", testUsagesGet),
         ("testApiStyleGet", testApiStyleGet),
+        ("testGetModels", testGetModels),
     ]
 }
 
@@ -108,6 +120,7 @@ struct Post {
 
 protocol Api {
     func fetchPost() -> AnyPublisher<Post, Error>
+    func fetchPosts() -> AnyPublisher<[Post], Error>
 }
 
 struct ConcreteJSONApi: Api {
@@ -116,6 +129,10 @@ struct ConcreteJSONApi: Api {
     
     func fetchPost() -> AnyPublisher<Post, Error> {
         return client.get("/posts/1")
+    }
+    
+    func fetchPosts() -> AnyPublisher<[Post], Error> {
+        return client.get("/posts").toModels()
     }
     
 }
