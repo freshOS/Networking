@@ -17,9 +17,11 @@ import Foundation
 
 // TODO - put patch delete
 // params.
-// Logging
-// not ! = send errors.
 // Set header
 
 
-// Force explicit error handling SPECIFYING THE ERROR
+// Force explicit error handling SPECIFYING THE ERROR - return NetworkingError? instead of Error.
+
+//defaultCollectionParsingKeyPath
+// logLevels
+// errorHandler

@@ -15,7 +15,8 @@ final class NetworkingTests: XCTestCase {
         let exp6 = expectation(description: "call")
     
         // Create client.
-        let client = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
+        var client = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
+        
         
         // Data
         client.get("/posts/1").then { data in
