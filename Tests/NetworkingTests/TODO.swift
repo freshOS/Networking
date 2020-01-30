@@ -14,6 +14,7 @@ import Foundation
 // - Simple to write.
 // - Returns Publisher to be used with combine.
 // - Favours composition, which is the essence of Combine's philosophy
+// Can get Data, JSON (Any) or Model (Codable)
 
 // TODO - put patch delete
 // params.

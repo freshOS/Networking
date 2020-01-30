@@ -32,7 +32,6 @@ struct ConcreteJSONApi: Api {
     func fetchCleanPosts() -> AnyPublisher<[CleanPost], Error> {
         return client.get("/posts")
     }
-
 }
 
 

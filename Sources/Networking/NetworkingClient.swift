@@ -3,6 +3,7 @@ import Combine
 
 
 public typealias Params = [String: Any]
+public typealias JSON = Any
 
 public struct NetworkingClient {
     
@@ -19,6 +20,8 @@ public struct NetworkingClient {
         self.baseURL = baseURL
     }
     
+    // Data
+    
     public func get(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
         return request(route, httpVerb: .get, params: params)
     }
@@ -33,6 +36,19 @@ public struct NetworkingClient {
     
     public func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
         return request(route, httpVerb: .put, params: params)
+    }
+    
+    // Void
+    public func get(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
+        let p: AnyPublisher<Data, Error> = get(route, params: params)
+        return p.map { data -> Void in () }
+        .eraseToAnyPublisher()
+    }
+    
+    // JSON
+    
+    public func get(_ route: String, params: Params = Params()) -> AnyPublisher<JSON, Error> {
+        return get(route, params: params).toJSON()
     }
     
     // Private
@@ -78,10 +94,10 @@ public extension NetworkingClient {
 // Data to JSON
 extension Publisher where Output == Data {
 
-    public func toJSON() -> AnyPublisher<Any, Error> {
-        return self.tryMap { data -> Any in
+    public func toJSON() -> AnyPublisher<JSON, Error> {
+        return self.tryMap { data -> JSON in
             let json = try JSONSerialization.jsonObject(with: data, options: [])
-            return json
+            return json as! JSON
         }.eraseToAnyPublisher()
     }
 }
@@ -114,12 +130,6 @@ extension Publisher where Output == Data {
     }
 }
 
-//public extension NetworkingClient {
-//
-//    func get(route: String) -> AnyPublisher<Any, Error> {
-//        return get(route).toJSON()
-//    }
-//    
-//}
+
 
 
