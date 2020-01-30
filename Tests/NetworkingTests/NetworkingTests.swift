@@ -43,32 +43,44 @@ final class NetworkingTests: XCTestCase {
         }
         
         // Model (auto generic)
-        client.get("/posts/1").then { (todo: Post) in
+        client.get("/posts/1").then { (todo: CleanPost) in
             exp6.fulfill()
         }
     
         waitForExpectations(timeout: 3, handler: nil)
     }
     
-    func testApiStyleGet() {
+    func testGetDecodableModel() {
         let exp = expectation(description: "call")
         let api: Api = ConcreteJSONApi()
-        
-        cancellable =  api.fetchPost().sink(receiveCompletion: { c in
-            
-        }, receiveValue: { todo in
-            print(todo)
+        api.fetchPost().then { post in
             exp.fulfill()
-        })
+        }
         waitForExpectations(timeout: 3, handler: nil)
     }
     
-    func testGetModels() {
+    func testGetDecodableModels() {
         let exp = expectation(description: "call")
         let api: Api = ConcreteJSONApi()
-        
         api.fetchPosts().then { posts in
-            print(posts)
+            exp.fulfill()
+        }
+        waitForExpectations(timeout: 3, handler: nil)
+    }
+    
+    func testGetNonDecodableModel() {
+        let exp = expectation(description: "call")
+        let api: Api = ConcreteJSONApi()
+        api.fetchCleanPost().then { post in
+            exp.fulfill()
+        }
+        waitForExpectations(timeout: 3, handler: nil)
+    }
+    
+    func testGetNonDecodableModels() {
+        let exp = expectation(description: "call")
+        let api: Api = ConcreteJSONApi()
+        api.fetchCleanPosts().then { posts in
             exp.fulfill()
         }
         waitForExpectations(timeout: 3, handler: nil)
@@ -76,63 +88,15 @@ final class NetworkingTests: XCTestCase {
 
     static var allTests = [
         ("testUsagesGet", testUsagesGet),
-        ("testApiStyleGet", testApiStyleGet),
-        ("testGetModels", testGetModels),
+        ("testGetDecodableModel", testGetDecodableModel),
+        ("testGetDecodableModels", testGetDecodableModels),
+        ("testGetNonDecodableModel", testGetNonDecodableModel),
+        ("testGetNonDecodableModels", testGetNonDecodableModels),
     ]
 }
 
 
 
-extension Post: Codable {}
 
 
-// Clean Model
-struct Post {
-    let id: Int
-    let userId: Int
-    let title: String
-    let body: String
-}
-//{
-//  "userId": 1,
-//  "id": 1,
-//  "title": "delectus aut autem",
-//  "completed": false
-//}
 
-
-// Networking Requirements.
-// - No dependencies: Generics, Codable, Combine: Pure Native.
-// - Leaves Models clean. ( Codable confromance can be made via an extension)
-// - Simple to write.
-// - Returns Publisher to be used with combine.
-// - Favours composition, which is the essence of Combine's philosophy
-
-// TODO - put patch delete
-// params.
-// Logging
-// not ! = send errors.
-// Set header
-
-
-// Force explicit error handling SPECIFYING THE ERROR
-
-
-protocol Api {
-    func fetchPost() -> AnyPublisher<Post, Error>
-    func fetchPosts() -> AnyPublisher<[Post], Error>
-}
-
-struct ConcreteJSONApi: Api {
-    
-    let client = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
-    
-    func fetchPost() -> AnyPublisher<Post, Error> {
-        return client.get("/posts/1")
-    }
-    
-    func fetchPosts() -> AnyPublisher<[Post], Error> {
-        return client.get("/posts").toModels()
-    }
-    
-}

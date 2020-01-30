@@ -89,16 +89,20 @@ extension Publisher where Output == Data {
 // Data to Model
 extension Publisher where Output == Data {
     
+    
+    //test
+    public func decode<T: Decodable>(_ type:T.Type) -> AnyPublisher<T, Error> {
+        return decode(type: type, decoder: JSONDecoder())
+            .eraseToAnyPublisher()
+    }
+    
     public func toModel<T: Decodable>() -> AnyPublisher<T, Error> {
         return toModel(T.self)
     }
     
     public func toModel<T: Decodable>(_ type:T.Type) -> AnyPublisher<T, Error> {
-        return self.tryMap { data -> T in
-            let decoder = JSONDecoder()
-            let model = try decoder.decode(T.self, from: data)
-            return model
-        }.eraseToAnyPublisher()
+        return decode(type: type, decoder: JSONDecoder())
+            .eraseToAnyPublisher()
     }
     
     public func toModels<T: Decodable>() -> AnyPublisher<[T], Error> {
@@ -141,3 +145,46 @@ public extension Publisher {
             return self
         }
 }
+
+
+// Post cannot be codable from another file
+// this is very well explained here :
+// https://forums.swift.org/t/why-you-cant-make-someone-elses-class-decodable-a-long-winded-explanation-of-required-initializers/6437
+// extension Post: Codable {}
+// For this reason it is advised to use a wrapper. Aka using and intermediary model conforming to Codable
+// for mapping the JSON and then mapping to your original model, thus leaving your model clean and
+// untouched by any Json parsing details.
+
+public protocol BackedByJSONModel {
+    associatedtype JSONModel: Decodable
+    static func fromJSONModel(jsonModel: JSONModel) -> Self
+}
+
+// Generics Magick <3
+// If the model asked for is Backed by a JSONModel
+// Apply conversion automatically.
+public extension NetworkingClient {
+
+    func get<T: BackedByJSONModel>(_ route: String) -> AnyPublisher<T, Error> {
+        return get(route).decode(type: T.JSONModel.self, decoder: JSONDecoder())
+            .map { T.fromJSONModel(jsonModel: $0) }
+        .eraseToAnyPublisher()
+    }
+    
+    func get<T: BackedByJSONModel>(_ route: String) -> AnyPublisher<[T], Error> {
+        return get(route).decode(type: [T.JSONModel].self, decoder: JSONDecoder())
+            .map { v in
+                return v.map { T.fromJSONModel(jsonModel: $0) }
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
+
+//public extension NetworkingClient {
+//
+//    func get(route: String) -> AnyPublisher<Any, Error> {
+//        return get(route).toJSON()
+//    }
+//    
+//}
