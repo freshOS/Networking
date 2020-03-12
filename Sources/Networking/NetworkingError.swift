@@ -69,7 +69,7 @@ public struct NetworkingError: Error {
     public var status: Status
     public var code: Int { return status.rawValue }
     
-//    public var jsonPayload: JSON?
+    public var jsonPayload: Any?
     
     public init(httpStatusCode: Int) {
         self.status = Status(rawValue: httpStatusCode) ?? .unknown

@@ -1,0 +1,217 @@
+//
+//  File.swift
+//  
+//
+//  Created by Sacha DSO on 21/02/2020.
+//
+
+import Foundation
+import Combine
+import UIKit
+
+public class NetworkingRequest: NSObject {
+            
+    var baseURL = ""
+    var route = ""
+    var httpVerb = HTTPVerb.get
+    public var params = Params()
+    var headers = [String: String]()
+    var multipartData: MultipartData?
+    var logLevels: NetworkingLogLevel {
+        get { return logger.logLevels }
+        set { logger.logLevels = newValue }
+    }
+    private let logger = NetworkingLogger()
+    var timeout: TimeInterval?
+    let progressPublisher = PassthroughSubject<Progress, Error>()
+    
+    
+    public func upload() -> AnyPublisher<(Data?, Progress), Error> {
+
+        guard let urlRequest = buildURLRequest() else {
+            return Fail(error: NetworkingError.unableToParseResponse as Error).eraseToAnyPublisher() // TODO good Error (invalidURL)
+        }
+        logger.log(request: urlRequest)
+        
+        let config = URLSessionConfiguration.default
+        let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
+        let callPublisher : AnyPublisher<(Data?, Progress), Error> = urlSession.dataTaskPublisher(for: urlRequest)
+            .tryMap { (data: Data, response: URLResponse) -> Data in
+                self.logger.log(response: response, data: data)
+                if let httpURLResponse = response as? HTTPURLResponse {
+                    if !(200...299 ~= httpURLResponse.statusCode) {
+                        var error = NetworkingError(httpStatusCode: httpURLResponse.statusCode)
+                        if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
+                            error.jsonPayload = json
+                        }
+                        throw error
+                    }
+                }
+            return data
+        }.mapError { e -> NetworkingError in
+            if let ne = e as? NetworkingError {
+                return ne
+            } else {
+                return NetworkingError.unableToParseResponse
+            }
+        }.map { data -> (Data?, Progress) in
+            print(" 😍 data")
+            return (data, Progress())
+        }.eraseToAnyPublisher()
+    
+        
+        let progressPublisher2: AnyPublisher<(Data?, Progress), Error> = progressPublisher
+            .map { progress -> (Data?, Progress) in
+                return (nil, progress)
+        }.eraseToAnyPublisher()
+        
+        return Publishers.Merge(callPublisher, progressPublisher2)
+            .receive(on: RunLoop.main).eraseToAnyPublisher()
+    }
+            
+    public func fetch() -> AnyPublisher<Data, Error> {
+        
+        guard let urlRequest = buildURLRequest() else {
+            return Fail(error: NetworkingError.unableToParseResponse as Error).eraseToAnyPublisher() // TODO good Error (invalidURL)
+        }
+        logger.log(request: urlRequest)
+        
+        let config = URLSessionConfiguration.default
+        let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
+        return urlSession.dataTaskPublisher(for: urlRequest)
+            .tryMap { (data: Data, response: URLResponse) -> Data in
+                self.logger.log(response: response, data: data)
+                if let httpURLResponse = response as? HTTPURLResponse {
+                    if !(200...299 ~= httpURLResponse.statusCode) {
+                        var error = NetworkingError(httpStatusCode: httpURLResponse.statusCode)
+                        if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
+                            error.jsonPayload = json
+                        }
+                        throw error
+                    }
+                }
+            return data
+        }.mapError { e -> NetworkingError in
+            if let ne = e as? NetworkingError {
+                return ne
+            } else {
+                return NetworkingError.unableToParseResponse
+            }
+        }.receive(on: RunLoop.main).eraseToAnyPublisher()
+    }
+    
+    private func getURLWithParams() -> String {
+        if var urlComponents = URLComponents(string: baseURL + route) {
+            var queryItems = [URLQueryItem]()
+            params.forEach { param in
+                // Go Api syntax arrayParam[]
+                if let array = param.value as? [CustomStringConvertible] {
+                    array.forEach {
+                        queryItems.append(URLQueryItem(name: "\(param.key)[]", value: "\($0)"))
+                    }
+                }
+                queryItems.append(URLQueryItem(name: param.key, value: "\(param.value)"))
+            }
+            urlComponents.queryItems = queryItems
+            return urlComponents.url?.absoluteString ?? baseURL + route
+        }
+        return baseURL + route
+    }
+    
+    private func buildURLRequest() -> URLRequest? {
+        
+        var urlString = baseURL + route
+        if httpVerb == .get || multipartData != nil {
+             urlString = getURLWithParams()
+        }
+        
+        let url = URL(string: urlString)!
+        var request = URLRequest(url: url)
+        
+        
+        if httpVerb != .get && multipartData == nil {
+            request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        }
+        
+        request.httpMethod = httpVerb.rawValue
+        for (key, value) in headers {
+            request.setValue(value, forHTTPHeaderField: key)
+        }
+        
+
+        if let t = timeout {
+            request.timeoutInterval = t
+        }
+        
+        if httpVerb != .get && multipartData == nil {
+            request.httpBody = postString().data(using: .utf8)
+        }
+        
+        // Multipart
+        if let multipart = multipartData {
+            let boundary = "Boundary-\(UUID().uuidString)"
+            request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+            request.httpBody = multipart.buildHttpBody(boundary: boundary)
+        }
+        return request
+    }
+    
+    func postString() -> String {
+        params.map { $0 + "=\($1)" }
+            .joined(separator: "&")
+    }
+}
+
+
+
+// MultipartData
+
+public struct MultipartData {
+    let name: String
+    let fileData: Data
+    let fileName: String
+    let mimeType: String
+    
+    public init(name: String, fileData: Data, fileName: String, mimeType: String) {
+        self.name = name
+        self.fileData = fileData
+        self.fileName = fileName
+        self.mimeType = mimeType
+    }
+}
+
+extension MultipartData {
+    
+    func buildHttpBody(boundary: String) -> Data {
+        let httpBody = NSMutableData()
+        httpBody.appendString("--\(boundary)\r\n")
+        httpBody.appendString("Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(fileName)\"\r\n")
+        httpBody.appendString("Content-Type: \(mimeType)\r\n\r\n")
+        httpBody.append(fileData)
+        httpBody.appendString("\r\n")
+        httpBody.appendString("--\(boundary)--")
+        return httpBody as Data
+    }
+}
+
+fileprivate extension NSMutableData {
+  func appendString(_ string: String) {
+    if let data = string.data(using: .utf8) {
+      self.append(data)
+    }
+  }
+}
+
+extension NetworkingRequest: URLSessionTaskDelegate {
+    public func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
+        let progress = Progress(totalUnitCount: totalBytesExpectedToSend)
+        progress.completedUnitCount = totalBytesSent
+        print(progress.fractionCompleted)
+        print(progress.isFinished)
+        
+        progressPublisher.send(progress)
+        
+        print("urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64)")
+    }
+}
+
