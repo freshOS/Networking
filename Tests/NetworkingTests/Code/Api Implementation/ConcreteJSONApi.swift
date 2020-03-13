@@ -11,11 +11,7 @@ import Combine
 
 struct ConcreteApi: Api, NetworkingService {
     
-    let network: NetworkingClient = {
-        var c = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
-        c.logLevels = .debug
-        return c
-    }()
+    let network: NetworkingClient = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
     
     func fetchPost() -> AnyPublisher<Post, Error> {
         get("/posts/1")
