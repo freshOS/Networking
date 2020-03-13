@@ -2,6 +2,8 @@ import XCTest
 import Networking
 import Combine
 
+extension Post: NetworkingJSONDecodable {}
+
 final class NetworkingTests: XCTestCase {
     
     var cancellables = Set<AnyCancellable>()
@@ -11,7 +13,7 @@ final class NetworkingTests: XCTestCase {
         let exp1 = expectation(description: "call")
         let exp2 = expectation(description: "call")
         let exp3 = expectation(description: "call")
-//        let exp4 = expectation(description: "call")
+        let exp4 = expectation(description: "call")
 //        let exp5 = expectation(description: "call")
 //        let exp6 = expectation(description: "call")
 //        let exp7 = expectation(description: "call")
@@ -41,21 +43,15 @@ final class NetworkingTests: XCTestCase {
         }.store(in: &cancellables)
     
 
-//        // Model (auto generic)
-//        client.get("/posts/1").sink(receiveCompletion: { _ in }) { (post:Post) in
-//            exp4.fulfill()
-//        }.store(in: &cancellables)
+        // Model (NetworkingJSONDecodable)
+        client.get("/posts/1").sink(receiveCompletion: { _ in }) { (post:Post) in
+            exp4.fulfill()
+        }.store(in: &cancellables)
     
-//
-//        // Model (auto generic)
-//        client.get("/posts/1").then { (post: CleanPost) in
-//            exp5.fulfill()
-//        }
-//
-//        // Model explicit
-//        client.get("/posts/1").toModel(Post.self).then { model in
+        // Model explicit
+//        client.get("/posts/1").toModel(Post.self).sink(receiveCompletion: { _ in }) { (post:Post) in
 //            exp6.fulfill()
-//        }
+//        }.store(in: &cancellables)
 //
 //        // Model implicit
 //        client.get("/posts/1").toModel().then { (model: Post) in
@@ -75,14 +71,14 @@ final class NetworkingTests: XCTestCase {
 //        waitForExpectations(timeout: 3, handler: nil)
 //    }
 //
-//    func testGetDecodableModel() {
-//        let exp = expectation(description: "call")
-//        let api: Api = ConcreteJSONApi()
-//        api.fetchPost().then { post in
-//            exp.fulfill()
-//        }
-//        waitForExpectations(timeout: 3, handler: nil)
-//    }
+    func testGetDecodableModel() {
+        let exp = expectation(description: "call")
+        let api: Api = ConcreteApi()
+        api.fetchPost().sink(receiveCompletion: { _ in }) { post in
+            exp.fulfill()
+        }.store(in: &cancellables)
+        waitForExpectations(timeout: 3, handler: nil)
+    }
 //
 //    func testGetDecodableModels() {
 //        let exp = expectation(description: "call")

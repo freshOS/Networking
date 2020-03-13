@@ -25,8 +25,7 @@ public class NetworkingRequest: NSObject {
     var timeout: TimeInterval?
     let progressPublisher = PassthroughSubject<Progress, Error>()
     
-    
-    public func upload() -> AnyPublisher<(Data?, Progress), Error> {
+    public func uploadPublisher() -> AnyPublisher<(Data?, Progress), Error> {
 
         guard let urlRequest = buildURLRequest() else {
             return Fail(error: NetworkingError.unableToParseResponse as Error).eraseToAnyPublisher() // TODO good Error (invalidURL)
@@ -69,7 +68,7 @@ public class NetworkingRequest: NSObject {
             .receive(on: RunLoop.main).eraseToAnyPublisher()
     }
             
-    public func fetch() -> AnyPublisher<Data, Error> {
+    public func publisher() -> AnyPublisher<Data, Error> {
         
         guard let urlRequest = buildURLRequest() else {
             return Fail(error: NetworkingError.unableToParseResponse as Error).eraseToAnyPublisher() // TODO good Error (invalidURL)
@@ -162,45 +161,6 @@ public class NetworkingRequest: NSObject {
     }
 }
 
-
-
-// MultipartData
-
-public struct MultipartData {
-    let name: String
-    let fileData: Data
-    let fileName: String
-    let mimeType: String
-    
-    public init(name: String, fileData: Data, fileName: String, mimeType: String) {
-        self.name = name
-        self.fileData = fileData
-        self.fileName = fileName
-        self.mimeType = mimeType
-    }
-}
-
-extension MultipartData {
-    
-    func buildHttpBody(boundary: String) -> Data {
-        let httpBody = NSMutableData()
-        httpBody.appendString("--\(boundary)\r\n")
-        httpBody.appendString("Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(fileName)\"\r\n")
-        httpBody.appendString("Content-Type: \(mimeType)\r\n\r\n")
-        httpBody.append(fileData)
-        httpBody.appendString("\r\n")
-        httpBody.appendString("--\(boundary)--")
-        return httpBody as Data
-    }
-}
-
-fileprivate extension NSMutableData {
-  func appendString(_ string: String) {
-    if let data = string.data(using: .utf8) {
-      self.append(data)
-    }
-  }
-}
 
 extension NetworkingRequest: URLSessionTaskDelegate {
     public func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
