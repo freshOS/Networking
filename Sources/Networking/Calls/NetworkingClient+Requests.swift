@@ -26,12 +26,12 @@ public extension NetworkingClient {
         request(.delete, route, params: params)
     }
     
-    internal func request(_: HTTPVerb, _ route: String, params: Params = Params()) -> NetworkingRequest {
+    internal func request(_ httpVerb: HTTPVerb, _ route: String, params: Params = Params()) -> NetworkingRequest {
         let r = NetworkingRequest()
         r.baseURL = baseURL
         r.logLevels = logLevels
         r.headers = headers
-        r.httpVerb = .get
+        r.httpVerb = httpVerb
         r.route = route
         r.params = params
         return r
