@@ -103,7 +103,7 @@ public class NetworkingRequest: NSObject {
         if var urlComponents = URLComponents(string: baseURL + route) {
             var queryItems = [URLQueryItem]()
             params.forEach { param in
-                // Go Api syntax arrayParam[]
+                // arrayParam[] syntax
                 if let array = param.value as? [CustomStringConvertible] {
                     array.forEach {
                         queryItems.append(URLQueryItem(name: "\(param.key)[]", value: "\($0)"))
@@ -156,8 +156,14 @@ public class NetworkingRequest: NSObject {
     }
     
     func postString() -> String {
-        params.map { $0 + "=\($1)" }
-            .joined(separator: "&")
+        return params.map { key, value in
+            if let array = value as? [CustomStringConvertible] {
+                return array.map { "\(key)[]=\($0)" }.joined(separator: "&")
+            } else {
+                return "\(key)=\(value)"
+            }
+        }
+        .joined(separator: "&")
     }
 }
 
