@@ -10,7 +10,7 @@
 [![License: MIT](http://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/freshOS/ws/blob/master/LICENSE)
 [![Build Status](https://app.bitrise.io/app/a6d157138f9ee86d/status.svg?token=W7-x9K5U976xiFrI8XqcJw&branch=master)](https://app.bitrise.io/app/a6d157138f9ee86d)
 [![codebeat badge](https://codebeat.co/badges/ae5feb24-529d-49fe-9e28-75dfa9e3c35d)](https://codebeat.co/projects/github-com-freshos-networking-master)
-![Release version](https://img.shields.io/github/release/freshos/Networking.svg)
+![Release version](https://img.shields.io/github/release/freshOS/Networking.svg)
 
 
 The simplest JSON Networking layer for Swift.
