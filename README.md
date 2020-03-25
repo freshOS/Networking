@@ -75,14 +75,6 @@ client.get("/posts/1").sink(receiveCompletion: { _ in }) { (data:Data) in
 }.store(in: &cancellables)
 ```
 
-
-## Get Data from a JSON Api
-```swift
-client.get("/posts/1").sink(receiveCompletion: { _ in }) { (data:Data) in
-    // data
-}.store(in: &cancellables)
-```
-
 ## Get the type you want back with type infernce
 `Networking` recognizes the type you want back.  
 Types supported are `Void`, `Data`, `Any`(JSON), `NetworkingJSONDecodable`(Your Model) & `[NetworkingJSONDecodable]`  
