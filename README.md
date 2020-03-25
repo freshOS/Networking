@@ -9,9 +9,8 @@
 [![codebeat badge](https://codebeat.co/badges/ae5feb24-529d-49fe-9e28-75dfa9e3c35d)](https://codebeat.co/projects/github-com-freshos-networking-master)
 ![Release version](https://img.shields.io/github/release/freshOS/Networking.svg)
 
-
-The simplest JSON Networking layer for Swift.
-Because JSON apis are used in **99% of iOS Apps**, this should be  **simple**.
+Networking brings together `URLSession`, `Combine`, `Decodable` and `Generics` to
+make connection to a JSON api a breeze.
 
 ```swift
 struct Api: NetworkingService {
@@ -75,7 +74,7 @@ client.get("/posts/1").sink(receiveCompletion: { _ in }) { (data:Data) in
 }.store(in: &cancellables)
 ```
 
-## Get the type you want back with type infernce
+## Get the type you want back with type inference
 `Networking` recognizes the type you want back.  
 Types supported are `Void`, `Data`, `Any`(JSON), `NetworkingJSONDecodable`(Your Model) & `[NetworkingJSONDecodable]`  
 
@@ -89,9 +88,44 @@ let postsPublisher: AnyPublisher<[Post], Error> = client.get("")
 ```
 
 ## Pass params
+Simply pass a `[String: CustomStringConvertible]` dictionary to the `params` parameter.
 ```swift
-client.get("/posts/1", params: ["optin" : true ])
+client.postsPublisher("/posts/1", params: ["optin" : true ])
     .sink(receiveCompletion: { _ in }) { (data:Data) in
       //  response
     }.store(in: &cancellables)
 ```
+
+
+## POST/ PUT Multipart data
+For multipart calls, just pass a `MultipartData` struct to the `multipartData` parameter.
+```swift
+let params: [String: CustomStringConvertible] = [ "type_resource_id": 1, "title": photo.title]
+let multipartData = MultipartData(name: "file",
+                                  fileData: photo.data,
+                                  fileName: "photo.jpg",
+                                   mimeType: "image/jpeg")
+client.post("/photos/upload",
+            params: params,
+            multipartData: multipartData).sink(receiveCompletion: { _ in }) { (data:Data?, progress: Progress) in
+                if let data = data {
+                    print("upload is complete : \(data)")
+                } else {
+                    print("progress: \(progress)")
+                }
+}.store(in: &cancellables)
+```
+
+## Add Headers
+Headers are added via the `headers` property on the client.
+```swift
+client.headers["Authorization"] = "[mytoken]"
+```
+
+
+##
+network.defaultCollectionParsingKeyPath = "collection"
+Logging
+Clean Api
+Models (NetworkingJSONDecodanle)
+Plug your
