@@ -140,13 +140,13 @@ cancellable.cancel()
 ```
 
 ### Logging Network calls
-3 log levels are supported: `off`, `info`, `debug`/
+3 log levels are supported: `off`, `info`, `debug`
 ```swift
 client.logLevels = .debug
 ```
 
 ### Supporting JSON-to-Model parsing.
-For a model to be parsable by `Networking`, it needs to conform to the `NetworkingJSONDecodable` protocl.
+For a model to be parsable by `Networking`, it needs to conform to the `NetworkingJSONDecodable` protocol.
 
 For example if you are using [Arrow](https://github.com/freshOS/Arrow) for JSON Parsing.
 Supporting a `Post` model will look like this:
@@ -162,7 +162,7 @@ extension Post: NetworkingJSONDecodable {
 }
 ```
 
-Instead of doing it every models, you can actually do it once for all with a clever extension 😍.
+Instead of doing it every models, you can actually do it once for all with a clever extension 🤓.
 
 ```swift
 extension ArrowParsable where Self: NetworkingJSONDecodable {
@@ -189,11 +189,6 @@ extension Mymodel: NetworkingJSONDecodable { }
 
 You can support any JSON parsing by replacing the code above with whatever JSON parsing library you are using \o/ !
 
-
+// TODO Document
 network.defaultCollectionParsingKeyPath = "collection"
-Logging
 Clean Api
-Models (NetworkingJSONDecodanle)
-Plug your
-
-Cancelling a request
