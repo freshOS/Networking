@@ -10,7 +10,7 @@
 ![Release version](https://img.shields.io/github/release/freshOS/Networking.svg)
 
 Networking brings together `URLSession`, `Combine`, `Decodable` and `Generics` to
-make connection to a JSON api a breeze.
+make connecting to a JSON api a breeze.
 
 ```swift
 struct Api: NetworkingService {
@@ -52,21 +52,24 @@ In essence, less dependencies and more native stuff.
 
 ## Try it!
 
-Networking is part of [freshOS](https://freshos.github.io) iOS toolset. Try it in an example App ! <a class="github-button" href="https://github.com/freshOS/StarterProject/archive/master.zip" data-icon="octicon-cloud-download" data-style="mega" aria-label="Download freshOS/StarterProject on GitHub">Download Starter Project</a>
+Networking is part of [freshOS](https://freshos.github.io) iOS toolset. Try it in an example App ! <a class="github-button" href="https://github.com/freshOS/StarterProject/archive/master.zip" data-icon="octicon-cloud-download" data-style="mega" aria-label="Download
+freshOS/StarterProject on GitHub">Download Starter Project</a>
 
-## Install it
+## Getting Started
+
+### Install it
 `Networking` is installed via the official [Swift Package Manager](https://swift.org/package-manager/).  
 
 Select `Xcode`>`File`> `Swift Packages`>`File`>`Add Package Dependency...`  
 and add `https://github.com/freshOS/Networking`.
 
-## Create a Networking Client
+### Create a Networking Client
 
 ```swift
 let client = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
 ```
 
-## Make your first call
+### Make your first call
 Use `get`, `post`, `put` & `delete` methods on the client to make calls.
 ```swift
 client.get("/posts/1").sink(receiveCompletion: { _ in }) { (data:Data) in
@@ -74,7 +77,7 @@ client.get("/posts/1").sink(receiveCompletion: { _ in }) { (data:Data) in
 }.store(in: &cancellables)
 ```
 
-## Get the type you want back with type inference
+### Get the type you want back with type inference
 `Networking` recognizes the type you want back.  
 Types supported are `Void`, `Data`, `Any`(JSON), `NetworkingJSONDecodable`(Your Model) & `[NetworkingJSONDecodable]`  
 
@@ -87,7 +90,7 @@ let postPublisher: AnyPublisher<Post, Error> = client.get("")
 let postsPublisher: AnyPublisher<[Post], Error> = client.get("")
 ```
 
-## Pass params
+### Pass params
 Simply pass a `[String: CustomStringConvertible]` dictionary to the `params` parameter.
 ```swift
 client.postsPublisher("/posts/1", params: ["optin" : true ])
@@ -97,7 +100,7 @@ client.postsPublisher("/posts/1", params: ["optin" : true ])
 ```
 
 
-## POST/ PUT Multipart data
+### POST/ PUT Multipart data
 For multipart calls, just pass a `MultipartData` struct to the `multipartData` parameter.
 ```swift
 let params: [String: CustomStringConvertible] = [ "type_resource_id": 1, "title": photo.title]
@@ -116,7 +119,7 @@ client.post("/photos/upload",
 }.store(in: &cancellables)
 ```
 
-## Add Headers
+### Add Headers
 Headers are added via the `headers` property on the client.
 ```swift
 client.headers["Authorization"] = "[mytoken]"
