@@ -1,9 +1,6 @@
 ![Networking](https://raw.githubusercontent.com/freshOS/Networking/master/banner.png)
 
 # Networking
-
-⚠️ Warnign: this is R&amp;D and experimental still. Use at your own risk 👨‍🔬💥  
-
 [![Language: Swift 5](https://img.shields.io/badge/language-swift5-f48041.svg?style=flat)](https://developer.apple.com/swift)
 ![Platform: iOS 13+](https://img.shields.io/badge/platform-iOS%2013%2B-blue.svg?style=flat)
 [![SPM compatible](https://img.shields.io/badge/SPM-compatible-4BC51D.svg?style=flat)](https://swift.org/package-manager/)
@@ -23,10 +20,6 @@ struct Api: NetworkingService {
 
     func fetchPost() -> AnyPublisher<Post, Error> {
         get("/posts/1")
-    }
-
-    func fetchPosts() -> AnyPublisher<[Post], Error> {
-        get("/posts")
     }
 }
 
