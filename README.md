@@ -54,3 +54,9 @@ In essence, less dependencies and more native stuff.
 ## Try it!
 
 Networking is part of [freshOS](https://freshos.github.io) iOS toolset. Try it in an example App ! <a class="github-button" href="https://github.com/freshOS/StarterProject/archive/master.zip" data-icon="octicon-cloud-download" data-style="mega" aria-label="Download freshOS/StarterProject on GitHub">Download Starter Project</a>
+
+## Installing
+`Networking` is installed via the official [Swift Package Manager](https://swift.org/package-manager/).  
+
+Select `Xcode`>`File`> `Swift Packages`>`File`>`Add Package Dependency...`  
+and add `https://github.com/freshOS/Networking`.
