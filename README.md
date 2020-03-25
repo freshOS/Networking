@@ -38,12 +38,13 @@ Getting swift models from a JSON api is now *a problem of the past*
 URLSession + Combine + Generics + Protocols = Networking.
 
 ## What
-- [x] Build concise Apis
+- [x] Build a concise Api
 - [x] Automatically map your models
-- [x] Built-in network logger
-- [x] Pure Swift, Simple & Lightweight
-- [x] Uses Apple's Combine
-- [x] 0 Dependencies
+- [x] Uses latest Apple's [Combine](https://developer.apple.com/documentation/combine)
+- [x] Compatible with native `Codable` and any JSON Parser
+- [x] Embarks a built-in network logger
+- [x] Pure Swift, simple, sightweight & 0 dependencies
+
 
 ## Welcome the future. Bye ws , Hello Networking.
 Networking is the next generation of the [ws](https://github.com/freshOS/ws) project.
@@ -100,7 +101,7 @@ client.postsPublisher("/posts/1", params: ["optin" : true ])
 ```
 
 
-### POST/ PUT Multipart data
+### Upload multipart data (POST/ PUT)
 For multipart calls, just pass a `MultipartData` struct to the `multipartData` parameter.
 ```swift
 let params: [String: CustomStringConvertible] = [ "type_resource_id": 1, "title": photo.title]
@@ -125,10 +126,74 @@ Headers are added via the `headers` property on the client.
 client.headers["Authorization"] = "[mytoken]"
 ```
 
+### Cancelling a request
+Since `Networking` uses the Combine framework. You just have to cancel the `AnyCancellable` returned by the `sink` call.
 
-##
+```swift
+var cancellable = client.get("/posts/1").sink(receiveCompletion: { _ in }) { (json:Any) in
+  print(json)
+}
+```
+Later ...
+```swift
+cancellable.cancel()
+```
+
+### Logging Network calls
+3 log levels are supported: `off`, `info`, `debug`/
+```swift
+client.logLevels = .debug
+```
+
+### Supporting JSON-to-Model parsing.
+For a model to be parsable by `Networking`, it needs to conform to the `NetworkingJSONDecodable` protocl.
+
+For example if you are using [Arrow](https://github.com/freshOS/Arrow) for JSON Parsing.
+Supporting a `Post` model will look like this:
+```swift
+extension Post: NetworkingJSONDecodable {
+    static func decode(_ json: Any) throws -> Post {
+        var t = Post()
+        if let arrowJSON = JSON(json) {
+            t.deserialize(arrowJSON)
+        }
+        return t
+    }
+}
+```
+
+Instead of doing it every models, you can actually do it once for all with a clever extension 😍.
+
+```swift
+extension ArrowParsable where Self: NetworkingJSONDecodable {
+
+    public static func decode(_ json: Any) throws -> Self {
+        var t: Self = Self()
+        if let arrowJSON = JSON(json) {
+            t.deserialize(arrowJSON)
+        }
+        return t
+    }
+}
+
+extension User: NetworkingJSONDecodable { }
+extension Photo: NetworkingJSONDecodable { }
+extension Video: NetworkingJSONDecodable { }
+// etc.
+```
+This default extension is already provided for the native `Decodable` type. So if your
+models are `Decodable` then you just have to add:
+```swift
+extension Mymodel: NetworkingJSONDecodable { }
+```
+
+You can support any JSON parsing by replacing the code above with whatever JSON parsing library you are using \o/ !
+
+
 network.defaultCollectionParsingKeyPath = "collection"
 Logging
 Clean Api
 Models (NetworkingJSONDecodanle)
 Plug your
+
+Cancelling a request
