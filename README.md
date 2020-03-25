@@ -16,15 +16,15 @@ Because JSON apis are used in **99% of iOS Apps**, this should be  **simple**.
 ```swift
 struct Api: NetworkingService {
 
-    let network: NetworkingClient = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
+    let network = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
 
     func fetchPost() -> AnyPublisher<Post, Error> {
         get("/posts/1")
     }
 }
-
-// ... later
-
+```
+// Later...
+```swift
 let api = Api()
 api.fetchPost().sink(receiveCompletion: { _ in }) { post in
     // Get back some post \o/
