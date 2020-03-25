@@ -55,8 +55,51 @@ In essence, less dependencies and more native stuff.
 
 Networking is part of [freshOS](https://freshos.github.io) iOS toolset. Try it in an example App ! <a class="github-button" href="https://github.com/freshOS/StarterProject/archive/master.zip" data-icon="octicon-cloud-download" data-style="mega" aria-label="Download freshOS/StarterProject on GitHub">Download Starter Project</a>
 
-## Installing
+## Install it
 `Networking` is installed via the official [Swift Package Manager](https://swift.org/package-manager/).  
 
 Select `Xcode`>`File`> `Swift Packages`>`File`>`Add Package Dependency...`  
 and add `https://github.com/freshOS/Networking`.
+
+## Create a Networking Client
+
+```swift
+let client = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
+```
+
+## Make your first call
+Use `get`, `post`, `put` & `delete` methods on the client to make calls.
+```swift
+client.get("/posts/1").sink(receiveCompletion: { _ in }) { (data:Data) in
+    // data
+}.store(in: &cancellables)
+```
+
+
+## Get Data from a JSON Api
+```swift
+client.get("/posts/1").sink(receiveCompletion: { _ in }) { (data:Data) in
+    // data
+}.store(in: &cancellables)
+```
+
+## Get the type you want back with type infernce
+`Networking` recognizes the type you want back.  
+Types supported are `Void`, `Data`, `Any`(JSON), `NetworkingJSONDecodable`(Your Model) & `[NetworkingJSONDecodable]`  
+
+This enables keeping a simple api while supporting many types :
+```swift
+let voidPublisher: AnyPublisher<Void, Error> = client.get("")
+let dataPublisher: AnyPublisher<Data, Error> = client.get("")
+let jsonPublisher: AnyPublisher<Any, Error> = client.get("")
+let postPublisher: AnyPublisher<Post, Error> = client.get("")
+let postsPublisher: AnyPublisher<[Post], Error> = client.get("")
+```
+
+## Pass params
+```swift
+client.get("/posts/1", params: ["optin" : true ])
+    .sink(receiveCompletion: { _ in }) { (data:Data) in
+      //  response
+    }.store(in: &cancellables)
+```
