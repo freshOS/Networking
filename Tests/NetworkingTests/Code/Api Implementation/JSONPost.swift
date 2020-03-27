@@ -23,10 +23,3 @@ struct JSONPost: Decodable {
 //  "completed": false
 //}
 
-// Declare that your clean model is backed by a JSONModel and define how it maps back to your clean model.
-//extension CleanPost: BackedByJSONModel {
-//    
-//    static func fromJSONModel(jsonModel: JSONPost) -> CleanPost {
-//        CleanPost(id: jsonModel.id, userId: jsonModel.userId, title: jsonModel.title, body: jsonModel.body)
-//    }
-//}

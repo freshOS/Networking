@@ -20,6 +20,8 @@ struct ConcreteApi: Api, NetworkingService {
     func fetchPosts() -> AnyPublisher<[Post], Error> {
         get("/posts")
     }
+    
+    
 }
 
 

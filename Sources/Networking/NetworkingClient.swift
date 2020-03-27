@@ -30,12 +30,3 @@ public struct NetworkingClient {
     }
 }
 
-
-
-
-
-
-
-
-
-
