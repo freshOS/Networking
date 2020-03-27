@@ -68,6 +68,7 @@ freshOS/StarterProject on GitHub">Download Starter Project</a>
 * [Cancel a request](#cancel-a-request)
 * [Log Network calls](#log-network-calls)
 * [Support JSON-to-Model parsing](#support-json-to-model-parsing)
+* [Design a clean api](#design-a-clean-api)
 
 ### Install it
 `Networking` is installed via the official [Swift Package Manager](https://swift.org/package-manager/).  
@@ -204,7 +205,7 @@ You can support any JSON parsing by replacing the code above with whatever JSON 
 network.defaultCollectionParsingKeyPath = "collection"
 Clean Api
 
-### Design a clean api.
+### Design a clean api
 In order to write a concise api, Networking provides the `NetworkingService` protocol.
 This will forward your calls to the underlying client so that your only have to write `get("/route")` instead of `network.get("/route")`, while this is overkill for tiny apis, it definitely keep things concise when working with massive apis.
 
