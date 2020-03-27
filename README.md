@@ -43,7 +43,7 @@ URLSession + Combine + Generics + Protocols = Networking.
 - [x] Uses latest Apple's [Combine](https://developer.apple.com/documentation/combine)
 - [x] Compatible with native `Codable` and any JSON Parser
 - [x] Embarks a built-in network logger
-- [x] Pure Swift, simple, sightweight & 0 dependencies
+- [x] Pure Swift, simple, lightweight & 0 dependencies
 
 
 ## Welcome the future. Bye ws , Hello Networking.
@@ -225,7 +225,7 @@ extension Article: NetworkingJSONDecodable {}
 Here is what a typical CRUD api would look like :
 
 ```swift
-struct CRUDAPi: NetworkingService {
+struct CRUDApi: NetworkingService {
 
     var network = NetworkingClient(baseURL: "https://my-api.com")
 
