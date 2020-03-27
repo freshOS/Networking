@@ -203,3 +203,54 @@ You can support any JSON parsing by replacing the code above with whatever JSON 
 // TODO Document
 network.defaultCollectionParsingKeyPath = "collection"
 Clean Api
+
+### Design a clean api.
+In order to write a concise api, Networking provides the `NetworkingService` protocol.
+This will forward your calls to the underlying client so that your only have to write `get("/route")` instead of `network.get("/route")`, while this is overkill for tiny apis, it definitely keep things concise when working with massive apis.
+
+
+Given an `Article` model
+```swift
+struct Article: Codable {
+    let id: String
+    let title: String
+    let content: String
+}
+```
+Make your `Article` `NetworkingJSONDecodable`, this is a one liner since `Codable` is supported by default.
+```swift
+extension Article: NetworkingJSONDecodable {}
+```
+Here is what a typical CRUD api would look like :
+
+```swift
+struct CRUDAPi: NetworkingService {
+
+    var network = NetworkingClient(baseURL: "https://my-api.com")
+
+    // Create
+    func create(article a: Article) -> AnyPublisher<Article, Error> {
+        post("/articles", params: ["title" : a.title, "content" : a.content])
+    }
+
+    // Read
+    func fetch(article a: Article) -> AnyPublisher<Article, Error> {
+        get("/articles/\(a.id)")
+    }
+
+    // Update
+    func update(article a: Article) -> AnyPublisher<Article, Error> {
+        put("/articles/\(a.id)", params: ["title" : a.title, "content" : a.content])
+    }
+
+    // Delete
+    func delete(article a: Article) -> AnyPublisher<Void, Error> {
+        delete("/articles/\(a.id)")
+    }
+
+    // List
+    func articles() -> AnyPublisher<[Article], Error> {
+        get("/articles")
+    }
+}
+```
