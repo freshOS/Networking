@@ -58,13 +58,24 @@ freshOS/StarterProject on GitHub">Download Starter Project</a>
 
 ## Getting Started
 
+* [Install it](#install-it)
+* [Create a Client](#create-a-client)
+* [Make your first call](#make-your-first-call)
+* [Get the type you want back](#get-the-type-you-want-back)
+* [Pass params](#pass-params)
+* [Upload multipart data](#upload-multipart-data)
+* [Add Headers](#add-headers)
+* [Cancel a request](#cancel-a-request)
+* [Log Network calls](#log-network-calls)
+* [Support JSON-to-Model parsing](#support-json-to-model-parsing)
+
 ### Install it
 `Networking` is installed via the official [Swift Package Manager](https://swift.org/package-manager/).  
 
 Select `Xcode`>`File`> `Swift Packages`>`File`>`Add Package Dependency...`  
 and add `https://github.com/freshOS/Networking`.
 
-### Create a Networking Client
+### Create a Client
 
 ```swift
 let client = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
@@ -78,8 +89,8 @@ client.get("/posts/1").sink(receiveCompletion: { _ in }) { (data:Data) in
 }.store(in: &cancellables)
 ```
 
-### Get the type you want back with type inference
-`Networking` recognizes the type you want back.  
+### Get the type you want back
+`Networking` recognizes the type you want back via type inference.
 Types supported are `Void`, `Data`, `Any`(JSON), `NetworkingJSONDecodable`(Your Model) & `[NetworkingJSONDecodable]`  
 
 This enables keeping a simple api while supporting many types :
@@ -101,8 +112,8 @@ client.postsPublisher("/posts/1", params: ["optin" : true ])
 ```
 
 
-### Upload multipart data (POST/ PUT)
-For multipart calls, just pass a `MultipartData` struct to the `multipartData` parameter.
+### Upload multipart data
+For multipart calls (post/put), just pass a `MultipartData` struct to the `multipartData` parameter.
 ```swift
 let params: [String: CustomStringConvertible] = [ "type_resource_id": 1, "title": photo.title]
 let multipartData = MultipartData(name: "file",
@@ -126,7 +137,7 @@ Headers are added via the `headers` property on the client.
 client.headers["Authorization"] = "[mytoken]"
 ```
 
-### Cancelling a request
+### Cancel a request
 Since `Networking` uses the Combine framework. You just have to cancel the `AnyCancellable` returned by the `sink` call.
 
 ```swift
@@ -139,13 +150,13 @@ Later ...
 cancellable.cancel()
 ```
 
-### Logging Network calls
+### Log Network calls
 3 log levels are supported: `off`, `info`, `debug`
 ```swift
 client.logLevels = .debug
 ```
 
-### Supporting JSON-to-Model parsing.
+### Support JSON-to-Model parsing.
 For a model to be parsable by `Networking`, it needs to conform to the `NetworkingJSONDecodable` protocol.
 
 For example if you are using [Arrow](https://github.com/freshOS/Arrow) for JSON Parsing.
