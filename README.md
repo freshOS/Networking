@@ -73,7 +73,7 @@ freshOS/StarterProject on GitHub">Download Starter Project</a>
 ### Install it
 `Networking` is installed via the official [Swift Package Manager](https://swift.org/package-manager/).  
 
-Select `Xcode`>`File`> `Swift Packages`>`File`>`Add Package Dependency...`  
+Select `Xcode`>`File`> `Swift Packages`>`Add Package Dependency...`  
 and add `https://github.com/freshOS/Networking`.
 
 ### Create a Client
