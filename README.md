@@ -48,7 +48,7 @@ URLSession + Combine + Generics + Protocols = Networking.
 
 ## Welcome the future. Bye ws , Hello Networking.
 Networking is the next generation of the [ws](https://github.com/freshOS/ws) project.
-The improvements are: Using Combine native Apple's framework over [Then](https://github.com/freshOS/Then) Promise Library, removing [Arrow](https://github.com/freshOS/Arrow) dependency to favour Codable (Arrow can still be adatped easily though) and removing the [Alamofire](https://github.com/Alamofire/Alamofire) dependency in favour of a simpler purely native [URLSession](https://developer.apple.com/documentation/foundation/urlsession) implementation.  
+The improvements are: Using Combine native Apple's framework over [Then](https://github.com/freshOS/Then) Promise Library, removing [Arrow](https://github.com/freshOS/Arrow) dependency to favour Codable (Arrow can still be adapted easily though) and removing the [Alamofire](https://github.com/Alamofire/Alamofire) dependency in favour of a simpler purely native [URLSession](https://developer.apple.com/documentation/foundation/urlsession) implementation.  
 In essence, less dependencies and more native stuff.
 
 ## Try it!
