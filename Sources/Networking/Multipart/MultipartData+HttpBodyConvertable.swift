@@ -8,7 +8,7 @@
 import Foundation
 
 extension MultipartData: HttpBodyConvertable {
-    public func buildHttpBody(boundary: String) -> Data {
+    public func buildHttpBodyPart(boundary: String) -> Data {
         let httpBody = NSMutableData()
         httpBody.appendString("--\(boundary)\r\n")
         httpBody.appendString("Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(fileName)\"\r\n")
@@ -19,7 +19,7 @@ extension MultipartData: HttpBodyConvertable {
     }
 }
 
-fileprivate extension NSMutableData {
+internal extension NSMutableData {
     func appendString(_ string: String) {
         if let data = string.data(using: .utf8) {
             self.append(data)

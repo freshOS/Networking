@@ -147,8 +147,7 @@ public class NetworkingRequest: NSObject {
         
         // Multipart
         if let multiparts = multipartData {
-            // Convert multiparts to boundary-seperated Data and combine them
-            // Construct a unique boundary to seperate values
+            // Construct a unique boundary to separate values
             let boundary = "Boundary-\(UUID().uuidString)"
             request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
             request.httpBody = buildMultipartHttpBody(params: params, multiparts: multiparts, boundary: boundary)
@@ -161,9 +160,10 @@ public class NetworkingRequest: NSObject {
         let allMultiparts: [HttpBodyConvertable] = [params] + multiparts;
         let boundaryEnding = "--\(boundary)--".data(using: .utf8)!
         
+        // Convert multiparts to boundary-seperated Data and combine them
         return allMultiparts
             .map { (multipart: HttpBodyConvertable) -> Data in
-                return multipart.buildHttpBody(boundary: boundary)
+                return multipart.buildHttpBodyPart(boundary: boundary)
             }
             .reduce(Data.init(), +)
             + boundaryEnding

@@ -11,15 +11,11 @@ import Combine
 public extension NetworkingClient {
     
     func post(_ route: String, params: Params = Params(), multipartData: MultipartData) -> AnyPublisher<(Data?, Progress), Error> {
-        let r = request(.post, route, params: params)
-        r.multipartData = [multipartData]
-        return r.uploadPublisher()
+        return post(route, params: params, multipartData: [multipartData])
     }
     
     func put(_ route: String, params: Params = Params(), multipartData: MultipartData) -> AnyPublisher<(Data?, Progress), Error> {
-        let r = request(.put, route, params: params)
-        r.multipartData = [multipartData]
-        return r.uploadPublisher()
+        return put(route, params: params, multipartData: [multipartData])
     }
     
     // Allow multiple multipart data

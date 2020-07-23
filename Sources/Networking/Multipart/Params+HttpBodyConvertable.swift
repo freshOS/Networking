@@ -8,7 +8,7 @@
 import Foundation
 
 extension Params: HttpBodyConvertable {
-    public func buildHttpBody(boundary: String) -> Data {
+    public func buildHttpBodyPart(boundary: String) -> Data {
         let httpBody = NSMutableData()
 
         self.forEach { (name, value) in
@@ -19,13 +19,5 @@ extension Params: HttpBodyConvertable {
         }
         
         return httpBody as Data
-    }
-}
-
-fileprivate extension NSMutableData {
-    func appendString(_ string: String) {
-        if let data = string.data(using: .utf8) {
-            self.append(data)
-        }
     }
 }

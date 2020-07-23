@@ -8,5 +8,5 @@
 import Foundation
 
 public protocol HttpBodyConvertable {
-    func buildHttpBody(boundary: String) -> Data
+    func buildHttpBodyPart(boundary: String) -> Data
 }
