@@ -12,4 +12,3 @@ public enum NetworkingLogLevel {
     case info
     case debug
 }
-

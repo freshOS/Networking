@@ -2,7 +2,7 @@ import Foundation
 import Combine
 
 public struct NetworkingClient {
-    
+
     /**
         Instead of using the same keypath for every call eg: "collection",
         this enables to use a default keypath for parsing collections.
@@ -22,11 +22,10 @@ public struct NetworkingClient {
         get { return logger.logLevels }
         set { logger.logLevels = newValue }
     }
-    
+
     private let logger = NetworkingLogger()
-    
+
     public init(baseURL: String) {
         self.baseURL = baseURL
     }
 }
-

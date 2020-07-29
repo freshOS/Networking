@@ -12,9 +12,9 @@ public struct NetworkingError: Error {
     public enum Status: Int {
         case unknown                        = -1
         case networkUnreachable             = 0
-        
+
         case unableToParseResponse          = 1
-        
+
         // 4xx Client Error
         case badRequest                     = 400
         case unauthorized                   = 401
@@ -44,14 +44,14 @@ public struct NetworkingError: Error {
         case tooManyRequests                = 429
         case requestHeaderFieldsTooLarge    = 431
         case unavailableForLegalReasons     = 451
-        
+
         // 4xx nginx
         case noResponse                     = 444
         case sslCertificateError            = 495
         case sslCertificateRequired         = 496
         case httpRequestSentToHTTPSPort     = 497
         case clientClosedRequest            = 499
-        
+
         // 5xx Server Error
         case internalServerError            = 500
         case notImplemented                 = 501
@@ -65,20 +65,19 @@ public struct NetworkingError: Error {
         case notExtended                    = 510
         case networkAuthenticationRequired  = 511
     }
-    
+
     public var status: Status
     public var code: Int { return status.rawValue }
-    
+
     public var jsonPayload: Any?
-    
+
     public init(httpStatusCode: Int) {
         self.status = Status(rawValue: httpStatusCode) ?? .unknown
     }
-    
 }
 
 extension NetworkingError: CustomStringConvertible {
-    
+
     public var description: String {
         return String(describing: self.status)
             .replacingOccurrences(of: "(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])",
@@ -86,13 +85,12 @@ extension NetworkingError: CustomStringConvertible {
                                   options: [.regularExpression])
             .capitalized
     }
-    
 }
 
 extension NetworkingError {
-    
+
     public static var unableToParseResponse: NetworkingError {
         return NetworkingError(httpStatusCode: Status.unableToParseResponse.rawValue)
     }
-    
+
 }

@@ -8,8 +8,15 @@
 import Foundation
 
 struct Post: Decodable {
-    let id: Int
+    let identifier: Int
     let userId: Int
     let title: String
     let body: String
+
+    enum CodingKeys: String, CodingKey {
+        case identifier = "id"
+        case userId
+        case title
+        case body
+    }
 }

@@ -5,10 +5,10 @@ import Combine
 extension Post: NetworkingJSONDecodable {}
 
 final class NetworkingTests: XCTestCase {
-    
+
     var cancellables = Set<AnyCancellable>()
     var cancellable: Cancellable?
-    
+
     func testUsagesGet() {
         let exp1 = expectation(description: "call")
         let exp2 = expectation(description: "call")
@@ -22,32 +22,31 @@ final class NetworkingTests: XCTestCase {
 //
         // Create client.
         let client = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
-        
-        client.get("/posts/1").sink(receiveCompletion: { _ in }) { (json:Any) in
+
+        client.get("/posts/1").sink(receiveCompletion: { _ in }, receiveValue: { (json: Any) in
             print(json)
-        }.store(in: &cancellables)
-    
+        }).store(in: &cancellables)
+
         // Void
-        client.get("/posts/1").sink(receiveCompletion: { _ in }) {
+        client.get("/posts/1").sink(receiveCompletion: { _ in }, receiveValue: {
             exp1.fulfill()
-        }.store(in: &cancellables)
+        }).store(in: &cancellables)
 
         // Data
-        client.get("/posts/1").sink(receiveCompletion: { _ in }) { (data:Data) in
+        client.get("/posts/1").sink(receiveCompletion: { _ in }, receiveValue: { (data: Data) in
             exp2.fulfill()
-        }.store(in: &cancellables)
-        
+        }).store(in: &cancellables)
+
         // JSON
-        client.get("/posts/1").toJSON().sink(receiveCompletion: { _ in }) { (json:Any) in
+        client.get("/posts/1").toJSON().sink(receiveCompletion: { _ in }, receiveValue: { (json: Any) in
             exp3.fulfill()
-        }.store(in: &cancellables)
-    
+        }).store(in: &cancellables)
 
         // Model (NetworkingJSONDecodable)
-        client.get("/posts/1").sink(receiveCompletion: { _ in }) { (post:Post) in
+        client.get("/posts/1").sink(receiveCompletion: { _ in }, receiveValue: { (post: Post) in
             exp4.fulfill()
-        }.store(in: &cancellables)
-    
+        }).store(in: &cancellables)
+
         // Model explicit
 //        client.get("/posts/1").toModel(Post.self).sink(receiveCompletion: { _ in }) { (post:Post) in
 //            exp6.fulfill()
@@ -73,13 +72,13 @@ final class NetworkingTests: XCTestCase {
 //
         waitForExpectations(timeout: 3, handler: nil)
     }
-    
+
     func testGetDecodableModel() {
         let exp = expectation(description: "call")
         let api: Api = ConcreteApi()
-        api.fetchPost().sink(receiveCompletion: { _ in }) { post in
+        api.fetchPost().sink(receiveCompletion: { _ in }, receiveValue: { post in
             exp.fulfill()
-        }.store(in: &cancellables)
+        }).store(in: &cancellables)
         waitForExpectations(timeout: 3, handler: nil)
     }
 //
@@ -164,9 +163,3 @@ final class NetworkingTests: XCTestCase {
 //        ("testGetNonDecodableModels", testGetNonDecodableModels),
 //    ]
 }
-
-
-
-
-
-

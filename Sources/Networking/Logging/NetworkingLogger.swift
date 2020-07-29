@@ -8,9 +8,9 @@
 import Foundation
 
 class NetworkingLogger {
-    
+
     var logLevels = NetworkingLogLevel.off
-    
+
     func log(request: URLRequest) {
         guard logLevels != .off else {
             return
@@ -22,7 +22,7 @@ class NetworkingLogger {
             logBody(request)
         }
     }
-    
+
     func log(response: URLResponse, data: Data) {
         guard logLevels != .off else {
             return
@@ -36,11 +36,11 @@ class NetworkingLogger {
             }
         }
     }
-    
+
     private func logHeaders(_ urlRequest: URLRequest) {
         if let allHTTPHeaderFields = urlRequest.allHTTPHeaderFields {
-            for (k, v) in allHTTPHeaderFields {
-                print("  \(k) : \(v)")
+            for (key, value) in allHTTPHeaderFields {
+                print("  \(key) : \(value)")
             }
         }
     }

@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  NetworkingRequest.swift
 //  
 //
 //  Created by Sacha DSO on 21/02/2020.
@@ -8,9 +8,8 @@
 import Foundation
 import Combine
 
-
 public class NetworkingRequest: NSObject {
-            
+
     var baseURL = ""
     var route = ""
     var httpVerb = HTTPVerb.get
@@ -24,17 +23,18 @@ public class NetworkingRequest: NSObject {
     private let logger = NetworkingLogger()
     var timeout: TimeInterval?
     let progressPublisher = PassthroughSubject<Progress, Error>()
-    
+
     public func uploadPublisher() -> AnyPublisher<(Data?, Progress), Error> {
 
         guard let urlRequest = buildURLRequest() else {
-            return Fail(error: NetworkingError.unableToParseResponse as Error).eraseToAnyPublisher() // TODO good Error (invalidURL)
+            return Fail(error: NetworkingError.unableToParseResponse as Error)
+                .eraseToAnyPublisher()
         }
         logger.log(request: urlRequest)
-        
+
         let config = URLSessionConfiguration.default
         let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
-        let callPublisher : AnyPublisher<(Data?, Progress), Error> = urlSession.dataTaskPublisher(for: urlRequest)
+        let callPublisher: AnyPublisher<(Data?, Progress), Error> = urlSession.dataTaskPublisher(for: urlRequest)
             .tryMap { (data: Data, response: URLResponse) -> Data in
                 self.logger.log(response: response, data: data)
                 if let httpURLResponse = response as? HTTPURLResponse {
@@ -47,34 +47,33 @@ public class NetworkingRequest: NSObject {
                     }
                 }
             return data
-        }.mapError { e -> NetworkingError in
-            if let ne = e as? NetworkingError {
-                return ne
+        }.mapError { error -> NetworkingError in
+            if let networkingError = error as? NetworkingError {
+                return networkingError
             } else {
                 return NetworkingError.unableToParseResponse
             }
         }.map { data -> (Data?, Progress) in
-            print(" 😍 data")
             return (data, Progress())
         }.eraseToAnyPublisher()
-    
-        
+
         let progressPublisher2: AnyPublisher<(Data?, Progress), Error> = progressPublisher
             .map { progress -> (Data?, Progress) in
                 return (nil, progress)
         }.eraseToAnyPublisher()
-        
+
         return Publishers.Merge(callPublisher, progressPublisher2)
             .receive(on: RunLoop.main).eraseToAnyPublisher()
     }
-            
+
     public func publisher() -> AnyPublisher<Data, Error> {
-        
+
         guard let urlRequest = buildURLRequest() else {
-            return Fail(error: NetworkingError.unableToParseResponse as Error).eraseToAnyPublisher() // TODO good Error (invalidURL)
+            return Fail(error: NetworkingError.unableToParseResponse as Error)
+                .eraseToAnyPublisher()
         }
         logger.log(request: urlRequest)
-        
+
         let config = URLSessionConfiguration.default
         let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         return urlSession.dataTaskPublisher(for: urlRequest)
@@ -90,15 +89,15 @@ public class NetworkingRequest: NSObject {
                     }
                 }
             return data
-        }.mapError { e -> NetworkingError in
-            if let ne = e as? NetworkingError {
-                return ne
+        }.mapError { error -> NetworkingError in
+            if let networkingError = error as? NetworkingError {
+                return networkingError
             } else {
                 return NetworkingError.unableToParseResponse
             }
         }.receive(on: RunLoop.main).eraseToAnyPublisher()
     }
-    
+
     private func getURLWithParams() -> String {
         if var urlComponents = URLComponents(string: baseURL + route) {
             var queryItems = [URLQueryItem]()
@@ -116,35 +115,33 @@ public class NetworkingRequest: NSObject {
         }
         return baseURL + route
     }
-    
+
     internal func buildURLRequest() -> URLRequest? {
         var urlString = baseURL + route
         if httpVerb == .get {
              urlString = getURLWithParams()
         }
-        
+
         let url = URL(string: urlString)!
         var request = URLRequest(url: url)
-        
-        
+
         if httpVerb != .get && multipartData == nil {
             request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         }
-        
+
         request.httpMethod = httpVerb.rawValue
         for (key, value) in headers {
             request.setValue(value, forHTTPHeaderField: key)
         }
-        
 
-        if let t = timeout {
-            request.timeoutInterval = t
+        if let timeout = timeout {
+            request.timeoutInterval = timeout
         }
-        
+
         if httpVerb != .get && multipartData == nil {
             request.httpBody = percentEncodedString().data(using: .utf8)
         }
-        
+
         // Multipart
         if let multiparts = multipartData {
             // Construct a unique boundary to separate values
@@ -154,12 +151,12 @@ public class NetworkingRequest: NSObject {
         }
         return request
     }
-    
+
     private func buildMultipartHttpBody(params: Params, multiparts: [MultipartData], boundary: String) -> Data {
         // Combine all multiparts together
-        let allMultiparts: [HttpBodyConvertible] = [params] + multiparts;
+        let allMultiparts: [HttpBodyConvertible] = [params] + multiparts
         let boundaryEnding = "--\(boundary)--".data(using: .utf8)!
-        
+
         // Convert multiparts to boundary-seperated Data and combine them
         return allMultiparts
             .map { (multipart: HttpBodyConvertible) -> Data in
@@ -168,13 +165,14 @@ public class NetworkingRequest: NSObject {
             .reduce(Data.init(), +)
             + boundaryEnding
     }
-    
+
     func percentEncodedString() -> String {
         return params.map { key, value in
             let escapedKey = "\(key)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
             if let array = value as? [CustomStringConvertible] {
                 return array.map { entry in
-                    let escapedValue = "\(entry)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
+                    let escapedValue = "\(entry)"
+                        .addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
                     return "\(key)[]=\(escapedValue)" }.joined(separator: "&"
                 )
             } else {
@@ -198,15 +196,13 @@ extension CharacterSet {
 }
 
 extension NetworkingRequest: URLSessionTaskDelegate {
-    public func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
+    public func urlSession(_ session: URLSession,
+                           task: URLSessionTask,
+                           didSendBodyData bytesSent: Int64,
+                           totalBytesSent: Int64,
+                           totalBytesExpectedToSend: Int64) {
         let progress = Progress(totalUnitCount: totalBytesExpectedToSend)
         progress.completedUnitCount = totalBytesSent
-        print(progress.fractionCompleted)
-        print(progress.isFinished)
-        
         progressPublisher.send(progress)
-        
-        print("urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64)")
     }
 }
-
