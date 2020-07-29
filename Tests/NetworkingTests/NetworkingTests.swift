@@ -71,6 +71,9 @@ final class NetworkingTests: XCTestCase {
 //        waitForExpectations(timeout: 3, handler: nil)
 //    }
 //
+        waitForExpectations(timeout: 3, handler: nil)
+    }
+    
     func testGetDecodableModel() {
         let exp = expectation(description: "call")
         let api: Api = ConcreteApi()
@@ -104,8 +107,8 @@ final class NetworkingTests: XCTestCase {
 //        api.fetchCleanPosts().then { posts in
 //            exp.fulfill()
 //        }
-        waitForExpectations(timeout: 3, handler: nil)
-    }
+//        waitForExpectations(timeout: 3, handler: nil)
+//    }
 //
 //
 //    //delete

@@ -16,7 +16,7 @@ public class NetworkingRequest: NSObject {
     var httpVerb = HTTPVerb.get
     public var params = Params()
     var headers = [String: String]()
-    var multipartData: MultipartData?
+    var multipartData: [MultipartData]?
     var logLevels: NetworkingLogLevel {
         get { return logger.logLevels }
         set { logger.logLevels = newValue }
@@ -117,10 +117,9 @@ public class NetworkingRequest: NSObject {
         return baseURL + route
     }
     
-    private func buildURLRequest() -> URLRequest? {
-        
+    internal func buildURLRequest() -> URLRequest? {
         var urlString = baseURL + route
-        if httpVerb == .get || multipartData != nil {
+        if httpVerb == .get {
              urlString = getURLWithParams()
         }
         
@@ -147,15 +146,29 @@ public class NetworkingRequest: NSObject {
         }
         
         // Multipart
-        if let multipart = multipartData {
+        if let multiparts = multipartData {
+            // Construct a unique boundary to separate values
             let boundary = "Boundary-\(UUID().uuidString)"
             request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-            request.httpBody = multipart.buildHttpBody(boundary: boundary)
+            request.httpBody = buildMultipartHttpBody(params: params, multiparts: multiparts, boundary: boundary)
         }
         return request
     }
     
-
+    private func buildMultipartHttpBody(params: Params, multiparts: [MultipartData], boundary: String) -> Data {
+        // Combine all multiparts together
+        let allMultiparts: [HttpBodyConvertable] = [params] + multiparts;
+        let boundaryEnding = "--\(boundary)--".data(using: .utf8)!
+        
+        // Convert multiparts to boundary-seperated Data and combine them
+        return allMultiparts
+            .map { (multipart: HttpBodyConvertable) -> Data in
+                return multipart.buildHttpBodyPart(boundary: boundary)
+            }
+            .reduce(Data.init(), +)
+            + boundaryEnding
+    }
+    
     func percentEncodedString() -> String {
         return params.map { key, value in
             let escapedKey = "\(key)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
