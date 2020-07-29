@@ -1,5 +1,5 @@
 //
-//  MultipartData+HttpBody.swift
+//  MultipartData+HttpBodyConvertible.swift
 //  
 //
 //  Created by Sacha on 13/03/2020.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension MultipartData: HttpBodyConvertable {
+extension MultipartData: HttpBodyConvertible {
     public func buildHttpBodyPart(boundary: String) -> Data {
         let httpBody = NSMutableData()
         httpBody.appendString("--\(boundary)\r\n")

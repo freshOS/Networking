@@ -157,12 +157,12 @@ public class NetworkingRequest: NSObject {
     
     private func buildMultipartHttpBody(params: Params, multiparts: [MultipartData], boundary: String) -> Data {
         // Combine all multiparts together
-        let allMultiparts: [HttpBodyConvertable] = [params] + multiparts;
+        let allMultiparts: [HttpBodyConvertible] = [params] + multiparts;
         let boundaryEnding = "--\(boundary)--".data(using: .utf8)!
         
         // Convert multiparts to boundary-seperated Data and combine them
         return allMultiparts
-            .map { (multipart: HttpBodyConvertable) -> Data in
+            .map { (multipart: HttpBodyConvertible) -> Data in
                 return multipart.buildHttpBodyPart(boundary: boundary)
             }
             .reduce(Data.init(), +)
