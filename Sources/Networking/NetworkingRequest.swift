@@ -99,8 +99,13 @@ public class NetworkingRequest: NSObject {
     }
 
     private func getURLWithParams() -> String {
-        if var urlComponents = URLComponents(string: baseURL + route) {
-            var queryItems = [URLQueryItem]()
+        let urlString = baseURL + route
+        guard let url = URL(string: urlString) else {
+            return urlString
+        }
+
+        if var urlComponents = URLComponents(url: url ,resolvingAgainstBaseURL: false) {
+            var queryItems = urlComponents.queryItems ?? [URLQueryItem]()
             params.forEach { param in
                 // arrayParam[] syntax
                 if let array = param.value as? [CustomStringConvertible] {
@@ -111,9 +116,9 @@ public class NetworkingRequest: NSObject {
                 queryItems.append(URLQueryItem(name: param.key, value: "\(param.value)"))
             }
             urlComponents.queryItems = queryItems
-            return urlComponents.url?.absoluteString ?? baseURL + route
+            return urlComponents.url?.absoluteString ?? urlString
         }
-        return baseURL + route
+        return urlString
     }
 
     internal func buildURLRequest() -> URLRequest? {
