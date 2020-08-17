@@ -21,6 +21,10 @@ public extension NetworkingClient {
     func putRequest(_ route: String, params: Params = Params()) -> NetworkingRequest {
         request(.put, route, params: params)
     }
+    
+    func patchRequest(_ route: String, params: Params = Params()) -> NetworkingRequest {
+        request(.patch, route, params: params)
+    }
 
     func deleteRequest(_ route: String, params: Params = Params()) -> NetworkingRequest {
         request(.delete, route, params: params)

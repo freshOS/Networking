@@ -53,6 +53,15 @@ public extension NetworkingClient {
             .eraseToAnyPublisher()
     }
 
+    func patch<T: NetworkingJSONDecodable>(_ route: String,
+                                           params: Params = Params(),
+                                           keypath: String? = nil) -> AnyPublisher<T, Error> {
+        return patch(route, params: params)
+            .tryMap { json -> T in try NetworkingParser().toModel(json, keypath: keypath) }
+            .receive(on: RunLoop.main)
+            .eraseToAnyPublisher()
+    }
+
     func delete<T: NetworkingJSONDecodable>(_ route: String,
                                             params: Params = Params(),
                                             keypath: String? = nil) -> AnyPublisher<T, Error> {

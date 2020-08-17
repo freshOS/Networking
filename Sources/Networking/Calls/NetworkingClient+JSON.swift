@@ -22,6 +22,10 @@ public extension NetworkingClient {
         put(route, params: params).toJSON()
     }
 
+    func patch(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
+        patch(route, params: params).toJSON()
+    }
+
     func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
         delete(route, params: params).toJSON()
     }

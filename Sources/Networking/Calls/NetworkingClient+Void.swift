@@ -27,6 +27,12 @@ public extension NetworkingClient {
             .map { (data: Data) -> Void in () }
             .eraseToAnyPublisher()
     }
+    
+    func patch(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
+        patch(route, params: params)
+            .map { (data: Data) -> Void in () }
+            .eraseToAnyPublisher()
+    }
 
     func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
         delete(route, params: params)
