@@ -10,6 +10,7 @@ import Combine
 
 public class NetworkingRequest: NSObject {
 
+    var parameterEncoding = ParameterEncoding.urlEncoded
     var baseURL = ""
     var route = ""
     var httpVerb = HTTPVerb.get
@@ -131,7 +132,12 @@ public class NetworkingRequest: NSObject {
         var request = URLRequest(url: url)
 
         if httpVerb != .get && multipartData == nil {
+					switch parameterEncoding {
+					case .urlEncoded:
             request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+					case .json:
+						request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+					}
         }
 
         request.httpMethod = httpVerb.rawValue
@@ -144,7 +150,14 @@ public class NetworkingRequest: NSObject {
         }
 
         if httpVerb != .get && multipartData == nil {
-            request.httpBody = percentEncodedString().data(using: .utf8)
+					switch parameterEncoding {
+					case .urlEncoded:
+						request.httpBody = percentEncodedString().data(using: .utf8)
+					case .json:
+						let jsonData = try? JSONSerialization.data(withJSONObject: params)
+						print(jsonData)
+						request.httpBody = jsonData
+					}
         }
 
         // Multipart
@@ -210,4 +223,9 @@ extension NetworkingRequest: URLSessionTaskDelegate {
         progress.completedUnitCount = totalBytesSent
         progressPublisher.send(progress)
     }
+}
+
+public enum ParameterEncoding {
+    case urlEncoded
+    case json
 }

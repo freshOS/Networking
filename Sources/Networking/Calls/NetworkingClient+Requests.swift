@@ -38,6 +38,7 @@ public extension NetworkingClient {
         req.httpVerb = httpVerb
         req.route = route
         req.params = params
+        req.parameterEncoding = parameterEncoding
         return req
     }
 }
