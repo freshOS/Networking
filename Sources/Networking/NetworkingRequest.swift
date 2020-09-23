@@ -155,7 +155,6 @@ public class NetworkingRequest: NSObject {
 						request.httpBody = percentEncodedString().data(using: .utf8)
 					case .json:
 						let jsonData = try? JSONSerialization.data(withJSONObject: params)
-						print(jsonData)
 						request.httpBody = jsonData
 					}
         }
