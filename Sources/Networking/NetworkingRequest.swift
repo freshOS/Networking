@@ -64,7 +64,7 @@ public class NetworkingRequest: NSObject {
         }.eraseToAnyPublisher()
 
         return Publishers.Merge(callPublisher, progressPublisher2)
-            .receive(on: RunLoop.main).eraseToAnyPublisher()
+            .receive(on: DispatchQueue.main).eraseToAnyPublisher()
     }
 
     public func publisher() -> AnyPublisher<Data, Error> {
@@ -96,7 +96,7 @@ public class NetworkingRequest: NSObject {
             } else {
                 return NetworkingError.unableToParseResponse
             }
-        }.receive(on: RunLoop.main).eraseToAnyPublisher()
+        }.receive(on: DispatchQueue.main).eraseToAnyPublisher()
     }
 
     private func getURLWithParams() -> String {
