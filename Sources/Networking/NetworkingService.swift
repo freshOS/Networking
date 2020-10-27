@@ -89,7 +89,7 @@ public extension NetworkingService {
                                          keypath: String? = nil) -> AnyPublisher<T, Error> {
         return get(route, params: params)
             .tryMap { json -> T in try NetworkingParser().toModel(json, keypath: keypath) }
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
     

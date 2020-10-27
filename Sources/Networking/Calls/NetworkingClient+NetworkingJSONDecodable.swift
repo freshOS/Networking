@@ -20,7 +20,7 @@ public extension NetworkingClient {
                                          keypath: String? = nil) -> AnyPublisher<T, Error> {
         return get(route, params: params)
             .tryMap { json -> T in try NetworkingParser().toModel(json, keypath: keypath) }
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 
@@ -31,7 +31,7 @@ public extension NetworkingClient {
         let keypath = keypath ?? defaultCollectionParsingKeyPath
         return get(route, params: params)
             .map { json -> [T] in  NetworkingParser().toModels(json, keypath: keypath) }
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 
@@ -40,7 +40,7 @@ public extension NetworkingClient {
                                           keypath: String? = nil) -> AnyPublisher<T, Error> {
         return post(route, params: params)
             .tryMap { json -> T in try NetworkingParser().toModel(json, keypath: keypath) }
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 
@@ -49,7 +49,7 @@ public extension NetworkingClient {
                                          keypath: String? = nil) -> AnyPublisher<T, Error> {
         return put(route, params: params)
             .tryMap { json -> T in try NetworkingParser().toModel(json, keypath: keypath) }
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 
@@ -58,7 +58,7 @@ public extension NetworkingClient {
                                            keypath: String? = nil) -> AnyPublisher<T, Error> {
         return patch(route, params: params)
             .tryMap { json -> T in try NetworkingParser().toModel(json, keypath: keypath) }
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 
@@ -67,7 +67,7 @@ public extension NetworkingClient {
                                             keypath: String? = nil) -> AnyPublisher<T, Error> {
         return delete(route, params: params)
             .tryMap { json -> T in try NetworkingParser().toModel(json, keypath: keypath) }
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 }
