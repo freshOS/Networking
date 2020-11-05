@@ -34,7 +34,7 @@ public struct NetworkingParser {
 
     private func resourceData(from json: Any, keypath: String?) -> Any {
         if let keypath = keypath, !keypath.isEmpty, let dic = json as? [String: Any], let val = dic[keypath] {
-            return val
+            return val is NSNull ? json : val
         }
         return json
     }
