@@ -39,6 +39,9 @@ public extension NetworkingClient {
         req.route = route
         req.params = params
         req.parameterEncoding = parameterEncoding
+        if let t = timeout {
+            req.timeout = t
+        }
         return req
     }
 }

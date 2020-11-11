@@ -13,6 +13,7 @@ public struct NetworkingClient {
     let baseURL: String
     public var headers = [String: String]()
     public var parameterEncoding = ParameterEncoding.urlEncoded
+    public var timeout: TimeInterval?
 
     /**
         Prints network calls to the console.
@@ -26,7 +27,8 @@ public struct NetworkingClient {
 
     private let logger = NetworkingLogger()
 
-    public init(baseURL: String) {
+    public init(baseURL: String, timeout: TimeInterval? = nil) {
         self.baseURL = baseURL
+        self.timeout = timeout
     }
 }
