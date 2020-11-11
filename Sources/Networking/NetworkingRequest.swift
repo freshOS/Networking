@@ -1,6 +1,6 @@
 //
 //  NetworkingRequest.swift
-//  
+//
 //
 //  Created by Sacha DSO on 21/02/2020.
 //
@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 public class NetworkingRequest: NSObject {
-
+    
     var parameterEncoding = ParameterEncoding.urlEncoded
     var baseURL = ""
     var route = ""
@@ -24,15 +24,15 @@ public class NetworkingRequest: NSObject {
     private let logger = NetworkingLogger()
     var timeout: TimeInterval?
     let progressPublisher = PassthroughSubject<Progress, Error>()
-
+    
     public func uploadPublisher() -> AnyPublisher<(Data?, Progress), Error> {
-
+        
         guard let urlRequest = buildURLRequest() else {
-            return Fail(error: NetworkingError.unableToParseResponse as Error)
+            return Fail(error: NetworkingError.unableToParseRequest as Error)
                 .eraseToAnyPublisher()
         }
         logger.log(request: urlRequest)
-
+        
         let config = URLSessionConfiguration.default
         let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         let callPublisher: AnyPublisher<(Data?, Progress), Error> = urlSession.dataTaskPublisher(for: urlRequest)
@@ -40,41 +40,37 @@ public class NetworkingRequest: NSObject {
                 self.logger.log(response: response, data: data)
                 if let httpURLResponse = response as? HTTPURLResponse {
                     if !(200...299 ~= httpURLResponse.statusCode) {
-                        var error = NetworkingError(httpStatusCode: httpURLResponse.statusCode)
+                        var error = NetworkingError(errorCode: httpURLResponse.statusCode)
                         if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
                             error.jsonPayload = json
                         }
                         throw error
                     }
                 }
-            return data
-        }.mapError { error -> NetworkingError in
-            if let networkingError = error as? NetworkingError {
-                return networkingError
-            } else {
-                return NetworkingError.unableToParseResponse
-            }
-        }.map { data -> (Data?, Progress) in
-            return (data, Progress())
-        }.eraseToAnyPublisher()
-
+                return data
+            }.mapError { error -> NetworkingError in
+                return NetworkingError(error: error)
+            }.map { data -> (Data?, Progress) in
+                return (data, Progress())
+            }.eraseToAnyPublisher()
+        
         let progressPublisher2: AnyPublisher<(Data?, Progress), Error> = progressPublisher
             .map { progress -> (Data?, Progress) in
                 return (nil, progress)
-        }.eraseToAnyPublisher()
-
+            }.eraseToAnyPublisher()
+        
         return Publishers.Merge(callPublisher, progressPublisher2)
             .receive(on: DispatchQueue.main).eraseToAnyPublisher()
     }
-
+    
     public func publisher() -> AnyPublisher<Data, Error> {
-
+        
         guard let urlRequest = buildURLRequest() else {
-            return Fail(error: NetworkingError.unableToParseResponse as Error)
+            return Fail(error: NetworkingError.unableToParseRequest as Error)
                 .eraseToAnyPublisher()
         }
         logger.log(request: urlRequest)
-
+        
         let config = URLSessionConfiguration.default
         let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         return urlSession.dataTaskPublisher(for: urlRequest)
@@ -82,29 +78,25 @@ public class NetworkingRequest: NSObject {
                 self.logger.log(response: response, data: data)
                 if let httpURLResponse = response as? HTTPURLResponse {
                     if !(200...299 ~= httpURLResponse.statusCode) {
-                        var error = NetworkingError(httpStatusCode: httpURLResponse.statusCode)
+                        var error = NetworkingError(errorCode: httpURLResponse.statusCode)
                         if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
                             error.jsonPayload = json
                         }
                         throw error
                     }
                 }
-            return data
-        }.mapError { error -> NetworkingError in
-            if let networkingError = error as? NetworkingError {
-                return networkingError
-            } else {
-                return NetworkingError.unableToParseResponse
-            }
-        }.receive(on: DispatchQueue.main).eraseToAnyPublisher()
+                return data
+            }.mapError { error -> NetworkingError in
+                return NetworkingError(error: error)
+            }.receive(on: DispatchQueue.main).eraseToAnyPublisher()
     }
-
+    
     private func getURLWithParams() -> String {
         let urlString = baseURL + route
         guard let url = URL(string: urlString) else {
             return urlString
         }
-
+        
         if var urlComponents = URLComponents(url: url ,resolvingAgainstBaseURL: false) {
             var queryItems = urlComponents.queryItems ?? [URLQueryItem]()
             params.forEach { param in
@@ -121,44 +113,44 @@ public class NetworkingRequest: NSObject {
         }
         return urlString
     }
-
+    
     internal func buildURLRequest() -> URLRequest? {
         var urlString = baseURL + route
         if httpVerb == .get {
-             urlString = getURLWithParams()
+            urlString = getURLWithParams()
         }
-
+        
         let url = URL(string: urlString)!
         var request = URLRequest(url: url)
-
+        
         if httpVerb != .get && multipartData == nil {
-					switch parameterEncoding {
-					case .urlEncoded:
-            request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-					case .json:
-						request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-					}
+            switch parameterEncoding {
+            case .urlEncoded:
+                request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+            case .json:
+                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            }
         }
-
+        
         request.httpMethod = httpVerb.rawValue
         for (key, value) in headers {
             request.setValue(value, forHTTPHeaderField: key)
         }
-
+        
         if let timeout = timeout {
             request.timeoutInterval = timeout
         }
-
+        
         if httpVerb != .get && multipartData == nil {
-					switch parameterEncoding {
-					case .urlEncoded:
-						request.httpBody = percentEncodedString().data(using: .utf8)
-					case .json:
-						let jsonData = try? JSONSerialization.data(withJSONObject: params)
-						request.httpBody = jsonData
-					}
+            switch parameterEncoding {
+            case .urlEncoded:
+                request.httpBody = percentEncodedString().data(using: .utf8)
+            case .json:
+                let jsonData = try? JSONSerialization.data(withJSONObject: params)
+                request.httpBody = jsonData
+            }
         }
-
+        
         // Multipart
         if let multiparts = multipartData {
             // Construct a unique boundary to separate values
@@ -168,12 +160,12 @@ public class NetworkingRequest: NSObject {
         }
         return request
     }
-
+    
     private func buildMultipartHttpBody(params: Params, multiparts: [MultipartData], boundary: String) -> Data {
         // Combine all multiparts together
         let allMultiparts: [HttpBodyConvertible] = [params] + multiparts
         let boundaryEnding = "--\(boundary)--".data(using: .utf8)!
-
+        
         // Convert multiparts to boundary-seperated Data and combine them
         return allMultiparts
             .map { (multipart: HttpBodyConvertible) -> Data in
@@ -182,7 +174,7 @@ public class NetworkingRequest: NSObject {
             .reduce(Data.init(), +)
             + boundaryEnding
     }
-
+    
     func percentEncodedString() -> String {
         return params.map { key, value in
             let escapedKey = "\(key)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
@@ -191,7 +183,7 @@ public class NetworkingRequest: NSObject {
                     let escapedValue = "\(entry)"
                         .addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
                     return "\(key)[]=\(escapedValue)" }.joined(separator: "&"
-                )
+                    )
             } else {
                 let escapedValue = "\(value)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
                 return "\(escapedKey)=\(escapedValue)"
