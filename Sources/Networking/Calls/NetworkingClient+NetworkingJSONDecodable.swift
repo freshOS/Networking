@@ -1,6 +1,6 @@
 //
 //  NetworkingClient+NetworkingJSONDecodable.swift
-//  
+//
 //
 //  Created by Sacha on 13/03/2020.
 //
@@ -30,7 +30,7 @@ public extension NetworkingClient {
                                          keypath: String? = nil) -> AnyPublisher<[T], Error> {
         let keypath = keypath ?? defaultCollectionParsingKeyPath
         return get(route, params: params)
-            .map { json -> [T] in  NetworkingParser().toModels(json, keypath: keypath) }
+            .tryMap { json -> [T] in try NetworkingParser().toModels(json, keypath: keypath) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }

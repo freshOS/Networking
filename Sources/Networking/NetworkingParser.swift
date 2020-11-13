@@ -1,6 +1,6 @@
 //
 //  NetworkingParser.swift
-//  
+//
 //
 //  Created by Sacha on 13/03/2020.
 //
@@ -12,24 +12,25 @@ public struct NetworkingParser {
     public init() {}
 
     public func toModel<T: NetworkingJSONDecodable>(_ json: Any, keypath: String? = nil) throws -> T {
-        let data = resourceData(from: json, keypath: keypath)
-        guard let req: T = resource(from: data) else {
-            throw NetworkingError.unableToParseResponse
+        do {
+            let data = resourceData(from: json, keypath: keypath)
+            return try T.decode(data)
+        } catch (let error) {
+            throw ParsingError.parsingError(error: error)
         }
-        return req
     }
 
-    public func toModels<T: NetworkingJSONDecodable>(_ json: Any, keypath: String? = nil) -> [T] {
-        guard let array = resourceData(from: json, keypath: keypath) as? [Any] else {
-            return [T]()
+    public func toModels<T: NetworkingJSONDecodable>(_ json: Any, keypath: String? = nil) throws -> [T] {
+        do {
+            guard let array = resourceData(from: json, keypath: keypath) as? [Any] else {
+                return [T]()
+            }
+            return try array.map {
+                try T.decode($0)
+            }.compactMap { $0 }
+        } catch (let error) {
+            throw ParsingError.parsingError(error: error)
         }
-        return array.map {
-            resource(from: $0)
-        }.compactMap { $0 }
-    }
-
-    private func resource<T: NetworkingJSONDecodable>(from json: Any) -> T? {
-        return try? T.decode(json)
     }
 
     private func resourceData(from json: Any, keypath: String?) -> Any {
