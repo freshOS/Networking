@@ -17,9 +17,7 @@ public enum ParsingError: Error, LocalizedError {
         case .parsingError(let error):
             if let theError = error as? DecodingError {
                 switch theError {
-                case .typeMismatch(let key, let value):
-                    return "error at \(key), value \(value) and ERROR: \(theError.localizedDescription)"
-                case .valueNotFound(let key, let value):
+                case .typeMismatch(let key, let value), .valueNotFound(let key, let value):
                     return "error at \(key), value \(value) and ERROR: \(theError.localizedDescription)"
                 case .keyNotFound(let key, let value):
                     return "error at \(key), value \(value) and ERROR: \(theError.localizedDescription)"
