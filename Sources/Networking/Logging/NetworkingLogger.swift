@@ -31,8 +31,11 @@ class NetworkingLogger {
             logStatusCodeAndURL(response)
         }
         if logLevels == .debug {
-            if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
-                print(json)
+            if let json = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers),
+               let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted) {
+                print(String(decoding: jsonData, as: UTF8.self))
+            } else {
+                print(String(decoding: data, as: UTF8.self))
             }
         }
     }
