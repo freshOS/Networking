@@ -157,6 +157,7 @@ public struct NetworkingError: Error, LocalizedError {
     public init(error: Error) {
         if let networkingError = error as? NetworkingError {
             self.status = networkingError.status
+            self.jsonPayload = networkingError.jsonPayload
         } else {
             if let theError = error as? URLError {
                 self.status = Status(rawValue: theError.errorCode) ?? .unknown
@@ -197,6 +198,25 @@ extension NetworkingError {
     
     public static var unknownError: NetworkingError {
         return NetworkingError(status: .unknown)
+    }
+    
+}
+
+extension DecodingError {
+    
+    public var description: String? {
+        switch self {
+        case .typeMismatch(_ , let value):
+            return "typeMismatch error: \(value.debugDescription)  \(self.localizedDescription)"
+        case .valueNotFound(_ , let value):
+            return "valueNotFound error: \(value.debugDescription)  \(self.localizedDescription)"
+        case .keyNotFound(_ , let value):
+            return "keyNotFound error: \(value.debugDescription)  \(self.localizedDescription)"
+        case .dataCorrupted(let key):
+            return "dataCorrupted error at: \(key)  \(self.localizedDescription)"
+        default:
+            return "decoding error: \(self.localizedDescription)"
+        }
     }
     
 }
