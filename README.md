@@ -22,7 +22,8 @@ struct Api: NetworkingService {
     }
 }
 ```
-// Later...
+Later...
+
 ```swift
 let api = Api()
 api.fetchPost().sink(receiveCompletion: { _ in }) { post in
@@ -65,8 +66,10 @@ freshOS/StarterProject on GitHub">Download Starter Project</a>
 * [Pass params](#pass-params)
 * [Upload multipart data](#upload-multipart-data)
 * [Add Headers](#add-headers)
+* [Add Timeout](#add-timeout)
 * [Cancel a request](#cancel-a-request)
 * [Log Network calls](#log-network-calls)
+* [Handling errors](#handling-errors)
 * [Support JSON-to-Model parsing](#support-json-to-model-parsing)
 * [Design a clean api](#design-a-clean-api)
 
