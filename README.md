@@ -169,6 +169,33 @@ cancellable.cancel()
 client.logLevels = .debug
 ```
 
+
+### Handling errors
+Errors are handled in the usual way on a Publisher, for example:
+
+```swift
+client.get("/posts/1").sink(receiveCompletion: { completion in
+switch completion {
+case .finished:
+    break
+case .failure(let error):
+    switch error {
+    case is DecodingError:
+        let theError = error as! DecodingError
+        // handle JSON decoding errors
+    case is NetworkingError:
+        let theError = error as! NetworkingError
+        // handle NetworkingError
+    default:
+        // handle other error types
+        print("\(error.localizedDescription)")
+    }
+}   
+}) { response in
+    // handle the response
+}.store(in: &cancellables)
+```
+
 ### Support JSON-to-Model parsing.
 For a model to be parsable by `Networking`, it needs to conform to the `NetworkingJSONDecodable` protocol.
 
