@@ -138,6 +138,18 @@ Headers are added via the `headers` property on the client.
 client.headers["Authorization"] = "[mytoken]"
 ```
 
+### Add Timeout
+Timeout (TimeInterval in seconds) is added via the optional `timeout` property on the client.
+```swift
+let client = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com", timeout: 15)
+```
+
+Alternatively,
+
+```swift
+client.timeout = 15 
+```
+
 ### Cancel a request
 Since `Networking` uses the Combine framework. You just have to cancel the `AnyCancellable` returned by the `sink` call.
 
