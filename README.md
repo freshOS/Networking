@@ -171,7 +171,7 @@ client.logLevels = .debug
 
 
 ### Handling errors
-Errors are handled in the usual way on a Publisher, for example:
+Errors can be handled on a Publisher, such as:
 
 ```swift
 client.get("/posts/1").sink(receiveCompletion: { completion in
