@@ -22,7 +22,8 @@ struct Api: NetworkingService {
     }
 }
 ```
-// Later...
+Later...
+
 ```swift
 let api = Api()
 api.fetchPost().sink(receiveCompletion: { _ in }) { post in
@@ -65,8 +66,10 @@ freshOS/StarterProject on GitHub">Download Starter Project</a>
 * [Pass params](#pass-params)
 * [Upload multipart data](#upload-multipart-data)
 * [Add Headers](#add-headers)
+* [Add Timeout](#add-timeout)
 * [Cancel a request](#cancel-a-request)
 * [Log Network calls](#log-network-calls)
+* [Handling errors](#handling-errors)
 * [Support JSON-to-Model parsing](#support-json-to-model-parsing)
 * [Design a clean api](#design-a-clean-api)
 
@@ -138,6 +141,18 @@ Headers are added via the `headers` property on the client.
 client.headers["Authorization"] = "[mytoken]"
 ```
 
+### Add Timeout
+Timeout (TimeInterval in seconds) is added via the optional `timeout` property on the client.
+```swift
+let client = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com", timeout: 15)
+```
+
+Alternatively,
+
+```swift
+client.timeout = 15 
+```
+
 ### Cancel a request
 Since `Networking` uses the Combine framework. You just have to cancel the `AnyCancellable` returned by the `sink` call.
 
@@ -168,6 +183,33 @@ client.post("/users").mapError { error -> Error in
 3 log levels are supported: `off`, `info`, `debug`
 ```swift
 client.logLevels = .debug
+```
+
+
+### Handling errors
+Errors can be handled on a Publisher, such as:
+
+```swift
+client.get("/posts/1").sink(receiveCompletion: { completion in
+switch completion {
+case .finished:
+    break
+case .failure(let error):
+    switch error {
+    case is DecodingError:
+        let theError = error as! DecodingError
+        // handle JSON decoding errors
+    case is NetworkingError:
+        let theError = error as! NetworkingError
+        // handle NetworkingError
+    default:
+        // handle other error types
+        print("\(error.localizedDescription)")
+    }
+}   
+}) { response in
+    // handle the response
+}.store(in: &cancellables)
 ```
 
 ### Support JSON-to-Model parsing.

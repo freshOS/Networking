@@ -1,6 +1,6 @@
 //
 //  NetworkingClient+Requests.swift
-//  
+//
 //
 //  Created by Sacha on 13/03/2020.
 //
@@ -39,6 +39,9 @@ public extension NetworkingClient {
         req.route = route
         req.params = params
         req.parameterEncoding = parameterEncoding
+        if let t = timeout {
+            req.timeout = t
+        }
         return req
     }
 }
