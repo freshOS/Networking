@@ -166,19 +166,6 @@ Later ...
 cancellable.cancel()
 ```
 
-### Catch errors
-
-Things don't always go as planned, right? To catch errors you cast the `Error` into a `NetworkingError` which gives you `status` and code.
-Here we are catching a status`forbidden` error, code `403`.
-
-```swift
-client.post("/users").mapError { error -> Error in
-    if let e = error as? NetworkingError, e.status == .forbidden {
-        // Access forbidden.
-    }
-}
-```
-
 ### Log Network calls
 3 log levels are supported: `off`, `info`, `debug`
 ```swift
@@ -196,18 +183,18 @@ case .finished:
     break
 case .failure(let error):
     switch error {
-    case is DecodingError:
-        let theError = error as! DecodingError
+    case let decodingError DecodingError:
         // handle JSON decoding errors
-    case is NetworkingError:
-        let theError = error as! NetworkingError
+    case let networkingError NetworkingError:
         // handle NetworkingError
+        // print(networkingError.status)
+        // print(networkingError.code)
     default:
         // handle other error types
         print("\(error.localizedDescription)")
     }
 }   
-}) { response in
+}) { (response: Post) in
     // handle the response
 }.store(in: &cancellables)
 ```
