@@ -191,7 +191,7 @@ case .failure(let error):
             let networkingError = error as! NetworkingError
             // handle NetworkingError
             print(networkingError.status)
-    print(networkingError.code)
+            print(networkingError.code)
         default:
             // handle other error types
             print("\(error.localizedDescription)")
