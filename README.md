@@ -276,6 +276,29 @@ struct CRUDApi: NetworkingService {
     func create(article a: Article) -> AnyPublisher<Article, Error> {
         post("/articles", params: ["title" : a.title, "content" : a.content])
     }
+    
+    // Create alternative
+    func createThisArticle(article: Article) -> AnyPublisher<Article, Error> {
+        do {
+            return post("/articles", params: try article.asParams())
+        } catch let error {
+            return Fail(error: error).eraseToAnyPublisher()
+        }
+    }
+    
+    // Create alternative, sending the query as json encoded string
+    mutating func createArticle(article: Article) -> AnyPublisher<Article, Error> {
+        do {
+            let prevEncoding = network.parameterEncoding
+            // set the encoding to json
+            network.parameterEncoding = ParameterEncoding.json
+            // put back the original encoding when finished
+            defer { network.parameterEncoding = prevEncoding }
+            return network.post("/articles", params: try article.asParams())
+        } catch let error {
+            return Fail(error: error).eraseToAnyPublisher()
+        }
+    }
 
     // Read
     func fetch(article a: Article) -> AnyPublisher<Article, Error> {
@@ -298,3 +321,4 @@ struct CRUDApi: NetworkingService {
     }
 }
 ```
+
