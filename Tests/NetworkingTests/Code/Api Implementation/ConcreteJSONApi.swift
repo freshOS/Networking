@@ -11,7 +11,7 @@ import Combine
 
 struct ConcreteApi: Api, NetworkingService {
 
-    let network: NetworkingClient = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
+    var network: NetworkingClient = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
 
     func fetchPost() -> AnyPublisher<Post, Error> {
         get("/posts/1")

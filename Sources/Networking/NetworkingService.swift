@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 public protocol NetworkingService {
-    var network: NetworkingClient { get }
+    var network: NetworkingClient { get set }
 }
 
 // Sugar, just forward calls to underlying network client
@@ -122,5 +122,17 @@ public extension NetworkingService {
                                          params: Params = Params(),
                                          keypath: String? = nil) -> AnyPublisher<[T], Error> {
         network.get(route, params: params, keypath: keypath)
+    }
+}
+
+// Provide for converting an Encodable model to Params.
+extension Encodable {
+    
+    func asParams() throws -> Params {
+        let data = try JSONEncoder().encode(self)
+        guard let dictionary = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? Params else {
+            throw EncodingError.invalidValue("Encodable", EncodingError.Context(codingPath: [], debugDescription: "Could not cast JSON content to Params", underlyingError: nil))
+        }
+        return dictionary
     }
 }

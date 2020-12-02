@@ -101,7 +101,7 @@ public class NetworkingRequest: NSObject {
             var queryItems = urlComponents.queryItems ?? [URLQueryItem]()
             params.forEach { param in
                 // arrayParam[] syntax
-                if let array = param.value as? [CustomStringConvertible] {
+                if let array = param.value as? [Any] {
                     array.forEach {
                         queryItems.append(URLQueryItem(name: "\(param.key)[]", value: "\($0)"))
                     }
@@ -178,7 +178,7 @@ public class NetworkingRequest: NSObject {
     func percentEncodedString() -> String {
         return params.map { key, value in
             let escapedKey = "\(key)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
-            if let array = value as? [CustomStringConvertible] {
+            if let array = value as? [Any] {
                 return array.map { entry in
                     let escapedValue = "\(entry)"
                         .addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""

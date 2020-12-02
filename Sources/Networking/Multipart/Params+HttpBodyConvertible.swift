@@ -13,7 +13,7 @@ extension Params: HttpBodyConvertible {
         forEach { (name, value) in
             httpBody.appendString("--\(boundary)\r\n")
             httpBody.appendString("Content-Disposition: form-data; name=\"\(name)\"\r\n\r\n")
-            httpBody.appendString(value.description)
+            httpBody.appendString((value as AnyObject).description)
             httpBody.appendString("\r\n")
         }
         return httpBody as Data
