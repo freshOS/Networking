@@ -280,7 +280,7 @@ struct CRUDApi: NetworkingService {
     }
     
     // Create alternative
-    func createThisArticle(article: Article) -> AnyPublisher<Article, Error> {
+    func createThis(article: Article) -> AnyPublisher<Article, Error> {
         do {
             return post("/articles", params: try article.asParams())
         } catch let error {
