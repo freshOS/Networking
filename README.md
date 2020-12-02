@@ -183,13 +183,15 @@ case .finished:
     break
 case .failure(let error):
     switch error {
-        case let decodingError where decodingError is DecodingError:
+        case is DecodingError:
+            let decodingError = error as! DecodingError
             // handle JSON decoding errors
             print("\(decodingError)")
-        case let networkingError where networkingError is NetworkingError:
+        case is NetworkingError:
+            let networkingError = error as! NetworkingError
             // handle NetworkingError
             print(networkingError.status)
-            print(networkingError.code)
+    print(networkingError.code)
         default:
             // handle other error types
             print("\(error.localizedDescription)")
