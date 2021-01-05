@@ -183,15 +183,18 @@ case .finished:
     break
 case .failure(let error):
     switch error {
-    case let decodingError DecodingError:
-        // handle JSON decoding errors
-    case let networkingError NetworkingError:
-        // handle NetworkingError
-        // print(networkingError.status)
-        // print(networkingError.code)
-    default:
-        // handle other error types
-        print("\(error.localizedDescription)")
+        case is DecodingError:
+            let decodingError = error as! DecodingError
+            // handle JSON decoding errors
+            print("\(decodingError)")
+        case is NetworkingError:
+            let networkingError = error as! NetworkingError
+            // handle NetworkingError
+            print(networkingError.status)
+            print(networkingError.code)
+        default:
+            // handle other error types
+            print("\(error.localizedDescription)")
     }
 }   
 }) { (response: Post) in
@@ -275,6 +278,29 @@ struct CRUDApi: NetworkingService {
     func create(article a: Article) -> AnyPublisher<Article, Error> {
         post("/articles", params: ["title" : a.title, "content" : a.content])
     }
+    
+    // Create alternative
+    func createThis(article: Article) -> AnyPublisher<Article, Error> {
+        do {
+            return post("/articles", params: try article.asParams())
+        } catch let error {
+            return Fail(error: error).eraseToAnyPublisher()
+        }
+    }
+    
+    // Create alternative, sending the query as json encoded string
+    mutating func createArticle(article: Article) -> AnyPublisher<Article, Error> {
+        do {
+            let prevEncoding = network.parameterEncoding
+            // set the encoding to json
+            network.parameterEncoding = ParameterEncoding.json
+            // put back the original encoding when finished
+            defer { network.parameterEncoding = prevEncoding }
+            return network.post("/articles", params: try article.asParams())
+        } catch let error {
+            return Fail(error: error).eraseToAnyPublisher()
+        }
+    }
 
     // Read
     func fetch(article a: Article) -> AnyPublisher<Article, Error> {
@@ -297,3 +323,4 @@ struct CRUDApi: NetworkingService {
     }
 }
 ```
+
