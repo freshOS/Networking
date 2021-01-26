@@ -14,7 +14,7 @@ final class CurlLoggingTests: XCTestCase {
         var urlRequest = URLRequest(url: URL(string: "https://jsonplaceholder.typicode.com")!)
         urlRequest.httpMethod = "GET"
         urlRequest.addValue("token", forHTTPHeaderField: "Authorization")
-        let result = urlRequest.curlString
+        let result = urlRequest.toCurlCommand()
         XCTAssertEqual(result, "curl \"https://jsonplaceholder.typicode.com\" \\\n\t-H 'Authorization: token'")
     }
     
@@ -26,7 +26,7 @@ final class CurlLoggingTests: XCTestCase {
         {"title": "Hello world"}
         """
         urlRequest.httpBody = jsonString.data(using: .utf8)
-        let result = urlRequest.curlString
+        let result = urlRequest.toCurlCommand()
         XCTAssertEqual(result, "curl \"https://jsonplaceholder.typicode.com/posts\" \\\n\t-X POST \\\n\t-d '{\"title\": \"Hello world\"}'")
     }
     
@@ -38,7 +38,7 @@ final class CurlLoggingTests: XCTestCase {
         {"title": "Hello world"}
         """
         urlRequest.httpBody = jsonString.data(using: .utf8)
-        let result = urlRequest.curlString
+        let result = urlRequest.toCurlCommand()
         XCTAssertEqual(result, "curl \"https://jsonplaceholder.typicode.com/posts\" \\\n\t-X PUT \\\n\t-d '{\"title\": \"Hello world\"}'")
     }
     
@@ -50,7 +50,7 @@ final class CurlLoggingTests: XCTestCase {
         {"title": "Hello world"}
         """
         urlRequest.httpBody = jsonString.data(using: .utf8)
-        let result = urlRequest.curlString
+        let result = urlRequest.toCurlCommand()
         XCTAssertEqual(result, "curl \"https://jsonplaceholder.typicode.com/posts\" \\\n\t-X PATCH \\\n\t-d '{\"title\": \"Hello world\"}'")
     }
     
@@ -58,7 +58,7 @@ final class CurlLoggingTests: XCTestCase {
         var urlRequest = URLRequest(url: URL(string:
             "https://jsonplaceholder.typicode.com/posts/1")!)
         urlRequest.httpMethod = "DELETE"
-        let result = urlRequest.curlString
+        let result = urlRequest.toCurlCommand()
         XCTAssertEqual(result, "curl \"https://jsonplaceholder.typicode.com/posts/1\" \\\n\t-X DELETE")
     }
 }
