@@ -6,7 +6,7 @@ public struct NetworkingClient {
     /**
         Instead of using the same keypath for every call eg: "collection",
         this enables to use a default keypath for parsing collections.
-        This is overidden by the per-request keypath if present.
+        This is overridden by the per-request keypath if present.
      
      */
     public var defaultCollectionParsingKeyPath: String?
@@ -14,6 +14,7 @@ public struct NetworkingClient {
     public var headers = [String: String]()
     public var parameterEncoding = ParameterEncoding.urlEncoded
     public var timeout: TimeInterval?
+    public var sessionConfiguration = URLSessionConfiguration.default
 
     /**
         Prints network calls to the console.

@@ -24,6 +24,7 @@ public class NetworkingRequest: NSObject {
     private let logger = NetworkingLogger()
     var timeout: TimeInterval?
     let progressPublisher = PassthroughSubject<Progress, Error>()
+    var sessionConfiguration: URLSessionConfiguration?
     
     public func uploadPublisher() -> AnyPublisher<(Data?, Progress), Error> {
         
@@ -32,8 +33,8 @@ public class NetworkingRequest: NSObject {
                 .eraseToAnyPublisher()
         }
         logger.log(request: urlRequest)
-        
-        let config = URLSessionConfiguration.default
+
+        let config = sessionConfiguration ?? URLSessionConfiguration.default
         let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         let callPublisher: AnyPublisher<(Data?, Progress), Error> = urlSession.dataTaskPublisher(for: urlRequest)
             .tryMap { (data: Data, response: URLResponse) -> Data in
