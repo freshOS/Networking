@@ -144,7 +144,7 @@ public class NetworkingRequest: NSObject {
         if httpVerb != .get && multipartData == nil {
             switch parameterEncoding {
             case .urlEncoded:
-                request.httpBody = percentEncodedString().data(using: .utf8)
+                request.httpBody = params.asPercentEncodedString().data(using: .utf8)
             case .json:
                 let jsonData = try? JSONSerialization.data(withJSONObject: params)
                 request.httpBody = jsonData
@@ -173,23 +173,6 @@ public class NetworkingRequest: NSObject {
             }
             .reduce(Data.init(), +)
             + boundaryEnding
-    }
-    
-    func percentEncodedString() -> String {
-        return params.map { key, value in
-            let escapedKey = "\(key)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
-            if let array = value as? [CustomStringConvertible] {
-                return array.map { entry in
-                    let escapedValue = "\(entry)"
-                        .addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
-                    return "\(key)[]=\(escapedValue)" }.joined(separator: "&"
-                    )
-            } else {
-                let escapedValue = "\(value)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
-                return "\(escapedKey)=\(escapedValue)"
-            }
-        }
-        .joined(separator: "&")
     }
 }
 
