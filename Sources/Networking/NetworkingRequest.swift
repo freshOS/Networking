@@ -71,8 +71,8 @@ public class NetworkingRequest: NSObject {
                 .eraseToAnyPublisher()
         }
         logger.log(request: urlRequest)
-        
-        let config = URLSessionConfiguration.default
+
+        let config = sessionConfiguration ?? URLSessionConfiguration.default
         let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         return urlSession.dataTaskPublisher(for: urlRequest)
             .tryMap { (data: Data, response: URLResponse) -> Data in
