@@ -121,7 +121,9 @@ public class NetworkingRequest: NSObject {
             urlString = getURLWithParams()
         }
         
-        let url = URL(string: urlString)!
+        guard let url = URL(string: urlString) else {
+            return nil
+        }
         var request = URLRequest(url: url)
         
         if httpVerb != .get && multipartData == nil {

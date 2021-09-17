@@ -81,6 +81,26 @@ final class NetworkingTests: XCTestCase {
         }).store(in: &cancellables)
         waitForExpectations(timeout: 3, handler: nil)
     }
+
+    func testBadURLDoesntCrash() {
+        let exp = expectation(description: "call")
+        let client = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
+        client.get("/forge a bad url")
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    print("finished")
+                case .failure(let error):
+                    if let e = error as? NetworkingError, e.status == .unableToParseRequest {
+                        exp.fulfill()
+                    }
+                }
+            },
+            receiveValue: { (json: Any) in
+            print(json)
+        }).store(in: &cancellables)
+        waitForExpectations(timeout: 1, handler: nil)
+    }
 //
 //    func testGetDecodableModels() {
 //        let exp = expectation(description: "call")
