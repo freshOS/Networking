@@ -31,6 +31,10 @@ api.fetchPost().sink(receiveCompletion: { _ in }) { post in
 }.store(in: &cancellables)
 ```
 
+## Video tutorial
+
+Alex from [Rebeloper](https://www.youtube.com/channel/UCK88iDIf2V6w68WvC-k7jcg) made a fantastic video tuorial, check it out [here](https://youtu.be/RM5uKTBr20c)!
+
 ## How
 By providing a lightweight client that **automates boilerplate code everyone has to write**.  
 By exposing a **delightfully simple** api to get the job done simply, clearly, quickly.  
