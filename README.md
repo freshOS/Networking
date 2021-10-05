@@ -33,7 +33,7 @@ api.fetchPost().sink(receiveCompletion: { _ in }) { post in
 
 ## Video tutorial
 
-Alex from [Rebeloper](https://www.youtube.com/channel/UCK88iDIf2V6w68WvC-k7jcg) made a fantastic video tuorial, check it out [here](https://youtu.be/RM5uKTBr20c)!
+Alex from [Rebeloper](https://www.youtube.com/channel/UCK88iDIf2V6w68WvC-k7jcg) made a fantastic video tutorial, check it out [here](https://youtu.be/RM5uKTBr20c)!
 
 ## How
 By providing a lightweight client that **automates boilerplate code everyone has to write**.  
