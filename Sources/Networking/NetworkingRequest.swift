@@ -8,6 +8,8 @@
 import Foundation
 import Combine
 
+public typealias NetworkRequestRetrier = (_ request: URLRequest, _ error: Error) -> AnyPublisher<Void, Error>?
+
 public class NetworkingRequest: NSObject {
     
     var parameterEncoding = ParameterEncoding.urlEncoded
@@ -25,7 +27,9 @@ public class NetworkingRequest: NSObject {
     var timeout: TimeInterval?
     let progressPublisher = PassthroughSubject<Progress, Error>()
     var sessionConfiguration: URLSessionConfiguration?
-    
+    var requestRetrier: NetworkRequestRetrier?
+    private let maxRetryCount = 3
+
     public func uploadPublisher() -> AnyPublisher<(Data?, Progress), Error> {
         
         guard let urlRequest = buildURLRequest() else {
@@ -63,9 +67,12 @@ public class NetworkingRequest: NSObject {
         return Publishers.Merge(callPublisher, progressPublisher2)
             .receive(on: DispatchQueue.main).eraseToAnyPublisher()
     }
-    
+
     public func publisher() -> AnyPublisher<Data, Error> {
-        
+        publisher(retryCount: maxRetryCount)
+    }
+
+    private func publisher(retryCount: Int) -> AnyPublisher<Data, Error> {
         guard let urlRequest = buildURLRequest() else {
             return Fail(error: NetworkingError.unableToParseRequest as Error)
                 .eraseToAnyPublisher()
@@ -87,7 +94,20 @@ public class NetworkingRequest: NSObject {
                     }
                 }
                 return data
-            }.mapError { error -> NetworkingError in
+            }.tryCatch({ [weak self, urlRequest] error -> AnyPublisher<Data, Error> in
+                guard
+                    let self = self,
+                    retryCount > 1,
+                    let retryPublisher = self.requestRetrier?(urlRequest, error)
+                else {
+                    throw error
+                }
+                return retryPublisher
+                    .flatMap { _ -> AnyPublisher<Data, Error> in
+                        self.publisher(retryCount: retryCount - 1)
+                    }
+                    .eraseToAnyPublisher()
+            }).mapError { error -> NetworkingError in
                 return NetworkingError(error: error)
             }.receive(on: DispatchQueue.main).eraseToAnyPublisher()
     }
