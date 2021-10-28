@@ -1,8 +1,7 @@
 import Foundation
 import Combine
 
-public struct NetworkingClient {
-
+public class NetworkingClient {
     /**
         Instead of using the same keypath for every call eg: "collection",
         this enables to use a default keypath for parsing collections.
@@ -15,6 +14,7 @@ public struct NetworkingClient {
     public var parameterEncoding = ParameterEncoding.urlEncoded
     public var timeout: TimeInterval?
     public var sessionConfiguration = URLSessionConfiguration.default
+    public var requestRetrier: NetworkRequestRetrier?
 
     /**
         Prints network calls to the console.

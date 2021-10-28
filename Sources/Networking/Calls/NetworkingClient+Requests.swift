@@ -32,15 +32,27 @@ public extension NetworkingClient {
 
     internal func request(_ httpVerb: HTTPVerb, _ route: String, params: Params = Params()) -> NetworkingRequest {
         let req = NetworkingRequest()
-        req.baseURL              = baseURL
-        req.logLevels            = logLevels
-        req.headers              = headers
         req.httpVerb             = httpVerb
         req.route                = route
         req.params               = params
-        req.parameterEncoding    = parameterEncoding
-        req.sessionConfiguration = sessionConfiguration
-        req.timeout              = timeout
+
+        let updateRequest = { [weak req, weak self] in
+            guard let self = self else { return }
+            req?.baseURL              = self.baseURL
+            req?.logLevels            = self.logLevels
+            req?.headers              = self.headers
+            req?.parameterEncoding    = self.parameterEncoding
+            req?.sessionConfiguration = self.sessionConfiguration
+            req?.timeout              = self.timeout
+        }
+        updateRequest()
+        req.requestRetrier = { [weak self] in
+            self?.requestRetrier?($0, $1)?
+                .handleEvents(receiveOutput: { _ in
+                    updateRequest()
+                })
+                .eraseToAnyPublisher()
+        }
         return req
     }
 }
