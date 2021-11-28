@@ -114,10 +114,10 @@ public class NetworkingRequest: NSObject {
     
     private func getURLWithParams() -> String {
         let urlString = baseURL + route
+        if params.isEmpty { return urlString }
         guard let url = URL(string: urlString) else {
             return urlString
         }
-        
         if var urlComponents = URLComponents(url: url ,resolvingAgainstBaseURL: false) {
             var queryItems = urlComponents.queryItems ?? [URLQueryItem]()
             params.forEach { param in
