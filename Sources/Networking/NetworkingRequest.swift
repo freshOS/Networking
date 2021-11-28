@@ -97,6 +97,11 @@ public class NetworkingRequest: NSObject {
             return urlString
         }
         
+        // if no params, do not add any URLComponents
+        if params.isEmpty {
+            return urlString
+        }
+        
         if var urlComponents = URLComponents(url: url ,resolvingAgainstBaseURL: false) {
             var queryItems = urlComponents.queryItems ?? [URLQueryItem]()
             params.forEach { param in
