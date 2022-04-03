@@ -21,9 +21,9 @@ public class NetworkingClient {
         Values Available are .None, Calls and CallsAndResponses.
         Default is None
     */
-    public var logLevels: NetworkingLogLevel {
-        get { return logger.logLevels }
-        set { logger.logLevels = newValue }
+    public var logLevel: NetworkingLogLevel {
+        get { return logger.logLevel }
+        set { logger.logLevel = newValue }
     }
 
     private let logger = NetworkingLogger()

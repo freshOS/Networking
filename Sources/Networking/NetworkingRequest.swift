@@ -19,9 +19,9 @@ public class NetworkingRequest: NSObject {
     public var params = Params()
     var headers = [String: String]()
     var multipartData: [MultipartData]?
-    var logLevels: NetworkingLogLevel {
-        get { return logger.logLevels }
-        set { logger.logLevels = newValue }
+    var logLevel: NetworkingLogLevel {
+        get { return logger.logLevel }
+        set { logger.logLevel = newValue }
     }
     private let logger = NetworkingLogger()
     var timeout: TimeInterval?

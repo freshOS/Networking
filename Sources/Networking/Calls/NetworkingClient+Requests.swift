@@ -39,7 +39,7 @@ public extension NetworkingClient {
         let updateRequest = { [weak req, weak self] in
             guard let self = self else { return }
             req?.baseURL              = self.baseURL
-            req?.logLevels            = self.logLevels
+            req?.logLevel             = self.logLevel
             req?.headers              = self.headers
             req?.parameterEncoding    = self.parameterEncoding
             req?.sessionConfiguration = self.sessionConfiguration
