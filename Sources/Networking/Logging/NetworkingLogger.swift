@@ -15,9 +15,9 @@ class NetworkingLogger {
         guard logLevel != .off else {
             return
         }
-        if let verb = request.httpMethod,
+        if let method = request.httpMethod,
             let url = request.url {
-            print("\(verb) '\(url.absoluteString)'")
+            print("\(method) '\(url.absoluteString)'")
             logHeaders(request)
             logBody(request)
 

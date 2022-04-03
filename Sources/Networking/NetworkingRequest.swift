@@ -15,7 +15,7 @@ public class NetworkingRequest: NSObject {
     var parameterEncoding = ParameterEncoding.urlEncoded
     var baseURL = ""
     var route = ""
-    var httpVerb = HTTPVerb.get
+    var httpMethod = HTTPMethod.get
     public var params = Params()
     var headers = [String: String]()
     var multipartData: [MultipartData]?
@@ -137,7 +137,7 @@ public class NetworkingRequest: NSObject {
     
     internal func buildURLRequest() -> URLRequest? {
         var urlString = baseURL + route
-        if httpVerb == .get {
+        if httpMethod == .get {
             urlString = getURLWithParams()
         }
         
@@ -146,7 +146,7 @@ public class NetworkingRequest: NSObject {
         }
         var request = URLRequest(url: url)
         
-        if httpVerb != .get && multipartData == nil {
+        if httpMethod != .get && multipartData == nil {
             switch parameterEncoding {
             case .urlEncoded:
                 request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -155,7 +155,7 @@ public class NetworkingRequest: NSObject {
             }
         }
         
-        request.httpMethod = httpVerb.rawValue
+        request.httpMethod = httpMethod.rawValue
         for (key, value) in headers {
             request.setValue(value, forHTTPHeaderField: key)
         }
@@ -164,7 +164,7 @@ public class NetworkingRequest: NSObject {
             request.timeoutInterval = timeout
         }
         
-        if httpVerb != .get && multipartData == nil {
+        if httpMethod != .get && multipartData == nil {
             switch parameterEncoding {
             case .urlEncoded:
                 request.httpBody = params.asPercentEncodedString().data(using: .utf8)

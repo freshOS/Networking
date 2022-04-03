@@ -30,9 +30,9 @@ public extension NetworkingClient {
         request(.delete, route, params: params)
     }
 
-    internal func request(_ httpVerb: HTTPVerb, _ route: String, params: Params = Params()) -> NetworkingRequest {
+    internal func request(_ httpMethod: HTTPMethod, _ route: String, params: Params = Params()) -> NetworkingRequest {
         let req = NetworkingRequest()
-        req.httpVerb             = httpVerb
+        req.httpMethod             = httpMethod
         req.route                = route
         req.params               = params
 
