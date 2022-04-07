@@ -173,7 +173,7 @@ cancellable.cancel()
 ### Log Network calls
 3 log levels are supported: `off`, `info`, `debug`
 ```swift
-client.logLevels = .debug
+client.logLevel = .debug
 ```
 
 

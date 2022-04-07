@@ -9,32 +9,32 @@ import Foundation
 
 class NetworkingLogger {
 
-    var logLevels = NetworkingLogLevel.off
+    var logLevel = NetworkingLogLevel.off
 
     func log(request: URLRequest) {
-        guard logLevels != .off else {
+        guard logLevel != .off else {
             return
         }
-        if let verb = request.httpMethod,
+        if let method = request.httpMethod,
             let url = request.url {
-            print("\(verb) '\(url.absoluteString)'")
+            print("\(method) '\(url.absoluteString)'")
             logHeaders(request)
             logBody(request)
 
         }
-        if logLevels == .debug {
+        if logLevel == .debug {
             logCurl(request)
         }
     }
 
     func log(response: URLResponse, data: Data) {
-        guard logLevels != .off else {
+        guard logLevel != .off else {
             return
         }
         if let response = response as? HTTPURLResponse {
             logStatusCodeAndURL(response)
         }
-        if logLevels == .debug {
+        if logLevel == .debug {
             print(String(decoding: data, as: UTF8.self))
         }
     }

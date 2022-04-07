@@ -30,16 +30,16 @@ public extension NetworkingClient {
         request(.delete, route, params: params)
     }
 
-    internal func request(_ httpVerb: HTTPVerb, _ route: String, params: Params = Params()) -> NetworkingRequest {
+    internal func request(_ httpMethod: HTTPMethod, _ route: String, params: Params = Params()) -> NetworkingRequest {
         let req = NetworkingRequest()
-        req.httpVerb             = httpVerb
+        req.httpMethod             = httpMethod
         req.route                = route
         req.params               = params
 
         let updateRequest = { [weak req, weak self] in
             guard let self = self else { return }
             req?.baseURL              = self.baseURL
-            req?.logLevels            = self.logLevels
+            req?.logLevel             = self.logLevel
             req?.headers              = self.headers
             req?.parameterEncoding    = self.parameterEncoding
             req?.sessionConfiguration = self.sessionConfiguration

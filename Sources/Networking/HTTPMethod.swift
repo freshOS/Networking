@@ -1,5 +1,5 @@
 //
-//  HTTPVerb.swift
+//  HTTPMethod.swift
 //  
 //
 //  Created by Sacha DSO on 30/01/2020.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum HTTPVerb: String {
+public enum HTTPMethod: String {
     case get = "GET"
     case put = "PUT"
     case patch = "PATCH"
