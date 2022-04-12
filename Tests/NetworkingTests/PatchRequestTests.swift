@@ -26,7 +26,7 @@ class PatchRequestTests: XCTestCase {
         MockingURLProtocol.currentRequest = nil
     }
 
-    func testPOSTVoidWorks() {
+    func testPATCHVoidWorks() {
         MockingURLProtocol.mockedResponse =
         """
         { "response": "OK" }
@@ -49,7 +49,7 @@ class PatchRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
     
-    func testPOSTDataWorks() {
+    func testPATCHDataWorks() {
         MockingURLProtocol.mockedResponse =
         """
         { "response": "OK" }
@@ -73,7 +73,7 @@ class PatchRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
     
-    func testPOSTJSONWorks() {
+    func testPATCHJSONWorks() {
         MockingURLProtocol.mockedResponse =
         """
         {"response":"OK"}
@@ -103,7 +103,36 @@ class PatchRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
     
-    func testPOSTNetworkingJSONDecodableWorks() {
+    func testPATCHNetworkingJSONDecodableWorks() {
+        MockingURLProtocol.mockedResponse =
+        """
+        {
+            "title":"Hello",
+            "content":"World",
+        }
+        """
+        let expectationWorks = expectation(description: "ReceiveValue called")
+        let expectationFinished = expectation(description: "Finished called")
+        network.patch("/posts/1")
+            .sink { completion in
+            switch completion {
+            case .failure:
+                XCTFail()
+            case .finished:
+                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PATCH")
+                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/posts/1")
+                expectationFinished.fulfill()
+            }
+        } receiveValue: { (post: Post) in
+            XCTAssertEqual(post.title, "Hello")
+            XCTAssertEqual(post.content, "World")
+            expectationWorks.fulfill()
+        }
+        .store(in: &cancellables)
+        waitForExpectations(timeout: 0.1)
+    }
+    
+    func testPATCHDecodableWorks() {
         MockingURLProtocol.mockedResponse =
         """
         {
@@ -132,7 +161,7 @@ class PatchRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
 
-    func testPOSTArrayOfNetworkingJSONDecodableWorks() {
+    func testPATCHArrayOfDecodableWorks() {
         MockingURLProtocol.mockedResponse =
         """
         [
@@ -169,7 +198,7 @@ class PatchRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
 
-    func testPOSTArrayOfNetworkingJSONDecodableWithKeypathWorks() {
+    func testPATCHArrayOfDecodableWithKeypathWorks() {
         MockingURLProtocol.mockedResponse =
         """
         {

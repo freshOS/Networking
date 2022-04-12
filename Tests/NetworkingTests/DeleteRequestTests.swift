@@ -26,7 +26,7 @@ class DeletehRequestTests: XCTestCase {
         MockingURLProtocol.currentRequest = nil
     }
 
-    func testPOSTVoidWorks() {
+    func testDELETEVoidWorks() {
         MockingURLProtocol.mockedResponse =
         """
         { "response": "OK" }
@@ -49,7 +49,7 @@ class DeletehRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
     
-    func testPOSTDataWorks() {
+    func testDELETEDataWorks() {
         MockingURLProtocol.mockedResponse =
         """
         { "response": "OK" }
@@ -73,7 +73,7 @@ class DeletehRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
     
-    func testPOSTJSONWorks() {
+    func testDELETEJSONWorks() {
         MockingURLProtocol.mockedResponse =
         """
         {"response":"OK"}
@@ -103,7 +103,35 @@ class DeletehRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
     
-    func testPOSTNetworkingJSONDecodableWorks() {
+    func testDELETENetworkingJSONDecodableWorks() {
+        MockingURLProtocol.mockedResponse =
+        """
+        {
+            "title":"Hello",
+            "content":"World",
+        }
+        """
+        let expectationWorks = expectation(description: "ReceiveValue called")
+        let expectationFinished = expectation(description: "Finished called")
+        network.delete("/posts/1")
+            .sink { completion in
+            switch completion {
+            case .failure:
+                XCTFail()
+            case .finished:
+                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "DELETE")
+                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/posts/1")
+                expectationFinished.fulfill()
+            }
+        } receiveValue: { (post: Post) in
+            XCTAssertEqual(post.title, "Hello")
+            XCTAssertEqual(post.content, "World")
+            expectationWorks.fulfill()
+        }
+        .store(in: &cancellables)
+        waitForExpectations(timeout: 0.1)
+    }
+    func testDELETEDecodableWorks() {
         MockingURLProtocol.mockedResponse =
         """
         {
@@ -132,7 +160,7 @@ class DeletehRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
 
-    func testPOSTArrayOfNetworkingJSONDecodableWorks() {
+    func testDELETEArrayOfDecodableWorks() {
         MockingURLProtocol.mockedResponse =
         """
         [
@@ -169,7 +197,7 @@ class DeletehRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
 
-    func testPOSTArrayOfNetworkingJSONDecodableWithKeypathWorks() {
+    func testDELETEArrayOfDecodableWithKeypathWorks() {
         MockingURLProtocol.mockedResponse =
         """
         {
