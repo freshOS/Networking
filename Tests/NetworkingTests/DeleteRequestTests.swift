@@ -49,6 +49,16 @@ class DeletehRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
     
+    func testDELETEVoidAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        { "response": "OK" }
+        """
+        let _: Void = try await network.delete("/users")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "DELETE")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+    }
+    
     func testDELETEDataWorks() {
         MockingURLProtocol.mockedResponse =
         """
@@ -71,6 +81,17 @@ class DeletehRequestTests: XCTestCase {
         }
         .store(in: &cancellables)
         waitForExpectations(timeout: 0.1)
+    }
+    
+    func testDELETEDataAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        { "response": "OK" }
+        """
+        let data: Data = try await network.delete("/users")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "DELETE")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+        XCTAssertEqual(data, MockingURLProtocol.mockedResponse.data(using: String.Encoding.utf8))
     }
     
     func testDELETEJSONWorks() {
@@ -103,6 +124,22 @@ class DeletehRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
     
+    func testDELETEJSONAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        {"response":"OK"}
+        """
+        let json: Any = try await network.delete("/users")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "DELETE")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+        let data = try? JSONSerialization.data(withJSONObject: json, options: [])
+        let expectedResponseData =
+        """
+        {"response":"OK"}
+        """.data(using: String.Encoding.utf8)
+        XCTAssertEqual(data, expectedResponseData)
+    }
+    
     func testDELETENetworkingJSONDecodableWorks() {
         MockingURLProtocol.mockedResponse =
         """
@@ -131,6 +168,7 @@ class DeletehRequestTests: XCTestCase {
         .store(in: &cancellables)
         waitForExpectations(timeout: 0.1)
     }
+    
     func testDELETEDecodableWorks() {
         MockingURLProtocol.mockedResponse =
         """
@@ -158,6 +196,21 @@ class DeletehRequestTests: XCTestCase {
         }
         .store(in: &cancellables)
         waitForExpectations(timeout: 0.1)
+    }
+    
+    func testDELETEDecodableAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        {
+            "firstname":"John",
+            "lastname":"Doe",
+        }
+        """
+        let userJSON: UserJSON = try await network.delete("/users/1")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "DELETE")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users/1")
+        XCTAssertEqual(userJSON.firstname, "John")
+        XCTAssertEqual(userJSON.lastname, "Doe")
     }
 
     func testDELETEArrayOfDecodableWorks() {
@@ -195,6 +248,29 @@ class DeletehRequestTests: XCTestCase {
         }
         .store(in: &cancellables)
         waitForExpectations(timeout: 0.1)
+    }
+    
+    func testDELETEArrayOfDecodableAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        [
+            {
+                "firstname":"John",
+                "lastname":"Doe"
+            },
+            {
+                "firstname":"Jimmy",
+                "lastname":"Punchline"
+            }
+        ]
+        """
+        let users: [UserJSON] = try await network.delete("/users")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "DELETE")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+        XCTAssertEqual(users[0].firstname, "John")
+        XCTAssertEqual(users[0].lastname, "Doe")
+        XCTAssertEqual(users[1].firstname, "Jimmy")
+        XCTAssertEqual(users[1].lastname, "Punchline")
     }
 
     func testDELETEArrayOfDecodableWithKeypathWorks() {

@@ -49,6 +49,16 @@ class PutRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
     
+    func testPUTVoidAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        { "response": "OK" }
+        """
+        let _: Void = try await network.put("/users")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+    }
+    
     func testPUTDataWorks() {
         MockingURLProtocol.mockedResponse =
         """
@@ -71,6 +81,17 @@ class PutRequestTests: XCTestCase {
         }
         .store(in: &cancellables)
         waitForExpectations(timeout: 0.1)
+    }
+    
+    func testPUTDataAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        { "response": "OK" }
+        """
+        let data: Data = try await network.put("/users")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+        XCTAssertEqual(data, MockingURLProtocol.mockedResponse.data(using: String.Encoding.utf8))
     }
     
     func testPUTJSONWorks() {
@@ -101,6 +122,22 @@ class PutRequestTests: XCTestCase {
         }
         .store(in: &cancellables)
         waitForExpectations(timeout: 0.1)
+    }
+    
+    func testPUTJSONAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        {"response":"OK"}
+        """
+        let json: Any = try await network.put("/users")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+        let data =  try? JSONSerialization.data(withJSONObject: json, options: [])
+        let expectedResponseData =
+        """
+        {"response":"OK"}
+        """.data(using: String.Encoding.utf8)
+            XCTAssertEqual(data, expectedResponseData)
     }
     
     func testPUTNetworkingJSONDecodableWorks() {
@@ -161,6 +198,21 @@ class PutRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
     
+    func testPUTDecodableAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        {
+            "firstname":"John",
+            "lastname":"Doe",
+        }
+        """
+        let user: UserJSON = try await network.put("/users/1")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users/1")
+        XCTAssertEqual(user.firstname, "John")
+        XCTAssertEqual(user.lastname, "Doe")
+    }
+    
     func testPUTArrayOfDecodableWorks() {
         MockingURLProtocol.mockedResponse =
         """
@@ -196,6 +248,29 @@ class PutRequestTests: XCTestCase {
         }
         .store(in: &cancellables)
         waitForExpectations(timeout: 0.1)
+    }
+    
+    func testPUTArrayOfDecodableAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        [
+            {
+                "firstname":"John",
+                "lastname":"Doe"
+            },
+            {
+                "firstname":"Jimmy",
+                "lastname":"Punchline"
+            }
+        ]
+        """
+        let users: [UserJSON] = try await network.put("/users")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+        XCTAssertEqual(users[0].firstname, "John")
+        XCTAssertEqual(users[0].lastname, "Doe")
+        XCTAssertEqual(users[1].firstname, "Jimmy")
+        XCTAssertEqual(users[1].lastname, "Punchline")
     }
 
     func testPUTArrayOfDecodableWithKeypathWorks() {

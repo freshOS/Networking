@@ -49,6 +49,16 @@ class PostRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
     
+    func testPOSTVoidAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        { "response": "OK" }
+        """
+        let _: Void = try await network.post("/users")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "POST")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+    }
+    
     func testPOSTDataWorks() {
         MockingURLProtocol.mockedResponse =
         """
@@ -71,6 +81,17 @@ class PostRequestTests: XCTestCase {
         }
         .store(in: &cancellables)
         waitForExpectations(timeout: 0.1)
+    }
+    
+    func testPOSTDataAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        { "response": "OK" }
+        """
+        let data: Data = try await network.post("/users")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "POST")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+        XCTAssertEqual(data, MockingURLProtocol.mockedResponse.data(using: String.Encoding.utf8))
     }
     
     func testPOSTJSONWorks() {
@@ -101,6 +122,22 @@ class PostRequestTests: XCTestCase {
         }
         .store(in: &cancellables)
         waitForExpectations(timeout: 0.1)
+    }
+    
+    func testPOSTJSONAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        {"response":"OK"}
+        """
+        let json: Any = try await network.post("/users")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "POST")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+        let data =  try? JSONSerialization.data(withJSONObject: json, options: [])
+        let expectedResponseData =
+        """
+        {"response":"OK"}
+        """.data(using: String.Encoding.utf8)
+        XCTAssertEqual(data, expectedResponseData)
     }
     
     func testPOSTNetworkingJSONDecodableWorks() {
@@ -161,6 +198,21 @@ class PostRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
     
+    func testPOSTDecodableAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        {
+            "firstname":"John",
+            "lastname":"Doe",
+        }
+        """
+        let userJSON:UserJSON = try await network.post("/users/1")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "POST")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users/1")
+        XCTAssertEqual(userJSON.firstname, "John")
+        XCTAssertEqual(userJSON.lastname, "Doe")
+    }
+    
     func testPOSTArrayOfDecodableWorks() {
         MockingURLProtocol.mockedResponse =
         """
@@ -196,6 +248,29 @@ class PostRequestTests: XCTestCase {
         }
         .store(in: &cancellables)
         waitForExpectations(timeout: 0.1)
+    }
+    
+    func testPOSTArrayOfDecodableAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        [
+            {
+                "firstname":"John",
+                "lastname":"Doe"
+            },
+            {
+                "firstname":"Jimmy",
+                "lastname":"Punchline"
+            }
+        ]
+        """
+        let users: [UserJSON] = try await network.post("/users")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "POST")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+        XCTAssertEqual(users[0].firstname, "John")
+        XCTAssertEqual(users[0].lastname, "Doe")
+        XCTAssertEqual(users[1].firstname, "Jimmy")
+        XCTAssertEqual(users[1].lastname, "Punchline")
     }
     
     func testPOSTArrayOfDecodableWithKeypathWorks() {
