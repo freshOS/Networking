@@ -2,8 +2,6 @@ import XCTest
 import Networking
 import Combine
 
-extension Post: NetworkingJSONDecodable {}
-
 final class NetworkingTests: XCTestCase {
 
     var cancellables = Set<AnyCancellable>()
