@@ -107,6 +107,35 @@ class PutRequestTests: XCTestCase {
         MockingURLProtocol.mockedResponse =
         """
         {
+            "title":"Hello",
+            "content":"World",
+        }
+        """
+        let expectationWorks = expectation(description: "ReceiveValue called")
+        let expectationFinished = expectation(description: "Finished called")
+        network.put("/posts/1")
+            .sink { completion in
+            switch completion {
+            case .failure:
+                XCTFail()
+            case .finished:
+                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
+                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/posts/1")
+                expectationFinished.fulfill()
+            }
+        } receiveValue: { (post: Post) in
+            XCTAssertEqual(post.title, "Hello")
+            XCTAssertEqual(post.content, "World")
+            expectationWorks.fulfill()
+        }
+        .store(in: &cancellables)
+        waitForExpectations(timeout: 0.1)
+    }
+    
+    func testPUTDecodableWorks() {
+        MockingURLProtocol.mockedResponse =
+        """
+        {
             "firstname":"John",
             "lastname":"Doe",
         }
@@ -132,7 +161,7 @@ class PutRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
     
-    func testPUTArrayOfNetworkingJSONDecodableWorks() {
+    func testPUTArrayOfDecodableWorks() {
         MockingURLProtocol.mockedResponse =
         """
         [
@@ -169,7 +198,7 @@ class PutRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
 
-    func testPUTArrayOfNetworkingJSONDecodableWithKeypathWorks() {
+    func testPUTArrayOfDecodableWithKeypathWorks() {
         MockingURLProtocol.mockedResponse =
         """
         {
