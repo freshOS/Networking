@@ -110,3 +110,83 @@ public extension NetworkingClient {
             .eraseToAnyPublisher()
     }
 }
+
+
+public extension NetworkingClient {
+    
+    func get<T: Decodable>(_ route: String,
+                           params: Params = Params(),
+                           keypath: String? = nil) async throws -> T {
+        let json: Any = try await get(route, params: params)
+        let model:T = try NetworkingParser().toModel(json, keypath: keypath)
+        return model
+    }
+    
+    func get<T: Decodable>(_ route: String,
+                           params: Params = Params(),
+                           keypath: String? = nil) async throws -> T where T: Collection {
+        let keypath = keypath ?? defaultCollectionParsingKeyPath
+        let json: Any = try await get(route, params: params)
+        return try NetworkingParser().toModel(json, keypath: keypath)
+    }
+    
+    func post<T: Decodable>(_ route: String,
+                           params: Params = Params(),
+                           keypath: String? = nil) async throws -> T {
+        let json: Any = try await post(route, params: params)
+        return try NetworkingParser().toModel(json, keypath: keypath)
+    }
+    
+    func post<T: Decodable>(_ route: String,
+                           params: Params = Params(),
+                           keypath: String? = nil) async throws -> T where T: Collection {
+        let keypath = keypath ?? defaultCollectionParsingKeyPath
+        let json: Any = try await post(route, params: params)
+        return try NetworkingParser().toModel(json, keypath: keypath)
+    }
+    
+    func put<T: Decodable>(_ route: String,
+                           params: Params = Params(),
+                           keypath: String? = nil) async throws -> T {
+        let json: Any = try await put(route, params: params)
+        return try NetworkingParser().toModel(json, keypath: keypath)
+    }
+    
+    func put<T: Decodable>(_ route: String,
+                           params: Params = Params(),
+                           keypath: String? = nil) async throws -> T where T: Collection {
+        let keypath = keypath ?? defaultCollectionParsingKeyPath
+        let json: Any = try await put(route, params: params)
+        return try NetworkingParser().toModel(json, keypath: keypath)
+    }
+    
+    func patch<T: Decodable>(_ route: String,
+                           params: Params = Params(),
+                           keypath: String? = nil) async throws -> T {
+        let json: Any = try await patch(route, params: params)
+        return try NetworkingParser().toModel(json, keypath: keypath)
+    }
+    
+    func patch<T: Decodable>(_ route: String,
+                           params: Params = Params(),
+                           keypath: String? = nil) async throws -> T where T: Collection {
+        let keypath = keypath ?? defaultCollectionParsingKeyPath
+        let json: Any = try await patch(route, params: params)
+        return try NetworkingParser().toModel(json, keypath: keypath)
+    }
+    
+    func delete<T: Decodable>(_ route: String,
+                           params: Params = Params(),
+                           keypath: String? = nil) async throws -> T {
+        let json: Any = try await delete(route, params: params)
+        return try NetworkingParser().toModel(json, keypath: keypath)
+    }
+    
+    func delete<T: Decodable>(_ route: String,
+                           params: Params = Params(),
+                           keypath: String? = nil) async throws -> T where T: Collection {
+        let keypath = keypath ?? defaultCollectionParsingKeyPath
+        let json: Any = try await delete(route, params: params)
+        return try NetworkingParser().toModel(json, keypath: keypath)
+    }
+}

@@ -49,6 +49,16 @@ class PatchRequestTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
     }
     
+    func testPATCHVoidAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        { "response": "OK" }
+        """
+        let _:Void = try await network.patch("/users")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PATCH")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+    }
+    
     func testPATCHDataWorks() {
         MockingURLProtocol.mockedResponse =
         """
@@ -71,6 +81,17 @@ class PatchRequestTests: XCTestCase {
         }
         .store(in: &cancellables)
         waitForExpectations(timeout: 0.1)
+    }
+    
+    func testPATCHDataAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        { "response": "OK" }
+        """
+        let data: Data = try await network.patch("/users")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PATCH")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+        XCTAssertEqual(data, MockingURLProtocol.mockedResponse.data(using: String.Encoding.utf8))
     }
     
     func testPATCHJSONWorks() {
@@ -101,6 +122,22 @@ class PatchRequestTests: XCTestCase {
         }
         .store(in: &cancellables)
         waitForExpectations(timeout: 0.1)
+    }
+    
+    func testPATCHJSONAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        {"response":"OK"}
+        """
+        let json: Any = try await network.patch("/users")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PATCH")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+        let data =  try? JSONSerialization.data(withJSONObject: json, options: [])
+        let expectedResponseData =
+        """
+        {"response":"OK"}
+        """.data(using: String.Encoding.utf8)
+        XCTAssertEqual(data, expectedResponseData)
     }
     
     func testPATCHNetworkingJSONDecodableWorks() {
@@ -160,6 +197,21 @@ class PatchRequestTests: XCTestCase {
         .store(in: &cancellables)
         waitForExpectations(timeout: 0.1)
     }
+    
+    func testPATCHDecodableAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        {
+            "firstname":"John",
+            "lastname":"Doe",
+        }
+        """
+        let user: UserJSON = try await network.patch("/users/1")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PATCH")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users/1")
+        XCTAssertEqual(user.firstname, "John")
+        XCTAssertEqual(user.lastname, "Doe")
+    }
 
     func testPATCHArrayOfDecodableWorks() {
         MockingURLProtocol.mockedResponse =
@@ -196,6 +248,29 @@ class PatchRequestTests: XCTestCase {
         }
         .store(in: &cancellables)
         waitForExpectations(timeout: 0.1)
+    }
+    
+    func testPATCHArrayOfDecodableAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        [
+            {
+                "firstname":"John",
+                "lastname":"Doe"
+            },
+            {
+                "firstname":"Jimmy",
+                "lastname":"Punchline"
+            }
+        ]
+        """
+        let users: [UserJSON] = try await network.patch("/users")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PATCH")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+        XCTAssertEqual(users[0].firstname, "John")
+        XCTAssertEqual(users[0].lastname, "Doe")
+        XCTAssertEqual(users[1].firstname, "Jimmy")
+        XCTAssertEqual(users[1].lastname, "Punchline")
     }
 
     func testPATCHArrayOfDecodableWithKeypathWorks() {

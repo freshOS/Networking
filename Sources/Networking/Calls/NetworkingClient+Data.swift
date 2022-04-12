@@ -30,3 +30,26 @@ public extension NetworkingClient {
         request(.delete, route, params: params).publisher()
     }
 }
+
+public extension NetworkingClient {
+
+    func get(_ route: String, params: Params = Params()) async throws -> Data {
+        try await request(.get, route, params: params).execute()
+    }
+    
+    func post(_ route: String, params: Params = Params()) async throws -> Data {
+        try await request(.post, route, params: params).execute()
+    }
+    
+    func put(_ route: String, params: Params = Params()) async throws -> Data {
+        try await request(.put, route, params: params).execute()
+    }
+    
+    func patch(_ route: String, params: Params = Params()) async throws -> Data {
+        try await request(.patch, route, params: params).execute()
+    }
+    
+    func delete(_ route: String, params: Params = Params()) async throws -> Data {
+        try await request(.delete, route, params: params).execute()
+    }
+}
