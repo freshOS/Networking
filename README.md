@@ -37,7 +37,7 @@ URLSession + Combine + Generics + Protocols = Networking.
 - [x] Build a concise Api
 - [x] Automatically map your models
 - [x] Uses latest Apple's [Combine](https://developer.apple.com/documentation/combine) / asyn-await 
-- [x] Compatible with native `Codable` and any JSON Parser
+- [x] Compatible with native `Decodable` and any JSON Parser
 - [x] Embarks a built-in network logger
 - [x] Pure Swift, simple, lightweight & 0 dependencies
 
@@ -232,7 +232,7 @@ This will forward your calls to the underlying client so that your only have to 
 
 Given an `Article` model
 ```swift
-struct Article: Codable {
+struct Article: DeCodable {
     let id: String
     let title: String
     let content: String
