@@ -9,26 +9,17 @@
 [![codebeat badge](https://codebeat.co/badges/ae5feb24-529d-49fe-9e28-75dfa9e3c35d)](https://codebeat.co/projects/github-com-freshos-networking-master)
 ![Release version](https://img.shields.io/github/release/freshOS/Networking.svg)
 
-Networking brings together `URLSession`, `Combine`, `Decodable` and `Generics` to
-make connecting to a JSON api a breeze.
+Networking brings together `URLSession`, `async`-`await` (or `Combine` ), `Decodable` and `Generics` to simplify connecting to a JSON api.
 
 ```swift
 struct Api: NetworkingService {
 
     let network = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
 
-    func fetchPost() -> AnyPublisher<Post, Error> {
-        get("/posts/1")
+    func fetchPost() async throws -> Post {
+       try await get("/posts/1")
     }
 }
-```
-Later...
-
-```swift
-let api = Api()
-api.fetchPost().sink(receiveCompletion: { _ in }) { post in
-    // Get back some post \o/
-}.store(in: &cancellables)
 ```
 
 ## Video tutorial
@@ -45,21 +36,12 @@ URLSession + Combine + Generics + Protocols = Networking.
 ## What
 - [x] Build a concise Api
 - [x] Automatically map your models
-- [x] Uses latest Apple's [Combine](https://developer.apple.com/documentation/combine)
+- [x] Uses latest Apple's [Combine](https://developer.apple.com/documentation/combine) / asyn-await 
 - [x] Compatible with native `Codable` and any JSON Parser
 - [x] Embarks a built-in network logger
 - [x] Pure Swift, simple, lightweight & 0 dependencies
 
 
-## Welcome the future. Bye ws , Hello Networking.
-Networking is the next generation of the [ws](https://github.com/freshOS/ws) project.
-The improvements are: Using Combine native Apple's framework over [Then](https://github.com/freshOS/Then) Promise Library, removing [Arrow](https://github.com/freshOS/Arrow) dependency to favour Codable (Arrow can still be adapted easily though) and removing the [Alamofire](https://github.com/Alamofire/Alamofire) dependency in favour of a simpler purely native [URLSession](https://developer.apple.com/documentation/foundation/urlsession) implementation.  
-In essence, less dependencies and more native stuff.
-
-## Try it!
-
-Networking is part of [freshOS](https://freshos.github.io) iOS toolset. Try it in an example App ! <a class="github-button" href="https://github.com/freshOS/StarterProject/archive/master.zip" data-icon="octicon-cloud-download" data-style="mega" aria-label="Download
-freshOS/StarterProject on GitHub">Download Starter Project</a>
 
 ## Getting Started
 
@@ -90,7 +72,12 @@ let client = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
 ```
 
 ### Make your first call
-Use `get`, `post`, `put` & `delete` methods on the client to make calls.
+Use `get`, `post`, `put`, `patch` & `delete` methods on the client to make calls.
+
+```swift
+let data: Data = try await client.get("/posts/1")
+```
+All the apis are also available in Combine:
 ```swift
 client.get("/posts/1").sink(receiveCompletion: { _ in }) { (data:Data) in
     // data
@@ -99,7 +86,7 @@ client.get("/posts/1").sink(receiveCompletion: { _ in }) { (data:Data) in
 
 ### Get the type you want back
 `Networking` recognizes the type you want back via type inference.
-Types supported are `Void`, `Data`, `Any`(JSON), `NetworkingJSONDecodable`(Your Model) & `[NetworkingJSONDecodable]`  
+Types supported are `Void`, `Data`, `Any`(JSON), `Decodable`(Your Model) & `NetworkingJSONDecodable`  
 
 This enables keeping a simple api while supporting many types :
 ```swift
@@ -112,13 +99,10 @@ let postsPublisher: AnyPublisher<[Post], Error> = client.get("")
 
 ### Pass params
 Simply pass a `[String: CustomStringConvertible]` dictionary to the `params` parameter.
-```swift
-client.postsPublisher("/posts/1", params: ["optin" : true ])
-    .sink(receiveCompletion: { _ in }) { (data:Data) in
-      //  response
-    }.store(in: &cancellables)
-```
 
+```swift
+let response: Data = try await client.posts("/posts/1", params: ["optin" : true ])
+```
 
 ### Upload multipart data
 For multipart calls (post/put), just pass a `MultipartData` struct to the `multipartData` parameter.
@@ -204,8 +188,9 @@ case .failure(let error):
 ```
 
 ### Support JSON-to-Model parsing.
-For a model to be parsable by `Networking`, it needs to conform to the `NetworkingJSONDecodable` protocol.
+For a model to be parsable by `Networking`, it only needs to conform to the `Decodable` protocol.
 
+If you are using a custom JSON parser, then you'll have to conform to `NetworkingJSONDecodable`.  
 For example if you are using [Arrow](https://github.com/freshOS/Arrow) for JSON Parsing.
 Supporting a `Post` model will look like this:
 ```swift
@@ -239,17 +224,6 @@ extension Photo: NetworkingJSONDecodable { }
 extension Video: NetworkingJSONDecodable { }
 // etc.
 ```
-This default extension is already provided for the native `Decodable` type. So if your
-models are `Decodable` then you just have to add:
-```swift
-extension Mymodel: NetworkingJSONDecodable { }
-```
-
-You can support any JSON parsing by replacing the code above with whatever JSON parsing library you are using \o/ !
-
-// TODO Document
-network.defaultCollectionParsingKeyPath = "collection"
-Clean Api
 
 ### Design a clean api
 In order to write a concise api, Networking provides the `NetworkingService` protocol.
@@ -264,12 +238,42 @@ struct Article: Codable {
     let content: String
 }
 ```
-Make your `Article` `NetworkingJSONDecodable`, this is a one liner since `Codable` is supported by default.
-```swift
-extension Article: NetworkingJSONDecodable {}
-```
+
 Here is what a typical CRUD api would look like :
 
+```swift
+struct CRUDApi: NetworkingService {
+
+    var network = NetworkingClient(baseURL: "https://my-api.com")
+
+    // Create
+    func create(article a: Article) async throws -> Article {
+        try await post("/articles", params: ["title" : a.title, "content" : a.content])
+    }
+
+    // Read
+    func fetch(article a: Article) async throws -> Article {
+        try await get("/articles/\(a.id)")
+    }
+
+    // Update
+    func update(article a: Article) async throws -> Article {
+        try await put("/articles/\(a.id)", params: ["title" : a.title, "content" : a.content])
+    }
+
+    // Delete
+    func delete(article a: Article) async throws {
+        return try await delete("/articles/\(a.id)")
+    }
+
+    // List
+    func articles() async throws -> [Article] {
+        try await get("/articles")
+    }
+}
+```
+
+The Combine equivalent would look like this:
 ```swift
 struct CRUDApi: NetworkingService {
 
