@@ -87,10 +87,7 @@ public extension NetworkingService {
     func get<T: Decodable>(_ route: String,
                                          params: Params = Params(),
                                          keypath: String? = nil) -> AnyPublisher<T, Error> {
-        return get(route, params: params)
-            .tryMap { json -> T in try NetworkingParser().toModel(json, keypath: keypath) }
-            .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
+        network.get(route, params: params, keypath: keypath)
     }
     
     func post<T: Decodable>(_ route: String,
@@ -154,10 +151,7 @@ public extension NetworkingService {
     func get<T: NetworkingJSONDecodable>(_ route: String,
                                          params: Params = Params(),
                                          keypath: String? = nil) -> AnyPublisher<T, Error> {
-        return get(route, params: params)
-            .tryMap { json -> T in try NetworkingParser().toModel(json, keypath: keypath) }
-            .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
+        network.get(route, params: params, keypath: keypath)
     }
     
     func post<T: NetworkingJSONDecodable>(_ route: String,
@@ -218,3 +212,138 @@ public extension NetworkingService {
         network.delete(route, params: params, keypath: keypath)
     }
 }
+
+// Async
+public extension NetworkingService {
+    
+    // Data
+    
+    func get(_ route: String, params: Params = Params()) async throws -> Data {
+        try await network.get(route, params: params)
+    }
+    
+    func post(_ route: String, params: Params = Params()) async throws -> Data {
+        try await network.post(route, params: params)
+    }
+
+    func put(_ route: String, params: Params = Params()) async throws -> Data {
+        try await network.put(route, params: params)
+    }
+
+    func patch(_ route: String, params: Params = Params()) async throws -> Data {
+        try await network.patch(route, params: params)
+    }
+
+    func delete(_ route: String, params: Params = Params()) async throws -> Data {
+        try await network.delete(route, params: params)
+    }
+
+    // Void
+
+    func get(_ route: String, params: Params = Params()) async throws {
+        return try await network.get(route, params: params)
+    }
+
+    func post(_ route: String, params: Params = Params()) async throws {
+        return try await network.post(route, params: params)
+    }
+
+    func put(_ route: String, params: Params = Params()) async throws {
+        return try await network.put(route, params: params)
+    }
+
+    func patch(_ route: String, params: Params = Params()) async throws {
+        return try await network.patch(route, params: params)
+    }
+
+    func delete(_ route: String, params: Params = Params()) async throws {
+        return try await network.delete(route, params: params)
+    }
+
+    // JSON
+
+    func get(_ route: String, params: Params = Params()) async throws -> Any {
+        try await network.get(route, params: params)
+    }
+
+    func post(_ route: String, params: Params = Params()) async throws -> Any {
+        try await network.post(route, params: params)
+    }
+
+    func put(_ route: String, params: Params = Params()) async throws -> Any {
+        try await network.put(route, params: params)
+    }
+
+    func patch(_ route: String, params: Params = Params()) async throws -> Any {
+        try await network.patch(route, params: params)
+    }
+
+    func delete(_ route: String, params: Params = Params()) async throws -> Any {
+        try await network.delete(route, params: params)
+    }
+
+    // Decodable
+
+    func get<T: Decodable>(_ route: String,
+                           params: Params = Params(),
+                           keypath: String? = nil) async throws -> T {
+        try await network.get(route, params: params, keypath: keypath)
+    }
+
+    func post<T: Decodable>(_ route: String,
+                                          params: Params = Params(),
+                                          keypath: String? = nil) async throws -> T {
+        try await network.post(route, params: params, keypath: keypath)
+    }
+
+    func put<T: Decodable>(_ route: String,
+                                         params: Params = Params(),
+                                         keypath: String? = nil) async throws -> T {
+        try await network.put(route, params: params, keypath: keypath)
+    }
+
+    func patch<T: Decodable>(_ route: String,
+                                           params: Params = Params(),
+                                           keypath: String? = nil) async throws -> T {
+        try await network.patch(route, params: params, keypath: keypath)
+    }
+
+    func delete<T: Decodable>(_ route: String,
+                                            params: Params = Params(),
+                                            keypath: String? = nil) async throws -> T {
+        try await network.delete(route, params: params, keypath: keypath)
+    }
+
+    // Array Decodable
+
+    func get<T: Decodable>(_ route: String,
+                           params: Params = Params(),
+                           keypath: String? = nil) async throws -> T where T: Collection {
+        try await network.get(route, params: params, keypath: keypath)
+    }
+
+    func post<T: Decodable>(_ route: String,
+                           params: Params = Params(),
+                           keypath: String? = nil) async throws -> T where T: Collection {
+        try await network.post(route, params: params, keypath: keypath)
+    }
+
+    func put<T: Decodable>(_ route: String,
+                           params: Params = Params(),
+                           keypath: String? = nil) async throws -> T where T: Collection {
+        try await network.put(route, params: params, keypath: keypath)
+    }
+
+    func patch<T: Decodable>(_ route: String,
+                           params: Params = Params(),
+                           keypath: String? = nil) async throws -> T where T: Collection {
+        try await network.patch(route, params: params, keypath: keypath)
+    }
+
+    func delete<T: Decodable>(_ route: String,
+                           params: Params = Params(),
+                           keypath: String? = nil) async throws -> T where T: Collection {
+        try await network.delete(route, params: params, keypath: keypath)
+    }
+}
+
