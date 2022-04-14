@@ -44,27 +44,24 @@ public extension NetworkingClient {
 public extension NetworkingClient {
 
     func get(_ route: String, params: Params = Params()) async throws {
-        let req = request(.get, route, params: params)
-        _ = try await req.execute()
+        _ = try await execute(request: request(.get, route, params: params))
     }
     
     func post(_ route: String, params: Params = Params()) async throws {
-        let req = request(.post, route, params: params)
-        _ = try await req.execute()
+        _ = try await execute(request: request(.post, route, params: params))
     }
     
     func put(_ route: String, params: Params = Params()) async throws {
-        let req = request(.put, route, params: params)
-        _ = try await req.execute()
+        _ = try await execute(request: request(.put, route, params: params))
     }
     
     func patch(_ route: String, params: Params = Params()) async throws {
         let req = request(.patch, route, params: params)
-        _ = try await req.execute()
+        _ = try await execute(request: req)
     }
     
     func delete(_ route: String, params: Params = Params()) async throws {
         let req = request(.delete, route, params: params)
-        _ = try await req.execute()
+        _ = try await execute(request: req)
     }
 }

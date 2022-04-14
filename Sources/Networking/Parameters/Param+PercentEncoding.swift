@@ -1,14 +1,12 @@
 //
-//  Params.swift
+//  Param+PercentEncoding.swift
 //  
 //
-//  Created by Sacha on 13/03/2020.
+//  Created by Sacha DSO on 14/04/2022.
 //
 
 import Foundation
 
-public typealias Params = [String: CustomStringConvertible]
-    
 extension Params {
     public func asPercentEncodedString(parentKey: String? = nil) -> String {
         return self.map { key, value in
@@ -32,4 +30,15 @@ extension Params {
         }
         .joined(separator: "&")
     }
+}
+
+// Thansks to https://stackoverflow.com/questions/26364914/http-request-in-swift-with-post-method
+extension CharacterSet {
+    static let urlQueryValueAllowed: CharacterSet = {
+        let generalDelimitersToEncode = ":#[]@" // does not include "?" or "/" due to RFC 3986 - Section 3.4
+        let subDelimitersToEncode = "!$&'()*+,;="
+        var allowed = CharacterSet.urlQueryAllowed
+        allowed.remove(charactersIn: "\(generalDelimitersToEncode)\(subDelimitersToEncode)")
+        return allowed
+    }()
 }

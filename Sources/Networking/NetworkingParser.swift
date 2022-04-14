@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 public struct NetworkingParser {
 
     public init() {}

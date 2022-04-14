@@ -35,31 +35,31 @@ public extension NetworkingClient {
 
     func get(_ route: String, params: Params = Params()) async throws -> Any {
         let req = request(.get, route, params: params)
-        let data = try await req.execute()
+        let data = try await execute(request: req)
         return try JSONSerialization.jsonObject(with: data, options: [])
     }
     
     func post(_ route: String, params: Params = Params()) async throws -> Any {
         let req = request(.post, route, params: params)
-        let data = try await req.execute()
+        let data = try await execute(request: req)
         return try JSONSerialization.jsonObject(with: data, options: [])
     }
     
     func put(_ route: String, params: Params = Params()) async throws -> Any {
         let req = request(.put, route, params: params)
-        let data = try await req.execute()
+        let data = try await execute(request: req)
         return try JSONSerialization.jsonObject(with: data, options: [])
     }
     
     func patch(_ route: String, params: Params = Params()) async throws -> Any {
         let req = request(.patch, route, params: params)
-        let data = try await req.execute()
+        let data = try await execute(request: req)
         return try JSONSerialization.jsonObject(with: data, options: [])
     }
     
     func delete(_ route: String, params: Params = Params()) async throws -> Any {
         let req = request(.delete, route, params: params)
-        let data = try await req.execute()
+        let data = try await execute(request: req)
         return try JSONSerialization.jsonObject(with: data, options: [])
     }
 }

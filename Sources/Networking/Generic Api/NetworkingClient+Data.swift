@@ -11,45 +11,45 @@ import Combine
 public extension NetworkingClient {
 
     func get(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        request(.get, route, params: params).publisher()
+        publisher(for: request(.get, route, params: params))
     }
 
     func post(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        request(.post, route, params: params).publisher()
+        publisher(for: request(.post, route, params: params))
     }
 
     func put(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        request(.put, route, params: params).publisher()
+        publisher(for: request(.put, route, params: params))
     }
 
     func patch(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        request(.patch, route, params: params).publisher()
+        publisher(for: request(.patch, route, params: params))
     }
 
     func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        request(.delete, route, params: params).publisher()
+        publisher(for: request(.delete, route, params: params))
     }
 }
 
 public extension NetworkingClient {
 
     func get(_ route: String, params: Params = Params()) async throws -> Data {
-        try await request(.get, route, params: params).execute()
+        try await execute(request: request(.get, route, params: params))
     }
     
     func post(_ route: String, params: Params = Params()) async throws -> Data {
-        try await request(.post, route, params: params).execute()
+        try await execute(request: request(.post, route, params: params))
     }
     
     func put(_ route: String, params: Params = Params()) async throws -> Data {
-        try await request(.put, route, params: params).execute()
+        try await execute(request: request(.put, route, params: params))
     }
     
     func patch(_ route: String, params: Params = Params()) async throws -> Data {
-        try await request(.patch, route, params: params).execute()
+        try await execute(request: request(.patch, route, params: params))
     }
     
     func delete(_ route: String, params: Params = Params()) async throws -> Data {
-        try await request(.delete, route, params: params).execute()
+        try await execute(request: request(.delete, route, params: params))
     }
 }
