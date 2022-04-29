@@ -135,6 +135,7 @@ public class NetworkingRequest: NSObject {
                             error.jsonPayload = json
                         }
                         continuation.resume(throwing: error)
+                        return
                     }
                 }
                 continuation.resume(returning: data)
