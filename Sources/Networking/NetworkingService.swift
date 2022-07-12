@@ -26,6 +26,10 @@ public extension NetworkingService {
         network.post(route, params: params)
     }
     
+    func post(_ route: String, encodable: Encodable) -> AnyPublisher<Data, Error> {
+        network.post(route, encodable: encodable)
+    }
+    
     func put(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
         network.put(route, params: params)
     }
@@ -48,6 +52,10 @@ public extension NetworkingService {
         network.post(route, params: params)
     }
     
+    func post(_ route: String, encodable: Encodable) -> AnyPublisher<Void, Error> {
+        network.post(route, encodable: encodable)
+    }
+    
     func put(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
         network.put(route, params: params)
     }
@@ -68,6 +76,10 @@ public extension NetworkingService {
     
     func post(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
         network.post(route, params: params)
+    }
+    
+    func post(_ route: String, encodable: Encodable) -> AnyPublisher<Any, Error> {
+        network.post(route, encodable: encodable)
     }
     
     func put(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
@@ -225,6 +237,10 @@ public extension NetworkingService {
     func post(_ route: String, params: Params = Params()) async throws -> Data {
         try await network.post(route, params: params)
     }
+    
+    func post(_ route: String, encodable: Encodable) async throws -> Data {
+        try await network.post(route, encodable: encodable)
+    }
 
     func put(_ route: String, params: Params = Params()) async throws -> Data {
         try await network.put(route, params: params)
@@ -247,6 +263,10 @@ public extension NetworkingService {
     func post(_ route: String, params: Params = Params()) async throws {
         return try await network.post(route, params: params)
     }
+    
+    func post(_ route: String, encodable: Encodable) async throws {
+        return try await network.post(route, encodable: encodable)
+    }
 
     func put(_ route: String, params: Params = Params()) async throws {
         return try await network.put(route, params: params)
@@ -268,6 +288,10 @@ public extension NetworkingService {
 
     func post(_ route: String, params: Params = Params()) async throws -> Any {
         try await network.post(route, params: params)
+    }
+    
+    func post(_ route: String, encodable: Encodable) async throws -> Any {
+        try await network.post(route, encodable: encodable)
     }
 
     func put(_ route: String, params: Params = Params()) async throws -> Any {
