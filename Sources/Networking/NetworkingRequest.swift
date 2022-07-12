@@ -17,6 +17,7 @@ public class NetworkingRequest: NSObject {
     var route = ""
     var httpMethod = HTTPMethod.get
     public var params = Params()
+    public var encodableParams: Encodable?
     var headers = [String: String]()
     var multipartData: [MultipartData]?
     var logLevel: NetworkingLogLevel {
@@ -200,8 +201,18 @@ public class NetworkingRequest: NSObject {
             case .urlEncoded:
                 request.httpBody = params.asPercentEncodedString().data(using: .utf8)
             case .json:
-                let jsonData = try? JSONSerialization.data(withJSONObject: params)
-                request.httpBody = jsonData
+                if let encodableParams = encodableParams {
+                    let jsonEncoder = JSONEncoder()
+                    do {
+                        let data = try jsonEncoder.encode(encodableParams)
+                        request.httpBody = data
+                    } catch {
+                        print(error)
+                    }
+                } else {
+                    let jsonData = try? JSONSerialization.data(withJSONObject: params)
+                    request.httpBody = jsonData
+                }
             }
         }
         
