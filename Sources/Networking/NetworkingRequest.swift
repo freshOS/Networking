@@ -204,8 +204,8 @@ public class NetworkingRequest<E: Encodable>: NSObject, URLSessionTaskDelegate {
                 if let encodableParams = encodableParams {
                     let jsonEncoder = JSONEncoder()
                     do {
-//                        let data = try jsonEncoder.encode(encodableParams)
-//                        request.httpBody = data
+                        let data = try jsonEncoder.encode(encodableParams)
+                        request.httpBody = data
                     } catch {
                         print(error)
                     }
