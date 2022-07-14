@@ -26,7 +26,7 @@ public extension NetworkingService {
         network.post(route, params: params)
     }
     
-    func post(_ route: String, encodable: Encodable) -> AnyPublisher<Data, Error> {
+    func post<E: Encodable>(_ route: String, encodable: E) -> AnyPublisher<Data, Error> {
         network.post(route, encodable: encodable)
     }
     
@@ -52,7 +52,7 @@ public extension NetworkingService {
         network.post(route, params: params)
     }
     
-    func post(_ route: String, encodable: Encodable) -> AnyPublisher<Void, Error> {
+    func post<E: Encodable>(_ route: String, encodable: E) -> AnyPublisher<Void, Error> {
         network.post(route, encodable: encodable)
     }
     
@@ -78,7 +78,7 @@ public extension NetworkingService {
         network.post(route, params: params)
     }
     
-    func post(_ route: String, encodable: Encodable) -> AnyPublisher<Any, Error> {
+    func post<E: Encodable>(_ route: String, encodable: E) -> AnyPublisher<Any, Error> {
         network.post(route, encodable: encodable)
     }
     
@@ -238,7 +238,7 @@ public extension NetworkingService {
         try await network.post(route, params: params)
     }
     
-    func post(_ route: String, encodable: Encodable) async throws -> Data {
+    func post<E: Encodable>(_ route: String, encodable: E) async throws -> Data {
         try await network.post(route, encodable: encodable)
     }
 
@@ -264,7 +264,7 @@ public extension NetworkingService {
         return try await network.post(route, params: params)
     }
     
-    func post(_ route: String, encodable: Encodable) async throws {
+    func post<E: Encodable>(_ route: String, encodable: E) async throws {
         return try await network.post(route, encodable: encodable)
     }
 
@@ -290,7 +290,7 @@ public extension NetworkingService {
         try await network.post(route, params: params)
     }
     
-    func post(_ route: String, encodable: Encodable) async throws -> Any {
+    func post<E: Encodable>(_ route: String, encodable: E) async throws -> Any {
         try await network.post(route, encodable: encodable)
     }
 
