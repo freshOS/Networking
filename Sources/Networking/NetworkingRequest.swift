@@ -10,14 +10,14 @@ import Combine
 
 public typealias NetworkRequestRetrier = (_ request: URLRequest, _ error: Error) -> AnyPublisher<Void, Error>?
 
-public class NetworkingRequest: NSObject {
+public class NetworkingRequest<E: Encodable>: NSObject, URLSessionTaskDelegate {
     
     var parameterEncoding = ParameterEncoding.urlEncoded
     var baseURL = ""
     var route = ""
     var httpMethod = HTTPMethod.get
     public var params = Params()
-    public var encodableParams: Encodable?
+    public var encodableParams: E?
     var headers = [String: String]()
     var multipartData: [MultipartData]?
     var logLevel: NetworkingLogLevel {
@@ -204,8 +204,8 @@ public class NetworkingRequest: NSObject {
                 if let encodableParams = encodableParams {
                     let jsonEncoder = JSONEncoder()
                     do {
-                        let data = try jsonEncoder.encode(encodableParams)
-                        request.httpBody = data
+//                        let data = try jsonEncoder.encode(encodableParams)
+//                        request.httpBody = data
                     } catch {
                         print(error)
                     }
@@ -239,6 +239,17 @@ public class NetworkingRequest: NSObject {
             .reduce(Data.init(), +)
             + boundaryEnding
     }
+    
+    public func urlSession(_ session: URLSession,
+                           task: URLSessionTask,
+                           didSendBodyData bytesSent: Int64,
+                           totalBytesSent: Int64,
+                           totalBytesExpectedToSend: Int64) {
+        let progress = Progress(totalUnitCount: totalBytesExpectedToSend)
+        progress.completedUnitCount = totalBytesSent
+        progressPublisher.send(progress)
+    }
+
 }
 
 // Thansks to https://stackoverflow.com/questions/26364914/http-request-in-swift-with-post-method
@@ -250,18 +261,6 @@ extension CharacterSet {
         allowed.remove(charactersIn: "\(generalDelimitersToEncode)\(subDelimitersToEncode)")
         return allowed
     }()
-}
-
-extension NetworkingRequest: URLSessionTaskDelegate {
-    public func urlSession(_ session: URLSession,
-                           task: URLSessionTask,
-                           didSendBodyData bytesSent: Int64,
-                           totalBytesSent: Int64,
-                           totalBytesExpectedToSend: Int64) {
-        let progress = Progress(totalUnitCount: totalBytesExpectedToSend)
-        progress.completedUnitCount = totalBytesSent
-        progressPublisher.send(progress)
-    }
 }
 
 public enum ParameterEncoding {
