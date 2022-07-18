@@ -319,7 +319,11 @@ public extension NetworkingService {
                                           keypath: String? = nil) async throws -> T {
         try await network.post(route, params: params, keypath: keypath)
     }
-
+    
+    func post<E: Encodable, T: Decodable>(_ route: String, encodable: E) async throws -> T {
+        try await network.post(route, encodable: encodable)
+    }
+    
     func put<T: Decodable>(_ route: String,
                                          params: Params = Params(),
                                          keypath: String? = nil) async throws -> T {
