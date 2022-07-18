@@ -137,6 +137,14 @@ public extension NetworkingClient {
         return try self.toModel(json, keypath: keypath)
     }
     
+    func post<E: Encodable, T: Decodable>(_ route: String,
+                                          encodable: E,
+                                          keypath: String? = nil
+    ) async throws -> T {
+        let json: Any = try await post(route, encodable: encodable)
+        return try self.toModel(json, keypath: keypath)
+    }
+    
     func post<T: Decodable>(_ route: String,
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T where T: Collection {
