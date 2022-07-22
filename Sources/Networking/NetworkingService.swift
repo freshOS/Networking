@@ -38,6 +38,10 @@ public extension NetworkingService {
         network.patch(route, params: params)
     }
     
+    func patch<E: Encodable>(_ route: String, encodable: E) -> AnyPublisher<Data, Error> {
+        network.patch(route, encodable: encodable)
+    }
+    
     func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
         network.delete(route, params: params)
     }
@@ -334,6 +338,10 @@ public extension NetworkingService {
                                            params: Params = Params(),
                                            keypath: String? = nil) async throws -> T {
         try await network.patch(route, params: params, keypath: keypath)
+    }
+    
+    func patch<E: Encodable, T: Decodable>(_ route: String, encodable: E) async throws -> T {
+        try await network.patch(route, encodable: encodable)
     }
 
     func delete<T: Decodable>(_ route: String,

@@ -183,6 +183,14 @@ public extension NetworkingClient {
         return try self.toModel(json, keypath: keypath)
     }
     
+    func patch<E: Encodable, T: Decodable>(_ route: String,
+                                          encodable: E,
+                                          keypath: String? = nil
+    ) async throws -> T {
+        let json: Any = try await patch(route, encodable: encodable)
+        return try self.toModel(json, keypath: keypath)
+    }
+    
     func delete<T: Decodable>(_ route: String,
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T {
