@@ -67,6 +67,12 @@ public extension NetworkingClient {
         return try JSONSerialization.jsonObject(with: data, options: [])
     }
     
+    func patch<E: Encodable>(_ route: String, encodable: E) async throws -> Any {
+        let req = request(.patch, route, encodableParams: encodable)
+        let data = try await req.execute()
+        return try JSONSerialization.jsonObject(with: data, options: [])
+    }
+    
     func delete(_ route: String, params: Params = Params()) async throws -> Any {
         let req = request(.delete, route, params: params)
         let data = try await req.execute()
