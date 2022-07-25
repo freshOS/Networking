@@ -39,6 +39,12 @@ public extension NetworkingClient {
             .map { (data: Data) -> Void in () }
             .eraseToAnyPublisher()
     }
+    
+    func patch<E: Encodable>(_ route: String, encodable: E) -> AnyPublisher<Void, Error> {
+        patch(route, encodable: encodable)
+            .map { (data: Data) -> Void in () }
+        .eraseToAnyPublisher()
+    }
 
     func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
         delete(route, params: params)
