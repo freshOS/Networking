@@ -104,6 +104,13 @@ Simply pass a `[String: CustomStringConvertible]` dictionary to the `params` par
 let response: Data = try await client.posts("/posts/1", params: ["optin" : true ])
 ```
 
+Parameters are `.urlEncoded` by default (`Content-Type: application/x-www-form-urlencoded`), to encode them as json
+(`Content-Type: application/json`), you need to set the client's `parameterEncoding` to `.json as follows:
+
+```swift
+client.parameterEncoding = .json
+```
+
 ### Upload multipart data
 For multipart calls (post/put), just pass a `MultipartData` struct to the `multipartData` parameter.
 ```swift
