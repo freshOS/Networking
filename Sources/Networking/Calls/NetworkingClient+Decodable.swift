@@ -39,6 +39,16 @@ public extension NetworkingClient {
             .eraseToAnyPublisher()
     }
     
+    func post<E: Encodable, T: Decodable>(_ route: String,
+                                          encodable: E,
+                                          keypath: String? = nil
+    ) -> AnyPublisher<T, Error> {
+        return post(route, encodable: encodable)
+            .tryMap { json -> T in try self.toModel(json, keypath: keypath) }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+    
     // Array version
     func post<T: Decodable>(_ route: String,
                            params: Params = Params(),
@@ -74,6 +84,17 @@ public extension NetworkingClient {
                                            params: Params = Params(),
                                            keypath: String? = nil) -> AnyPublisher<T, Error> {
         return patch(route, params: params)
+            .tryMap { json -> T in try self.toModel(json, keypath: keypath) }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+    
+
+    func patch<E: Encodable, T: Decodable>(_ route: String,
+                                          encodable: E,
+                                          keypath: String? = nil
+    ) -> AnyPublisher<T, Error> {
+        return patch(route, encodable: encodable)
             .tryMap { json -> T in try self.toModel(json, keypath: keypath) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()

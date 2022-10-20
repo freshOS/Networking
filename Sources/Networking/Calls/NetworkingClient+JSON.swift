@@ -29,6 +29,10 @@ public extension NetworkingClient {
     func patch(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
         patch(route, params: params).toJSON()
     }
+    
+    func patch<E: Encodable>(_ route: String, encodable: E) -> AnyPublisher<Any, Error> {
+        patch(route, encodable: encodable).toJSON()
+    }
 
     func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
         delete(route, params: params).toJSON()
