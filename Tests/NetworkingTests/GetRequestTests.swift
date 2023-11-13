@@ -57,6 +57,17 @@ final class GetRequestTests: XCTestCase {
         XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
     }
     
+    func testGETVoidAsyncWithURLParams() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        { "response": "OK" }
+        """
+        
+        let _:Void = try await network.get("/users", params: ["search" : "lion"])
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "GET")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users?search=lion")
+    }
+    
     func testGETDataWorks() {
         MockingURLProtocol.mockedResponse =
         """
