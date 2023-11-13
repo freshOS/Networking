@@ -11,7 +11,8 @@ import Combine
 public enum HTTPBody {
     case urlEncoded(params: Params)
     case json(encodable: Encodable)
-    case multipart(params:Params, parts:[MultipartData])
+    case jsonParams(params: Params)
+    case multipart(params: Params?, parts:[MultipartData])
 }
 
 public typealias NetworkRequestRetrier = (_ request: URLRequest, _ error: Error) -> AnyPublisher<Void, Error>?
@@ -22,7 +23,7 @@ public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
     var baseURL = ""
     var route = ""
     var httpMethod = HTTPMethod.get
-    var body: HTTPBody? = nil
+    var httpBody: HTTPBody? = nil
     public var urlParams: Params? = nil
     var headers = [String: String]()
     var logLevel: NetworkingLogLevel {
@@ -140,13 +141,14 @@ public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
     
     private func getURLWithParams() -> String {
         let urlString = baseURL + route
-        if params.isEmpty { return urlString }
+        guard let urlParams else { return urlString }
+        if urlParams.isEmpty { return urlString }
         guard let url = URL(string: urlString) else {
             return urlString
         }
         if var urlComponents = URLComponents(url: url ,resolvingAgainstBaseURL: false) {
             var queryItems = urlComponents.queryItems ?? [URLQueryItem]()
-            params.forEach { param in
+            urlParams.forEach { param in
                 // arrayParam[] syntax
                 if let array = param.value as? [CustomStringConvertible] {
                     array.forEach {
@@ -172,14 +174,6 @@ public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
         }
         var request = URLRequest(url: url)
         
-        if httpMethod != .get && multipartData == nil {
-            switch parameterEncoding {
-            case .urlEncoded:
-                request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-            case .json:
-                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            }
-        }
         
         request.httpMethod = httpMethod.rawValue
         for (key, value) in headers {
@@ -189,33 +183,33 @@ public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
         if let timeout = timeout {
             request.timeoutInterval = timeout
         }
+    
         
-        if httpMethod != .get && multipartData == nil {
-            if let encodableBody {
+        if let httpBody {
+            switch httpBody {
+            case .urlEncoded(params: let params):
+                request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+                request.httpBody = params.asPercentEncodedString().data(using: .utf8)
+            case .jsonParams(params: let params):
+                request.setValue("application/json", forHTTPHeaderField: "Content-Type") // Todo httpbody extension to simplify
+                let jsonData = try? JSONSerialization.data(withJSONObject: params)
+                request.httpBody = jsonData
+            case .json(encodable: let encodable):
+                // request.setValue("application/json", forHTTPHeaderField: "Content-Type") // Todo needed?
                 let jsonEncoder = JSONEncoder()
                 do {
-                    let data = try jsonEncoder.encode(encodableBody)
+                    let data = try jsonEncoder.encode(encodable)
                     request.httpBody = data
                 } catch {
                     print(error)
                 }
-            } else {
-                switch parameterEncoding {
-                case .urlEncoded:
-                    request.httpBody = params.asPercentEncodedString().data(using: .utf8)
-                case .json:
-                    let jsonData = try? JSONSerialization.data(withJSONObject: params)
-                    request.httpBody = jsonData
-                }
+            case .multipart(params: let params, parts: let parts):
+                // Construct a unique boundary to separate values
+                let boundary = "Boundary-\(UUID().uuidString)"
+                request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+                request.httpBody = buildMultipartHttpBody(params: params ?? [:], multiparts: parts, boundary: boundary)
             }
-        }
-        
-        // Multipart
-        if let multiparts = multipartData {
-            // Construct a unique boundary to separate values
-            let boundary = "Boundary-\(UUID().uuidString)"
-            request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-            request.httpBody = buildMultipartHttpBody(params: params, multiparts: multiparts, boundary: boundary)
+            
         }
         return request
     }

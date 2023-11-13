@@ -14,6 +14,7 @@ public protocol NetworkingService {
 
 // Sugar, just forward calls to underlying network client
 
+/*
 public extension NetworkingService {
     
     // Data
@@ -382,4 +383,4 @@ public extension NetworkingService {
         try await network.delete(route, params: params, keypath: keypath)
     }
 }
-
+*/

@@ -17,16 +17,14 @@ final class MultipartRequestTests: XCTestCase {
     let route = "/api/test"
 
     func testRequestGenerationWithSingleFile() {
-        // Set up test
-        let params: Params = [:]
         let multipartData = MultipartData(name: "test_name",
                                           fileData: "test data".data(using: .utf8)!,
                                           fileName: "file.txt",
                                           mimeType: "text/plain")
 
         // Construct request
-        let request = baseClient.request(.post, route, params: params)
-        request.multipartData = [multipartData]
+        let request = baseClient.request(.post, route, body: .multipart(params: nil, parts: [multipartData]))
+        
 
         if let urlRequest = request.buildURLRequest(),
            let body = urlRequest.httpBody,
@@ -46,7 +44,6 @@ final class MultipartRequestTests: XCTestCase {
     }
 
     func testRequestGenerationWithParams() {
-        // Set up test
         let params: Params = ["test_name": "test_value"]
         let multipartData = MultipartData(name: "test_name",
                                           fileData: "test data".data(using: .utf8)!,
@@ -54,8 +51,7 @@ final class MultipartRequestTests: XCTestCase {
                                           mimeType: "text/plain")
 
         // Construct request
-        let request = baseClient.request(.post, route, params: params)
-        request.multipartData = [multipartData]
+        let request = baseClient.request(.post, route, body: .multipart(params: params, parts: [multipartData]))
 
         if let urlRequest = request.buildURLRequest(),
            let body = urlRequest.httpBody,
@@ -76,9 +72,8 @@ final class MultipartRequestTests: XCTestCase {
     }
 
     func testRequestGenerationWithMultipleFiles() {
-        // Set up test
-        let params: Params = [:]
-        let multipartData = [
+        
+        let parts = [
             MultipartData(name: "test_name",
                           fileData: "test data".data(using: .utf8)!,
                           fileName: "file.txt",
@@ -90,8 +85,7 @@ final class MultipartRequestTests: XCTestCase {
         ]
 
         // Construct request
-        let request = baseClient.request(.post, route, params: params)
-        request.multipartData = multipartData
+        let request = baseClient.request(.post, route, body: .multipart(params: nil, parts: parts))
 
         if let urlRequest = request.buildURLRequest(),
            let body = urlRequest.httpBody,

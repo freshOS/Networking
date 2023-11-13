@@ -10,7 +10,6 @@ import Combine
 
 public extension NetworkingClient {
 
-
     func getRequest(_ route: String, urlParams: Params? = nil) -> NetworkingRequest {
         request(.get, route, urlParams: urlParams)
     }
@@ -27,8 +26,8 @@ public extension NetworkingClient {
         request(.patch, route, body: body)
     }
 
-    func deleteRequest(_ route: String, body: HTTPBody? = nil) -> NetworkingRequest {
-        request(.delete, route, params: params)
+    func deleteRequest(_ route: String) -> NetworkingRequest {
+        request(.delete, route)
     }
 
     internal func request(_ httpMethod: HTTPMethod,
@@ -39,39 +38,8 @@ public extension NetworkingClient {
         let req = NetworkingRequest()
         req.httpMethod             = httpMethod
         req.route                = route
-        req.body = body
-        
-        let updateRequest = { [weak req, weak self] in
-            guard let self = self else { return }
-            req?.baseURL              = self.baseURL
-            req?.logLevel             = self.logLevel
-            req?.headers              = self.headers
-            req?.parameterEncoding    = self.parameterEncoding
-            req?.sessionConfiguration = self.sessionConfiguration
-            req?.timeout              = self.timeout
-        }
-        updateRequest()
-        req.requestRetrier = { [weak self] in
-            self?.requestRetrier?($0, $1)?
-                .handleEvents(receiveOutput: { _ in
-                    updateRequest()
-                })
-                .eraseToAnyPublisher()
-        }
-        return req
-    }
-    
-    internal func request(_ httpMethod: HTTPMethod,
-                          _ route: String,
-                          params: Params = Params(),
-                          encodableBody: Encodable? = nil
-    ) -> NetworkingRequest {
-        let req = NetworkingRequest()
-         body: HTTPBody? = nil) -> NetworkingRequest<E> {
-        let req = NetworkingRequest()
-        req.httpMethod             = httpMethod
-        req.route                = route
-        req.body = body
+        req.urlParams = urlParams
+        req.httpBody = body
         
         let updateRequest = { [weak req, weak self] in
             guard let self = self else { return }
