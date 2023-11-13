@@ -18,8 +18,8 @@ public extension NetworkingClient {
         post(route, params: params).toJSON()
     }
     
-    func post<E: Encodable>(_ route: String, encodable: E) -> AnyPublisher<Any, Error> {
-        post(route, encodable: encodable).toJSON()
+    func post<E: Encodable>(_ route: String, body: E) -> AnyPublisher<Any, Error> {
+        post(route, body: body).toJSON()
     }
 
     func put(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
@@ -30,8 +30,8 @@ public extension NetworkingClient {
         patch(route, params: params).toJSON()
     }
     
-    func patch<E: Encodable>(_ route: String, encodable: E) -> AnyPublisher<Any, Error> {
-        patch(route, encodable: encodable).toJSON()
+    func patch<E: Encodable>(_ route: String, body: E) -> AnyPublisher<Any, Error> {
+        patch(route, body: body).toJSON()
     }
 
     func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
@@ -53,8 +53,8 @@ public extension NetworkingClient {
         return try JSONSerialization.jsonObject(with: data, options: [])
     }
     
-    func post<E: Encodable>(_ route: String, encodable: E) async throws -> Any {
-        let req = request(.post, route, encodableParams: encodable)
+    func post<E: Encodable>(_ route: String, body: E) async throws -> Any {
+        let req = request(.post, route, encodableBody: body)
         let data = try await req.execute()
         return try JSONSerialization.jsonObject(with: data, options: [])
     }
@@ -71,8 +71,8 @@ public extension NetworkingClient {
         return try JSONSerialization.jsonObject(with: data, options: [])
     }
     
-    func patch<E: Encodable>(_ route: String, encodable: E) async throws -> Any {
-        let req = request(.patch, route, encodableParams: encodable)
+    func patch<E: Encodable>(_ route: String, body: E) async throws -> Any {
+        let req = request(.patch, route, encodableBody: body)
         let data = try await req.execute()
         return try JSONSerialization.jsonObject(with: data, options: [])
     }

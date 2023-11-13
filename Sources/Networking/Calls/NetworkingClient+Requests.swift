@@ -62,13 +62,13 @@ public extension NetworkingClient {
     internal func request<E: Encodable>(_ httpMethod: HTTPMethod,
                           _ route: String,
                           params: Params = Params(),
-                          encodableParams: E? = nil
+                          encodableBody: E? = nil
     ) -> NetworkingRequest<E> {
         let req = NetworkingRequest<E>()
         req.httpMethod             = httpMethod
         req.route                = route
         req.params               = Params()
-        req.encodableParams      = encodableParams
+        req.encodableBody      = encodableBody
         
         let updateRequest = { [weak req, weak self] in
             guard let self = self else { return }

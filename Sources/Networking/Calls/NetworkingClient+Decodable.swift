@@ -40,10 +40,10 @@ public extension NetworkingClient {
     }
     
     func post<E: Encodable, T: Decodable>(_ route: String,
-                                          encodable: E,
+                                          body: E,
                                           keypath: String? = nil
     ) -> AnyPublisher<T, Error> {
-        return post(route, encodable: encodable)
+        return post(route, body: body)
             .tryMap { json -> T in try self.toModel(json, keypath: keypath) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
@@ -91,10 +91,10 @@ public extension NetworkingClient {
     
 
     func patch<E: Encodable, T: Decodable>(_ route: String,
-                                          encodable: E,
+                                          body: E,
                                           keypath: String? = nil
     ) -> AnyPublisher<T, Error> {
-        return patch(route, encodable: encodable)
+        return patch(route, body: body)
             .tryMap { json -> T in try self.toModel(json, keypath: keypath) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
@@ -159,10 +159,10 @@ public extension NetworkingClient {
     }
     
     func post<E: Encodable, T: Decodable>(_ route: String,
-                                          encodable: E,
+                                          body: E,
                                           keypath: String? = nil
     ) async throws -> T {
-        let json: Any = try await post(route, encodable: encodable)
+        let json: Any = try await post(route, body: body)
         return try self.toModel(json, keypath: keypath)
     }
     
@@ -205,10 +205,10 @@ public extension NetworkingClient {
     }
     
     func patch<E: Encodable, T: Decodable>(_ route: String,
-                                          encodable: E,
+                                          body: E,
                                           keypath: String? = nil
     ) async throws -> T {
-        let json: Any = try await patch(route, encodable: encodable)
+        let json: Any = try await patch(route, body: body)
         return try self.toModel(json, keypath: keypath)
     }
     
