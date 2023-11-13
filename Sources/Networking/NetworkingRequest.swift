@@ -8,12 +8,6 @@
 import Foundation
 import Combine
 
-public enum HTTPBody {
-    case urlEncoded(params: Params)
-    case json(encodable: Encodable)
-    case jsonParams(params: Params)
-    case multipart(params: Params?, parts:[MultipartData])
-}
 
 public typealias NetworkRequestRetrier = (_ request: URLRequest, _ error: Error) -> AnyPublisher<Void, Error>?
 

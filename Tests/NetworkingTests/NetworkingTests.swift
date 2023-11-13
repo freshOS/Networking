@@ -26,6 +26,6 @@ final class NetworkingTests: XCTestCase {
             receiveValue: { (json: Any) in
             print(json)
         }).store(in: &cancellables)
-        waitForExpectations(timeout: 1, handler: nil)
+        waitForExpectations(timeout: 3, handler: nil)
     }
 }

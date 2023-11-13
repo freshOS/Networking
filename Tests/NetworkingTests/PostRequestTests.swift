@@ -320,7 +320,7 @@ class PostRequestTests: XCTestCase {
             """
         
         let creds = Credentials(username: "john", password: "doe")
-        let data: Data = try await network.post("/users", body: .json(encodable: creds))
+        let data: Data = try await network.post("/users", body: .json(creds))
         XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "POST")
         XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
         XCTAssertEqual(data, MockingURLProtocol.mockedResponse.data(using: String.Encoding.utf8))
@@ -339,7 +339,7 @@ class PostRequestTests: XCTestCase {
         let expectationFinished = expectation(description: "Finished called")
         
         let creds = Credentials(username: "Alan", password: "Turing")
-        network.post("/users", body: .json(encodable: creds)).sink { completion in
+        network.post("/users", body: .json(creds)).sink { completion in
             switch completion {
             case .failure:
                 XCTFail()
