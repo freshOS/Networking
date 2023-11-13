@@ -8,6 +8,12 @@
 import Foundation
 import Combine
 
+public enum HTTPBody {
+    case urlEncoded(params: Params)
+    case json(encodable: Encodable)
+    case multipart(params:Params, parts:[MultipartData])
+}
+
 public typealias NetworkRequestRetrier = (_ request: URLRequest, _ error: Error) -> AnyPublisher<Void, Error>?
 
 public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
@@ -16,10 +22,9 @@ public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
     var baseURL = ""
     var route = ""
     var httpMethod = HTTPMethod.get
-    public var params = Params()
-    public var encodableBody: Encodable?
+    var body: HTTPBody? = nil
+    public var urlParams: Params? = nil
     var headers = [String: String]()
-    var multipartData: [MultipartData]?
     var logLevel: NetworkingLogLevel {
         get { return logger.logLevel }
         set { logger.logLevel = newValue }
