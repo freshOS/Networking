@@ -37,3 +37,30 @@ public extension NetworkingClient {
         try await request(.put, route, body: body).execute()
     }
 }
+
+public extension NetworkingService {
+    
+    func put(_ route: String, body: HTTPBody? = nil) async throws {
+        return try await network.put(route, body: body)
+    }
+    
+    func put<T: Decodable>(_ route: String,
+                           body: HTTPBody? = nil,
+                           keypath: String? = nil) async throws -> T {
+        try await network.put(route, body: body, keypath: keypath)
+    }
+    
+    func put<T: Decodable>(_ route: String,
+                           body: HTTPBody? = nil,
+                           keypath: String? = nil) async throws -> T where T: Collection {
+        try await network.put(route, body: body, keypath: keypath)
+    }
+    
+    func put(_ route: String, body: HTTPBody? = nil) async throws -> Any {
+        try await network.put(route, body: body)
+    }
+    
+    func put(_ route: String, body: HTTPBody? = nil) async throws -> Data {
+        try await network.put(route, body: body)
+    }
+}

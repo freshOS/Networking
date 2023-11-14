@@ -37,3 +37,31 @@ public extension NetworkingClient {
         try await request(.get, route, urlParams: urlParams).execute()
     }
 }
+
+public extension NetworkingService {
+    
+    func get(_ route: String, urlParams: Params? = nil) async throws {
+        return try await network.get(route, urlParams: urlParams)
+    }
+    
+    func get<T: Decodable>(_ route: String,
+                           urlParams: Params? = nil,
+                           keypath: String? = nil) async throws -> T {
+        try await network.get(route, urlParams: urlParams, keypath: keypath)
+    }
+    
+    func get<T: Decodable>(_ route: String,
+                           urlParams: Params? = nil,
+                           keypath: String? = nil) async throws -> T where T: Collection {
+        try await network.get(route, urlParams: urlParams, keypath: keypath)
+    }
+    
+    
+    func get(_ route: String, urlParams: Params? = nil) async throws -> Any {
+        try await network.get(route, urlParams: urlParams)
+    }
+    
+    func get(_ route: String, urlParams: Params? = nil) async throws -> Data {
+        try await network.get(route, urlParams: urlParams)
+    }
+}

@@ -14,18 +14,18 @@ public extension NetworkingClient {
     }
     
     func delete<T: Decodable>(_ route: String,
-                           keypath: String? = nil) async throws -> T {
+                              keypath: String? = nil) async throws -> T {
         let json: Any = try await delete(route)
         return try self.toModel(json, keypath: keypath)
     }
     
     func delete<T: Decodable>(_ route: String,
-                           keypath: String? = nil) async throws -> T where T: Collection {
+                              keypath: String? = nil) async throws -> T where T: Collection {
         let keypath = keypath ?? defaultCollectionParsingKeyPath
         let json: Any = try await delete(route)
         return try self.toModel(json, keypath: keypath)
     }
-
+    
     func delete(_ route: String) async throws -> Any {
         let data: Data = try await delete(route)
         return try JSONSerialization.jsonObject(with: data, options: [])
@@ -33,5 +33,30 @@ public extension NetworkingClient {
     
     func delete(_ route: String) async throws -> Data {
         try await request(.delete, route).execute()
+    }
+}
+
+public extension NetworkingService {
+    
+    func delete(_ route: String) async throws {
+        return try await network.delete(route)
+    }
+    
+    func delete<T: Decodable>(_ route: String,
+                              keypath: String? = nil) async throws -> T {
+        try await network.delete(route, keypath: keypath)
+    }
+    
+    func delete<T: Decodable>(_ route: String,
+                              keypath: String? = nil) async throws -> T where T: Collection {
+        try await network.delete(route, keypath: keypath)
+    }
+    
+    func delete(_ route: String) async throws -> Any {
+        try await network.delete(route)
+    }
+    
+    func delete(_ route: String) async throws -> Data {
+        try await network.delete(route)
     }
 }

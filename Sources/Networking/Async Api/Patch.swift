@@ -40,3 +40,30 @@ public extension NetworkingClient {
     }
     
 }
+
+public extension NetworkingService {
+    
+    func patch(_ route: String, body: HTTPBody? = nil) async throws {
+        return try await network.patch(route, body: body)
+    }
+    
+    func patch<T: Decodable>(_ route: String,
+                             body: HTTPBody? = nil,
+                             keypath: String? = nil) async throws -> T {
+        try await network.patch(route, body: body, keypath: keypath)
+    }
+    
+    func patch<T: Decodable>(_ route: String,
+                             body: HTTPBody? = nil,
+                             keypath: String? = nil) async throws -> T where T: Collection {
+        try await network.patch(route, body: body, keypath: keypath)
+    }
+    
+    func patch(_ route: String, body: HTTPBody? = nil) async throws -> Any {
+        try await network.patch(route, body: body)
+    }
+    
+    func patch(_ route: String, body: HTTPBody? = nil) async throws -> Data {
+        try await network.patch(route, body: body)
+    }
+}
