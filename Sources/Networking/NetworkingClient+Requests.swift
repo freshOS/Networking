@@ -34,7 +34,7 @@ public extension NetworkingClient {
                           _ route: String,
                           urlParams: Params? = nil,
                           body: HTTPBody? = nil
-    ) -> NetworkingRequest<String> {
+    ) -> NetworkingRequest {
         let req = NetworkingRequest()
         req.httpMethod             = httpMethod
         req.route                = route
