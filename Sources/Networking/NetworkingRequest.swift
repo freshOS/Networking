@@ -120,28 +120,17 @@ public class NetworkingRequest<E: Encodable>: NSObject, URLSessionTaskDelegate {
         logger.log(request: urlRequest)
         let config = sessionConfiguration ?? URLSessionConfiguration.default
         let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
-        return try await withCheckedThrowingContinuation { continuation in
-            urlSession.dataTask(with: urlRequest) { data, response, error in
-                guard let data = data, let response = response else {
-                    if let error = error {
-                        continuation.resume(throwing: error)
-                    }
-                    return
-                }
-                self.logger.log(response: response, data: data)
-                if let httpURLResponse = response as? HTTPURLResponse {
-                    if !(200...299 ~= httpURLResponse.statusCode) {
-                        var error = NetworkingError(errorCode: httpURLResponse.statusCode)
-                        if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
-                            error.jsonPayload = json
-                        }
-                        continuation.resume(throwing: error)
-                        return
-                    }
-                }
-                continuation.resume(returning: data)
-            }.resume()
+        let (data, response) = try await urlSession.data(for: urlRequest)
+        self.logger.log(response: response, data: data)
+        if let httpURLResponse = response as? HTTPURLResponse, !(200...299 ~= httpURLResponse.statusCode) {
+            var error = NetworkingError(errorCode: httpURLResponse.statusCode)
+            if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
+                error.jsonPayload = json
+            }
+            throw error
         }
+        return data
+        
     }
     
     private func getURLWithParams() -> String {
