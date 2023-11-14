@@ -11,14 +11,30 @@
 
 Networking brings together `URLSession`, `async`-`await` (or `Combine` ), `Decodable` and `Generics` to simplify connecting to a JSON api.
 
+## Demo time 🍿
+
+Networking turns this:
 ```swift
-struct Api: NetworkingService {
+func nativePost() async throws -> User {
+    let config = URLSessionConfiguration.default
+    let urlSession = URLSession(configuration: config, delegate: nil, delegateQueue: nil)
+    var urlRequest = URLRequest(url: URL(string: "https://jsonplaceholder.typicode.com/users")!)
+    urlRequest.httpMethod = "POST"
+    urlRequest.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+    urlRequest.httpBody = "firstname=Alan&lastname=Turing".data(using: .utf8)
+    let (data, _) = try await urlSession.data(for: urlRequest)
+    let decoder = JSONDecoder()
+    let user = try decoder.decode(User.self, from: data)
+    return user
+}
+```
 
-    let network = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
-
-    func fetchPost() async throws -> Post {
-       try await get("/posts/1")
-    }
+into: 
+```swift
+let network = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
+    
+func post() async throws -> User {
+    try await network.post("/users", params: ["username" : "John"])
 }
 ```
 
