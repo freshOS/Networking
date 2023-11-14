@@ -18,7 +18,7 @@ public extension NetworkingClient {
         request(.post, route, params: params).publisher()
     }
     
-    func post<E: Encodable>(_ route: String, body: E) -> AnyPublisher<Data, Error> {
+    func post(_ route: String, body: Encodable) -> AnyPublisher<Data, Error> {
         request(.post, route, encodableBody: body).publisher()
     }
 
@@ -30,7 +30,7 @@ public extension NetworkingClient {
         request(.patch, route, params: params).publisher()
     }
     
-    func patch<E: Encodable>(_ route: String, body: E) -> AnyPublisher<Data, Error> {
+    func patch(_ route: String, body: Encodable) -> AnyPublisher<Data, Error> {
         request(.patch, route, encodableBody: body).publisher()
     }
 
@@ -49,7 +49,7 @@ public extension NetworkingClient {
         try await request(.post, route, params: params).execute()
     }
     
-    func post<E: Encodable>(_ route: String, body: E) async throws -> Data {
+    func post(_ route: String, body: Encodable) async throws -> Data {
         try await request(.post, route, encodableBody: body).execute()
     }
     

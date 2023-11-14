@@ -39,8 +39,8 @@ public extension NetworkingClient {
             .eraseToAnyPublisher()
     }
     
-    func post<E: Encodable, T: Decodable>(_ route: String,
-                                          body: E,
+    func post<T: Decodable>(_ route: String,
+                                          body: Encodable,
                                           keypath: String? = nil
     ) -> AnyPublisher<T, Error> {
         return post(route, body: body)
@@ -90,8 +90,8 @@ public extension NetworkingClient {
     }
     
 
-    func patch<E: Encodable, T: Decodable>(_ route: String,
-                                          body: E,
+    func patch<T: Decodable>(_ route: String,
+                                          body: Encodable,
                                           keypath: String? = nil
     ) -> AnyPublisher<T, Error> {
         return patch(route, body: body)
@@ -158,8 +158,8 @@ public extension NetworkingClient {
         return try self.toModel(json, keypath: keypath)
     }
     
-    func post<E: Encodable, T: Decodable>(_ route: String,
-                                          body: E,
+    func post<T: Decodable>(_ route: String,
+                                          body: Encodable,
                                           keypath: String? = nil
     ) async throws -> T {
         let json: Any = try await post(route, body: body)
@@ -204,8 +204,8 @@ public extension NetworkingClient {
         return try self.toModel(json, keypath: keypath)
     }
     
-    func patch<E: Encodable, T: Decodable>(_ route: String,
-                                          body: E,
+    func patch<T: Decodable>(_ route: String,
+                                          body: Encodable,
                                           keypath: String? = nil
     ) async throws -> T {
         let json: Any = try await patch(route, body: body)

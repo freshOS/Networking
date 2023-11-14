@@ -18,7 +18,7 @@ public extension NetworkingClient {
         post(route, params: params).toJSON()
     }
     
-    func post<E: Encodable>(_ route: String, body: E) -> AnyPublisher<Any, Error> {
+    func post(_ route: String, body: Encodable) -> AnyPublisher<Any, Error> {
         post(route, body: body).toJSON()
     }
 
@@ -30,7 +30,7 @@ public extension NetworkingClient {
         patch(route, params: params).toJSON()
     }
     
-    func patch<E: Encodable>(_ route: String, body: E) -> AnyPublisher<Any, Error> {
+    func patch(_ route: String, body: Encodable) -> AnyPublisher<Any, Error> {
         patch(route, body: body).toJSON()
     }
 
@@ -53,7 +53,7 @@ public extension NetworkingClient {
         return try JSONSerialization.jsonObject(with: data, options: [])
     }
     
-    func post<E: Encodable>(_ route: String, body: E) async throws -> Any {
+    func post(_ route: String, body: Encodable) async throws -> Any {
         let req = request(.post, route, encodableBody: body)
         let data = try await req.execute()
         return try JSONSerialization.jsonObject(with: data, options: [])
@@ -71,7 +71,7 @@ public extension NetworkingClient {
         return try JSONSerialization.jsonObject(with: data, options: [])
     }
     
-    func patch<E: Encodable>(_ route: String, body: E) async throws -> Any {
+    func patch(_ route: String, body: Encodable) async throws -> Any {
         let req = request(.patch, route, encodableBody: body)
         let data = try await req.execute()
         return try JSONSerialization.jsonObject(with: data, options: [])

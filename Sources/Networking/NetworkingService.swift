@@ -26,7 +26,7 @@ public extension NetworkingService {
         network.post(route, params: params)
     }
     
-    func post<E: Encodable>(_ route: String, body: E) -> AnyPublisher<Data, Error> {
+    func post(_ route: String, body: Encodable) -> AnyPublisher<Data, Error> {
         network.post(route, body: body)
     }
     
@@ -38,7 +38,7 @@ public extension NetworkingService {
         network.patch(route, params: params)
     }
     
-    func patch<E: Encodable>(_ route: String, body: E) -> AnyPublisher<Data, Error> {
+    func patch(_ route: String, body: Encodable) -> AnyPublisher<Data, Error> {
         network.patch(route, body: body)
     }
     
@@ -56,7 +56,7 @@ public extension NetworkingService {
         network.post(route, params: params)
     }
     
-    func post<E: Encodable>(_ route: String, body: E) -> AnyPublisher<Void, Error> {
+    func post(_ route: String, body: Encodable) -> AnyPublisher<Void, Error> {
         network.post(route, body: body)
     }
     
@@ -82,7 +82,7 @@ public extension NetworkingService {
         network.post(route, params: params)
     }
     
-    func post<E: Encodable>(_ route: String, body: E) -> AnyPublisher<Any, Error> {
+    func post(_ route: String, body: Encodable) -> AnyPublisher<Any, Error> {
         network.post(route, body: body)
     }
     
@@ -242,7 +242,7 @@ public extension NetworkingService {
         try await network.post(route, params: params)
     }
     
-    func post<E: Encodable>(_ route: String, body: E) async throws -> Data {
+    func post(_ route: String, body: Encodable) async throws -> Data {
         try await network.post(route, body: body)
     }
 
@@ -268,7 +268,7 @@ public extension NetworkingService {
         return try await network.post(route, params: params)
     }
     
-    func post<E: Encodable>(_ route: String, body: E) async throws {
+    func post(_ route: String, body: Encodable) async throws {
         return try await network.post(route, body: body)
     }
 
@@ -294,7 +294,7 @@ public extension NetworkingService {
         try await network.post(route, params: params)
     }
     
-    func post<E: Encodable>(_ route: String, body: E) async throws -> Any {
+    func post(_ route: String, body: Encodable) async throws -> Any {
         try await network.post(route, body: body)
     }
 
@@ -324,7 +324,7 @@ public extension NetworkingService {
         try await network.post(route, params: params, keypath: keypath)
     }
     
-    func post<E: Encodable, T: Decodable>(_ route: String, body: E) async throws -> T {
+    func post<T: Decodable>(_ route: String, body: Encodable) async throws -> T {
         try await network.post(route, body: body)
     }
     
@@ -340,7 +340,7 @@ public extension NetworkingService {
         try await network.patch(route, params: params, keypath: keypath)
     }
     
-    func patch<E: Encodable, T: Decodable>(_ route: String, body: E) async throws -> T {
+    func patch<T: Decodable>(_ route: String, body: Encodable) async throws -> T {
         try await network.patch(route, body: body)
     }
 

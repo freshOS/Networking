@@ -59,10 +59,10 @@ public extension NetworkingClient {
         return req
     }
     
-    internal func request<E: Encodable>(_ httpMethod: HTTPMethod,
+    internal func request(_ httpMethod: HTTPMethod,
                           _ route: String,
                           params: Params = Params(),
-                          encodableBody: E? = nil
+                          encodableBody: Encodable? = nil
     ) -> NetworkingRequest {
         let req = NetworkingRequest()
         req.httpMethod             = httpMethod
