@@ -17,6 +17,10 @@ public extension NetworkingClient {
     func post(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
         post(route, params: params).toJSON()
     }
+    
+    func post<E: Encodable>(_ route: String, body: E) -> AnyPublisher<Any, Error> {
+        post(route, body: body).toJSON()
+    }
 
     func put(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
         put(route, params: params).toJSON()
@@ -24,6 +28,10 @@ public extension NetworkingClient {
 
     func patch(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
         patch(route, params: params).toJSON()
+    }
+    
+    func patch<E: Encodable>(_ route: String, body: E) -> AnyPublisher<Any, Error> {
+        patch(route, body: body).toJSON()
     }
 
     func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
@@ -45,6 +53,12 @@ public extension NetworkingClient {
         return try JSONSerialization.jsonObject(with: data, options: [])
     }
     
+    func post<E: Encodable>(_ route: String, body: E) async throws -> Any {
+        let req = request(.post, route, encodableBody: body)
+        let data = try await req.execute()
+        return try JSONSerialization.jsonObject(with: data, options: [])
+    }
+    
     func put(_ route: String, params: Params = Params()) async throws -> Any {
         let req = request(.put, route, params: params)
         let data = try await req.execute()
@@ -53,6 +67,12 @@ public extension NetworkingClient {
     
     func patch(_ route: String, params: Params = Params()) async throws -> Any {
         let req = request(.patch, route, params: params)
+        let data = try await req.execute()
+        return try JSONSerialization.jsonObject(with: data, options: [])
+    }
+    
+    func patch<E: Encodable>(_ route: String, body: E) async throws -> Any {
+        let req = request(.patch, route, encodableBody: body)
         let data = try await req.execute()
         return try JSONSerialization.jsonObject(with: data, options: [])
     }

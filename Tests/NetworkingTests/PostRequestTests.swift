@@ -312,5 +312,58 @@ class PostRequestTests: XCTestCase {
         .store(in: &cancellables)
         waitForExpectations(timeout: 0.1)
     }
+    
+    func testAsyncPostEncodable() async throws {
+        MockingURLProtocol.mockedResponse =
+            """
+            { "response": "OK" }
+            """
+        
+        let creds = Credentials(username: "john", password: "doe")
+        let data: Data = try await network.post("/users", body: creds)
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "POST")
+        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+        XCTAssertEqual(data, MockingURLProtocol.mockedResponse.data(using: String.Encoding.utf8))
+        
+        let body = MockingURLProtocol.currentRequest?.httpBodyStreamAsDictionary()
+        XCTAssertEqual(body?["username"] as? String, "john")
+        XCTAssertEqual(body?["password"] as? String, "doe")
+    }
+    
+    func testPOSTDataEncodableWorks() {
+        MockingURLProtocol.mockedResponse =
+        """
+        { "response": "OK" }
+        """
+        let expectationWorks = expectation(description: "ReceiveValue called")
+        let expectationFinished = expectation(description: "Finished called")
+        
+        let creds = Credentials(username: "Alan", password: "Turing")
+        network.post("/users", body: creds).sink { completion in
+            switch completion {
+            case .failure:
+                XCTFail()
+            case .finished:
+                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "POST")
+                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+                
+                let body = MockingURLProtocol.currentRequest?.httpBodyStreamAsDictionary()
+                XCTAssertEqual(body?["username"] as? String, "Alan")
+                XCTAssertEqual(body?["password"] as? String, "Turing")
+                
+                expectationFinished.fulfill()
+            }
+        } receiveValue: { (data: Data) in
+            XCTAssertEqual(data, MockingURLProtocol.mockedResponse.data(using: String.Encoding.utf8))
+            expectationWorks.fulfill()
+        }
+        .store(in: &cancellables)
+        waitForExpectations(timeout: 0.1)
+    }
 
+}
+
+struct Credentials: Encodable {
+    let username: String
+    let password: String
 }

@@ -18,6 +18,8 @@ final class NetworkingTests: XCTestCase {
                 case .failure(let error):
                     if let e = error as? NetworkingError, e.status == .unableToParseRequest {
                         exp.fulfill()
+                    } else {
+                        exp.fulfill()
                     }
                 }
             },

@@ -21,6 +21,12 @@ public extension NetworkingClient {
             .map { (data: Data) -> Void in () }
         .eraseToAnyPublisher()
     }
+    
+    func post<E: Encodable>(_ route: String, body: E) -> AnyPublisher<Void, Error> {
+        post(route, body: body)
+            .map { (data: Data) -> Void in () }
+        .eraseToAnyPublisher()
+    }
 
     func put(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
         put(route, params: params)
@@ -32,6 +38,12 @@ public extension NetworkingClient {
         patch(route, params: params)
             .map { (data: Data) -> Void in () }
             .eraseToAnyPublisher()
+    }
+    
+    func patch<E: Encodable>(_ route: String, body: E) -> AnyPublisher<Void, Error> {
+        patch(route, body: body)
+            .map { (data: Data) -> Void in () }
+        .eraseToAnyPublisher()
     }
 
     func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
@@ -50,6 +62,11 @@ public extension NetworkingClient {
     
     func post(_ route: String, params: Params = Params()) async throws {
         let req = request(.post, route, params: params)
+        _ = try await req.execute()
+    }
+    
+    func post<E: Encodable>(_ route: String, body: E) async throws {
+        let req = request(.post, route, encodableBody: body)
         _ = try await req.execute()
     }
     
