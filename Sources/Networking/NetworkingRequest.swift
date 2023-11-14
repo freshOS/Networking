@@ -10,14 +10,14 @@ import Combine
 
 public typealias NetworkRequestRetrier = (_ request: URLRequest, _ error: Error) -> AnyPublisher<Void, Error>?
 
-public class NetworkingRequest<E: Encodable>: NSObject, URLSessionTaskDelegate {
+public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
     
     var parameterEncoding = ParameterEncoding.urlEncoded
     var baseURL = ""
     var route = ""
     var httpMethod = HTTPMethod.get
     public var params = Params()
-    public var encodableBody: E?
+    public var encodableBody: Encodable?
     var headers = [String: String]()
     var multipartData: [MultipartData]?
     var logLevel: NetworkingLogLevel {

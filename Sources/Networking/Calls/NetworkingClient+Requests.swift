@@ -10,31 +10,31 @@ import Combine
 
 public extension NetworkingClient {
 
-    func getRequest(_ route: String, params: Params = Params()) -> NetworkingRequest<String> {
+    func getRequest(_ route: String, params: Params = Params()) -> NetworkingRequest {
         request(.get, route, params: params)
     }
 
-    func postRequest(_ route: String, params: Params = Params()) -> NetworkingRequest<String> {
+    func postRequest(_ route: String, params: Params = Params()) -> NetworkingRequest {
         request(.post, route, params: params)
     }
 
-    func putRequest(_ route: String, params: Params = Params()) -> NetworkingRequest<String> {
+    func putRequest(_ route: String, params: Params = Params()) -> NetworkingRequest {
         request(.put, route, params: params)
     }
     
-    func patchRequest(_ route: String, params: Params = Params()) -> NetworkingRequest<String> {
+    func patchRequest(_ route: String, params: Params = Params()) -> NetworkingRequest {
         request(.patch, route, params: params)
     }
 
-    func deleteRequest(_ route: String, params: Params = Params()) -> NetworkingRequest<String> {
+    func deleteRequest(_ route: String, params: Params = Params()) -> NetworkingRequest {
         request(.delete, route, params: params)
     }
 
     internal func request(_ httpMethod: HTTPMethod,
                           _ route: String,
                           params: Params = Params()
-    ) -> NetworkingRequest<String> {
-        let req = NetworkingRequest<String>()
+    ) -> NetworkingRequest {
+        let req = NetworkingRequest()
         req.httpMethod             = httpMethod
         req.route                = route
         req.params               = params
@@ -63,8 +63,8 @@ public extension NetworkingClient {
                           _ route: String,
                           params: Params = Params(),
                           encodableBody: E? = nil
-    ) -> NetworkingRequest<E> {
-        let req = NetworkingRequest<E>()
+    ) -> NetworkingRequest {
+        let req = NetworkingRequest()
         req.httpMethod             = httpMethod
         req.route                = route
         req.params               = Params()
