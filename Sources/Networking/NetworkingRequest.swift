@@ -17,7 +17,7 @@ public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
     var route = ""
     var httpMethod = HTTPMethod.get
     var httpBody: HTTPBody? = nil
-    public var queryParams: Params? = nil
+    public var params: Params = Params()
     var headers = [String: String]()
     var logLevel: NetworkingLogLevel {
         get { return logger.logLevel }
@@ -134,14 +134,13 @@ public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
     
     private func getURLWithParams() -> String {
         let urlString = baseURL + route
-        guard let queryParams else { return urlString }
-        if queryParams.isEmpty { return urlString }
+        if params.isEmpty { return urlString }
         guard let url = URL(string: urlString) else {
             return urlString
         }
         if var urlComponents = URLComponents(url: url ,resolvingAgainstBaseURL: false) {
             var queryItems = urlComponents.queryItems ?? [URLQueryItem]()
-            queryParams.forEach { param in
+            params.forEach { param in
                 // arrayParam[] syntax
                 if let array = param.value as? [CustomStringConvertible] {
                     array.forEach {

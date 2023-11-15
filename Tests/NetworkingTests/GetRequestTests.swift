@@ -63,7 +63,7 @@ final class GetRequestTests: XCTestCase {
         { "response": "OK" }
         """
         
-        let _:Void = try await network.get("/users", urlParams: ["search" : "lion"])
+        let _:Void = try await network.get("/users", params: ["search" : "lion"])
         XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "GET")
         XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users?search=lion")
     }

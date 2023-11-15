@@ -10,8 +10,8 @@ import Combine
 
 public extension NetworkingClient {
 
-    func getRequest(_ route: String, queryParams: Params? = nil) -> NetworkingRequest {
-        request(.get, route, queryParams: queryParams)
+    func getRequest(_ route: String, params: Params? = nil) -> NetworkingRequest {
+        request(.get, route, params: params)
     }
 
     func postRequest(_ route: String, body: HTTPBody? = nil) -> NetworkingRequest {
@@ -32,13 +32,13 @@ public extension NetworkingClient {
 
     internal func request(_ httpMethod: HTTPMethod,
                           _ route: String,
-                          queryParams: Params? = nil,
+                          params: Params? = nil,
                           body: HTTPBody? = nil
     ) -> NetworkingRequest {
         let req = NetworkingRequest()
         req.httpMethod             = httpMethod
         req.route                = route
-        req.queryParams = queryParams
+        req.params = params ?? Params()
         req.httpBody = body
         
         let updateRequest = { [weak req, weak self] in

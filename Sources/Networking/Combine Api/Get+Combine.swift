@@ -41,7 +41,7 @@ public extension NetworkingClient {
     }
     
     func get(_ route: String, params: Params? = nil) -> AnyPublisher<Data, Error> {
-        request(.get, route, queryParams: params).publisher()
+        request(.get, route, params: params).publisher()
     }
 }
 

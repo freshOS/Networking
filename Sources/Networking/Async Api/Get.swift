@@ -34,7 +34,7 @@ public extension NetworkingClient {
     }
     
     func get(_ route: String, params: Params? = nil) async throws -> Data {
-        try await request(.get, route, queryParams: params).execute()
+        try await request(.get, route, params: params).execute()
     }
 }
 
