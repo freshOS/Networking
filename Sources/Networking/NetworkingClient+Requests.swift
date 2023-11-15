@@ -38,7 +38,7 @@ public extension NetworkingClient {
         let req = NetworkingRequest()
         req.httpMethod             = httpMethod
         req.route                = route
-        req.urlParams = urlParams
+        req.queryParams = urlParams
         req.httpBody = body
         
         let updateRequest = { [weak req, weak self] in
@@ -46,7 +46,6 @@ public extension NetworkingClient {
             req?.baseURL              = self.baseURL
             req?.logLevel             = self.logLevel
             req?.headers              = self.headers
-            req?.parameterEncoding    = self.parameterEncoding
             req?.sessionConfiguration = self.sessionConfiguration
             req?.timeout              = self.timeout
         }

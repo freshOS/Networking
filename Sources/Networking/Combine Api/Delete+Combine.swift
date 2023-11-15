@@ -17,7 +17,7 @@ public extension NetworkingClient {
     }
     
     func delete<T: Decodable>(_ route: String,
-                                            keypath: String? = nil) -> AnyPublisher<T, Error> {
+                              keypath: String? = nil) -> AnyPublisher<T, Error> {
         return delete(route)
             .tryMap { json -> T in try self.toModel(json, keypath: keypath) }
             .receive(on: DispatchQueue.main)
@@ -26,7 +26,7 @@ public extension NetworkingClient {
     
     // Array version
     func delete<T: Decodable>(_ route: String,
-                           keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
+                              keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
         let keypath = keypath ?? defaultCollectionParsingKeyPath
         return delete(route)
             .tryMap { json -> T in try self.toModel(json, keypath: keypath) }
@@ -42,3 +42,40 @@ public extension NetworkingClient {
         request(.delete, route).publisher()
     }
 }
+
+public extension NetworkingService {
+    
+    func delete(_ route: String) -> AnyPublisher<Void, Error> {
+        network.delete(route)
+    }
+    
+    func delete<T: Decodable>(_ route: String,
+                              keypath: String? = nil) -> AnyPublisher<T, Error> {
+        network.delete(route, keypath: keypath)
+    }
+    
+    func delete<T: Decodable>(_ route: String,
+                              params: Params = Params(),
+                              keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
+        network.delete(route, keypath: keypath)
+    }
+    
+    func delete<T: NetworkingJSONDecodable>(_ route: String,
+                                            keypath: String? = nil) -> AnyPublisher<T, Error> {
+        network.delete(route, keypath: keypath)
+    }
+    
+    func delete<T: NetworkingJSONDecodable>(_ route: String,
+                                            keypath: String? = nil) -> AnyPublisher<[T], Error> {
+        network.delete(route, keypath: keypath)
+    }
+    
+    func delete(_ route: String) -> AnyPublisher<Any, Error> {
+        network.delete(route)
+    }
+    
+    func delete(_ route: String) -> AnyPublisher<Data, Error> {
+        network.delete(route)
+    }
+}
+

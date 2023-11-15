@@ -1,6 +1,6 @@
 //
 //  Patch+Combine.swift
-//  
+//
 //
 //  Created by Sacha Durand Saint Omer on 12/11/2023.
 //
@@ -18,7 +18,7 @@ public extension NetworkingClient {
     
     func patch<T: Decodable>(_ route: String,
                              body: HTTPBody? = nil,
-                                           keypath: String? = nil) -> AnyPublisher<T, Error> {
+                             keypath: String? = nil) -> AnyPublisher<T, Error> {
         return patch(route, body: body)
             .tryMap { json -> T in try self.toModel(json, keypath: keypath) }
             .receive(on: DispatchQueue.main)
@@ -29,7 +29,7 @@ public extension NetworkingClient {
     // Array version
     func patch<T: Decodable>(_ route: String,
                              body: HTTPBody? = nil,
-                           keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
+                             keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
         let keypath = keypath ?? defaultCollectionParsingKeyPath
         return patch(route, body: body)
             .tryMap { json -> T in try self.toModel(json, keypath: keypath) }
@@ -46,8 +46,47 @@ public extension NetworkingClient {
     }
     
     func patch(_ route: String,
-             body: HTTPBody) -> AnyPublisher<(Data?, Progress), Error> {
+               body: HTTPBody? = nil) -> AnyPublisher<(Data?, Progress), Error> {
         let req = request(.patch, route, body: body)
         return req.uploadPublisher()
+    }
+}
+
+public extension NetworkingService {
+    
+    func patch(_ route: String, body: HTTPBody? = nil) -> AnyPublisher<Void, Error> {
+        network.patch(route, body: body)
+    }
+    
+    func patch<T: Decodable>(_ route: String,
+                             body: HTTPBody? = nil,
+                             keypath: String? = nil) -> AnyPublisher<T, Error> {
+        network.patch(route, body: body, keypath: keypath)
+    }
+    
+    func patch<T: Decodable>(_ route: String,
+                             body: HTTPBody? = nil,
+                             keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
+        network.patch(route, body: body, keypath: keypath)
+    }
+    
+    func patch<T: NetworkingJSONDecodable>(_ route: String,
+                                           body: HTTPBody? = nil,
+                                           keypath: String? = nil) -> AnyPublisher<T, Error> {
+        network.patch(route, body: body, keypath: keypath)
+    }
+    
+    func patch<T: NetworkingJSONDecodable>(_ route: String,
+                                           body: HTTPBody? = nil,
+                                           keypath: String? = nil) -> AnyPublisher<[T], Error> {
+        network.patch(route, body: body, keypath: keypath)
+    }
+    
+    func patch(_ route: String, body: HTTPBody? = nil) -> AnyPublisher<Any, Error> {
+        network.patch(route, body: body)
+    }
+    
+    func patch(_ route: String, body: HTTPBody? = nil) -> AnyPublisher<Data, Error> {
+        network.patch(route, body: body)
     }
 }

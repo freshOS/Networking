@@ -49,5 +49,44 @@ public extension NetworkingClient {
         let req = request(.post, route, body: body)
         return req.uploadPublisher()
     }
+    
+}
 
+public extension NetworkingService {
+    
+    func post(_ route: String, body: HTTPBody? = nil) -> AnyPublisher<Void, Error> {
+        network.post(route, body: body)
+    }
+    
+    func post<T: Decodable>(_ route: String,
+                            body: HTTPBody? = nil,
+                            keypath: String? = nil) -> AnyPublisher<T, Error> {
+        network.post(route, body: body, keypath: keypath)
+    }
+    
+    func post<T: Decodable>(_ route: String,
+                            body: HTTPBody? = nil,
+                            keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
+        network.post(route, body: body, keypath: keypath)
+    }
+    
+    func post<T: NetworkingJSONDecodable>(_ route: String,
+                                          body: HTTPBody? = nil,
+                                          keypath: String? = nil) -> AnyPublisher<T, Error> {
+        network.post(route, body: body, keypath: keypath)
+    }
+    
+    func post<T: NetworkingJSONDecodable>(_ route: String,
+                                          body: HTTPBody? = nil,
+                                          keypath: String? = nil) -> AnyPublisher<[T], Error> {
+        network.post(route, body: body, keypath: keypath)
+    }
+    
+    func post(_ route: String, body: HTTPBody? = nil) -> AnyPublisher<Any, Error> {
+        network.post(route, body: body)
+    }
+    
+    func post(_ route: String, body: HTTPBody? = nil) -> AnyPublisher<Data, Error> {
+        network.post(route, body: body)
+    }
 }

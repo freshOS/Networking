@@ -50,3 +50,42 @@ public extension NetworkingClient {
         return req.uploadPublisher()
     }
 }
+
+public extension NetworkingService {
+    
+    func put(_ route: String, body: HTTPBody? = nil) -> AnyPublisher<Void, Error> {
+        network.put(route, body: body)
+    }
+    
+    func put<T: Decodable>(_ route: String,
+                           body: HTTPBody? = nil,
+                                         keypath: String? = nil) -> AnyPublisher<T, Error> {
+        network.put(route, body: body, keypath: keypath)
+    }
+    
+    func put<T: Decodable>(_ route: String,
+                           body: HTTPBody? = nil,
+                           keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
+        network.put(route, body: body, keypath: keypath)
+    }
+    
+    func put<T: NetworkingJSONDecodable>(_ route: String,
+                                         body: HTTPBody? = nil,
+                                         keypath: String? = nil) -> AnyPublisher<T, Error> {
+        network.put(route, body: body, keypath: keypath)
+    }
+    
+    func put<T: NetworkingJSONDecodable>(_ route: String,
+                                         body: HTTPBody? = nil,
+                                         keypath: String? = nil) -> AnyPublisher<[T], Error> {
+        network.put(route, body: body, keypath: keypath)
+    }
+    
+    func put(_ route: String, body: HTTPBody? = nil) -> AnyPublisher<Any, Error> {
+        network.put(route, body: body)
+    }
+    
+    func put(_ route: String, body: HTTPBody? = nil) -> AnyPublisher<Data, Error> {
+        network.put(route, body: body)
+    }
+}
