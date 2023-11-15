@@ -8,7 +8,7 @@
 import Foundation
 
 public enum HTTPBody {
-    case urlEncoded(params: Params)
+    case urlEncoded(_ params: Params)
     case json(_ encodable: Encodable)
     case multipart(params: Params? = nil, parts:[MultipartData])
 }
