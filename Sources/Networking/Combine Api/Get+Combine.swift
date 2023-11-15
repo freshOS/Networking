@@ -10,16 +10,16 @@ import Combine
 
 public extension NetworkingClient {
     
-    func get(_ route: String, urlParams: Params? = nil) -> AnyPublisher<Void, Error> {
-        get(route, urlParams: urlParams)
+    func get(_ route: String, params: Params? = nil) -> AnyPublisher<Void, Error> {
+        get(route, params: params)
             .map { (data: Data) -> Void in () }
             .eraseToAnyPublisher()
     }
     
     func get<T: Decodable>(_ route: String,
-                           urlParams: Params? = nil,
+                           params: Params? = nil,
                            keypath: String? = nil) -> AnyPublisher<T, Error> {
-        return get(route, urlParams: urlParams)
+        return get(route, params: params)
             .tryMap { json -> T in try self.toModel(json, keypath: keypath) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
@@ -27,61 +27,61 @@ public extension NetworkingClient {
     
     // Array version
     func get<T: Decodable>(_ route: String,
-                           urlParams: Params? = nil,
+                           params: Params? = nil,
                            keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
         let keypath = keypath ?? defaultCollectionParsingKeyPath
-        return get(route, urlParams: urlParams)
+        return get(route, params: params)
             .tryMap { json -> T in try self.toModel(json, keypath: keypath) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
     
-    func get(_ route: String, urlParams: Params? = nil) -> AnyPublisher<Any, Error> {
-        get(route, urlParams: urlParams).toJSON()
+    func get(_ route: String, params: Params? = nil) -> AnyPublisher<Any, Error> {
+        get(route, params: params).toJSON()
     }
     
-    func get(_ route: String, urlParams: Params? = nil) -> AnyPublisher<Data, Error> {
-        request(.get, route, urlParams: urlParams).publisher()
+    func get(_ route: String, params: Params? = nil) -> AnyPublisher<Data, Error> {
+        request(.get, route, queryParams: params).publisher()
     }
 }
 
 public extension NetworkingService {
     
-    func get(_ route: String, urlParams: Params? = nil) -> AnyPublisher<Void, Error> {
-        network.get(route, urlParams: urlParams)
+    func get(_ route: String, params: Params? = nil) -> AnyPublisher<Void, Error> {
+        network.get(route, params: params)
     }
     
     func get<T: Decodable>(_ route: String,
-                           urlParams: Params? = nil,
+                           params: Params? = nil,
                            keypath: String? = nil) -> AnyPublisher<T, Error> {
-        network.get(route, urlParams: urlParams, keypath: keypath)
+        network.get(route, params: params, keypath: keypath)
     }
     
     func get<T: Decodable>(_ route: String,
-                           urlParams: Params? = nil,
+                           params: Params? = nil,
                            keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
-        network.get(route, urlParams: urlParams, keypath: keypath)
+        network.get(route, params: params, keypath: keypath)
     }
     
     func get<T: NetworkingJSONDecodable>(_ route: String,
-                                         urlParams: Params? = nil,
+                                         params: Params? = nil,
                                          keypath: String? = nil) -> AnyPublisher<T, Error> {
-        network.get(route, urlParams: urlParams, keypath: keypath)
+        network.get(route, params: params, keypath: keypath)
     }
     
     func get<T: NetworkingJSONDecodable>(_ route: String,
-                                         urlParams: Params? = nil,
+                                         params: Params? = nil,
                                          keypath: String? = nil) -> AnyPublisher<[T], Error> {
-        network.get(route, urlParams: urlParams, keypath: keypath)
+        network.get(route, params: params, keypath: keypath)
     }
     
     
-    func get(_ route: String, urlParams: Params? = nil) -> AnyPublisher<Any, Error> {
-        network.get(route, urlParams: urlParams)
+    func get(_ route: String, params: Params? = nil) -> AnyPublisher<Any, Error> {
+        network.get(route, params: params)
     }
     
-    func get(_ route: String, urlParams: Params? = nil) -> AnyPublisher<Data, Error> {
-        network.get(route, urlParams: urlParams)
+    func get(_ route: String, params: Params? = nil) -> AnyPublisher<Data, Error> {
+        network.get(route, params: params)
     }
     
     

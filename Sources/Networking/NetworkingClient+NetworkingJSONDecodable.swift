@@ -17,9 +17,9 @@ public protocol NetworkingJSONDecodable {
 public extension NetworkingClient {
 
     func get<T: NetworkingJSONDecodable>(_ route: String,
-                                         urlParams: Params? = nil,
+                                         params: Params? = nil,
                                          keypath: String? = nil) -> AnyPublisher<T, Error> {
-        return get(route, urlParams: urlParams)
+        return get(route, params: params)
             .tryMap { json -> T in try self.toModel(json, keypath: keypath) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
@@ -27,10 +27,10 @@ public extension NetworkingClient {
 
     // Array version
     func get<T: NetworkingJSONDecodable>(_ route: String,
-                                         urlParams: Params? = nil,
+                                         params: Params? = nil,
                                          keypath: String? = nil) -> AnyPublisher<[T], Error> {
         let keypath = keypath ?? defaultCollectionParsingKeyPath
-        return get(route, urlParams: urlParams)
+        return get(route, params: params)
             .tryMap { json -> [T] in try self.toModels(json, keypath: keypath) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()

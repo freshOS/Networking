@@ -9,9 +9,8 @@ import Foundation
 
 public enum HTTPBody {
     case urlEncoded(params: Params)
-    case json(Encodable)
-    case jsonParams(params: Params)
-    case multipart(params: Params?, parts:[MultipartData])
+    case json(_ encodable: Encodable)
+    case multipart(params: Params? = nil, parts:[MultipartData])
 }
 
 
@@ -21,8 +20,6 @@ extension HTTPBody {
         case .urlEncoded(_):
             return "application/x-www-form-urlencoded"
         case .json(_):
-            return "application/json"
-        case .jsonParams(_):
             return "application/json"
         case .multipart(_, _):
             return "multipart/form-data; boundary=\(boundary)"
@@ -45,8 +42,6 @@ extension HTTPBody {
                 print(error)
                 return nil
             }
-        case .jsonParams(params: let params):
-            return try? JSONSerialization.data(withJSONObject: params)
         case .multipart(params: let params, parts: let parts):
             return buildMultipartHttpBody(params: params ?? [:], multiparts: parts, boundary: boundary)
         }
