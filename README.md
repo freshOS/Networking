@@ -136,7 +136,7 @@ You can specify them using the `body` parameter.
 ##### URLEncoded
 `Content-Type: application/x-www-form-urlencoded`
 
-For url encoded boy, use `HttpBody.urlEncoded` type for the `body` parameter with a `[String: CustomStringConvertible]` dictionary.
+For url encoded body, use `HttpBody.urlEncoded` type for the `body` parameter with a `[String: CustomStringConvertible]` dictionary.
 ```swift
 try await client.post("/posts/1", body: .urlEncoded(["liked" : true ]))
 ```
@@ -298,7 +298,7 @@ struct CRUDApi: NetworkingService {
 
     // Create
     func create(article a: Article) async throws -> Article {
-        try await post("/articles", params: ["title" : a.title, "content" : a.content])
+        try await post("/articles", body: .json(a))
     }
 
     // Read
@@ -308,7 +308,7 @@ struct CRUDApi: NetworkingService {
 
     // Update
     func update(article a: Article) async throws -> Article {
-        try await put("/articles/\(a.id)", params: ["title" : a.title, "content" : a.content])
+        try await put("/articles/\(a.id)", body: .json(["title" : a.title]))
     }
 
     // Delete
@@ -331,7 +331,7 @@ struct CRUDApi: NetworkingService {
 
     // Create
     func create(article a: Article) -> AnyPublisher<Article, Error> {
-        post("/articles", params: ["title" : a.title, "content" : a.content])
+        post("/articles", body: .json(a))
     }
 
     // Read
@@ -341,7 +341,7 @@ struct CRUDApi: NetworkingService {
 
     // Update
     func update(article a: Article) -> AnyPublisher<Article, Error> {
-        put("/articles/\(a.id)", params: ["title" : a.title, "content" : a.content])
+        put("/articles/\(a.id)", body: .json(["title" : a.title]))
     }
 
     // Delete
