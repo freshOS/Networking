@@ -34,7 +34,7 @@ into:
 let network = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
     
 func post() async throws -> User {
-    try await network.post("/users", params: ["firstname" : "Alan", "lastname" : "Turing"])
+    try await network.post("/users", body: .urlEncoded(["firstname" : "Alan", "lastname" : "Turing"]))
 }
 ```
 
