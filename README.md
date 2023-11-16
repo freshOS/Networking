@@ -15,27 +15,21 @@ Networking brings together `URLSession`, `async`-`await` (or `Combine` ), `Decod
 
 Networking turns this:
 ```swift
-func nativePost() async throws -> User {
-    let config = URLSessionConfiguration.default
-    let urlSession = URLSession(configuration: config, delegate: nil, delegateQueue: nil)
-    var urlRequest = URLRequest(url: URL(string: "https://jsonplaceholder.typicode.com/users")!)
-    urlRequest.httpMethod = "POST"
-    urlRequest.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-    urlRequest.httpBody = "firstname=Alan&lastname=Turing".data(using: .utf8)
-    let (data, _) = try await urlSession.data(for: urlRequest)
-    let decoder = JSONDecoder()
-    let user = try decoder.decode(User.self, from: data)
-    return user
-}
+let config = URLSessionConfiguration.default
+let urlSession = URLSession(configuration: config, delegate: nil, delegateQueue: nil)
+var urlRequest = URLRequest(url: URL(string: "https://jsonplaceholder.typicode.com/users")!)
+urlRequest.httpMethod = "POST"
+urlRequest.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+urlRequest.httpBody = "firstname=Alan&lastname=Turing".data(using: .utf8)
+let (data, _) = try await urlSession.data(for: urlRequest)
+let decoder = JSONDecoder()
+let user = try decoder.decode(User.self, from: data)
 ```
 
 into: 
 ```swift
 let network = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
-    
-func post() async throws -> User {
-    try await network.post("/users", params: ["firstname" : "Alan", "lastname" : "Turing"])
-}
+let user: User = try await network.post("/users", params: ["firstname" : "Alan", "lastname" : "Turing"])
 ```
 
 ## Video tutorial
