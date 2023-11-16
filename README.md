@@ -114,21 +114,47 @@ let postsPublisher: AnyPublisher<[Post], Error> = client.get("")
 ```
 
 ### Pass params
-Simply pass a `[String: CustomStringConvertible]` dictionary to the `params` parameter.
+
+#### GET params
+GET params are query params, you can put them directly in the URL like so:
 
 ```swift
-let response: Data = try await client.posts("/posts/1", params: ["optin" : true ])
+try await client.get("/posts?limit=20&offset=60")
+```
+or use the `params` parameter like so:
+
+```swift
+try await client.get("/posts", params: ["limit" : 20, "offset" : 60])
 ```
 
-Parameters are `.urlEncoded` by default (`Content-Type: application/x-www-form-urlencoded`), to encode them as json
-(`Content-Type: application/json`), you need to set the client's `parameterEncoding` to `.json` as follows:
+Both are equivalent.
+
+#### POST, PUT, PATCH body
+Parameters to POST, PUT & PATCH requests are passed in the http body.
+You can specify them using the `body` parameter.
+
+##### URLEncoded
+`Content-Type: application/x-www-form-urlencoded`
+
+For url encoded boy, use `HttpBody.urlEncoded` type for the `body` parameter with a `[String: CustomStringConvertible]` dictionary.
+```swift
+try await client.post("/posts/1", body: .urlEncoded(["liked" : true ]))
+```
+
+##### JSON
+`Content-Type: application/json`
+For JSON encoded body, use `HttpBody.json` type for the `body` parameter with an `Encodable` object.
 
 ```swift
-client.parameterEncoding = .json
+try await client.post("/posts/1", body: .json(["liked" : true ]))
+
+or
+try await client.post("/posts/1", body: .json(PostBody(liked: true))
+// Where `PostBody` is Encodable`
 ```
 
 ### Upload multipart data
-For multipart calls (post/put), just pass a `MultipartData` struct to the `multipartData` parameter.
+For multipart calls (post/put), just pass a `HttpBody.multipart` type to the `body` parameter.
 ```swift
 let params: [String: CustomStringConvertible] = [ "type_resource_id": 1, "title": photo.title]
 let multipartData = MultipartData(name: "file",
@@ -136,8 +162,9 @@ let multipartData = MultipartData(name: "file",
                                   fileName: "photo.jpg",
                                    mimeType: "image/jpeg")
 client.post("/photos/upload",
-            params: params,
-            multipartData: multipartData).sink(receiveCompletion: { _ in }) { (data:Data?, progress: Progress) in
+            body: .multipart(params: params,
+                             parts: [multipartData]))
+        .sink(receiveCompletion: { _ in }) { (data:Data?, progress: Progress) in
                 if let data = data {
                     print("upload is complete : \(data)")
                 } else {
