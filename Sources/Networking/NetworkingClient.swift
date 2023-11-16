@@ -1,6 +1,11 @@
 import Foundation
 import Combine
 
+public enum ParameterEncoding {
+    case urlEncode
+    case json
+}
+
 public class NetworkingClient {
     /**
         Instead of using the same keypath for every call eg: "collection",
@@ -11,11 +16,13 @@ public class NetworkingClient {
     public var defaultCollectionParsingKeyPath: String?
     let baseURL: String
     public var headers = [String: String]()
-    public var parameterEncoding = ParameterEncoding.urlEncoded
     public var timeout: TimeInterval?
     public var sessionConfiguration = URLSessionConfiguration.default
     public var requestRetrier: NetworkRequestRetrier?
     public var jsonDecoderFactory: (() -> JSONDecoder)?
+    
+    @available(*, deprecated, message: "Parameter encoding is now done explicitly via `body` param for POST PUT & PATCH requests.")
+    public var parameterEncoding: ParameterEncoding = .urlEncode
 
     /**
         Prints network calls to the console.

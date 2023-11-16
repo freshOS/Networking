@@ -8,18 +8,17 @@
 import Foundation
 import Combine
 
+
 public typealias NetworkRequestRetrier = (_ request: URLRequest, _ error: Error) -> AnyPublisher<Void, Error>?
 
 public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
     
-    var parameterEncoding = ParameterEncoding.urlEncoded
     var baseURL = ""
     var route = ""
     var httpMethod = HTTPMethod.get
-    public var params = Params()
-    public var encodableBody: Encodable?
+    var httpBody: HTTPBody? = nil
+    public var params: Params = Params()
     var headers = [String: String]()
-    var multipartData: [MultipartData]?
     var logLevel: NetworkingLogLevel {
         get { return logger.logLevel }
         set { logger.logLevel = newValue }
@@ -167,66 +166,24 @@ public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
         }
         var request = URLRequest(url: url)
         
-        if httpMethod != .get && multipartData == nil {
-            switch parameterEncoding {
-            case .urlEncoded:
-                request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-            case .json:
-                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            }
-        }
         
         request.httpMethod = httpMethod.rawValue
+        
         for (key, value) in headers {
             request.setValue(value, forHTTPHeaderField: key)
         }
         
-        if let timeout = timeout {
+        if let timeout {
             request.timeoutInterval = timeout
         }
-        
-        if httpMethod != .get && multipartData == nil {
-            if let encodableBody {
-                let jsonEncoder = JSONEncoder()
-                do {
-                    let data = try jsonEncoder.encode(encodableBody)
-                    request.httpBody = data
-                } catch {
-                    print(error)
-                }
-            } else {
-                switch parameterEncoding {
-                case .urlEncoded:
-                    request.httpBody = params.asPercentEncodedString().data(using: .utf8)
-                case .json:
-                    let jsonData = try? JSONSerialization.data(withJSONObject: params)
-                    request.httpBody = jsonData
-                }
-            }
-        }
-        
-        // Multipart
-        if let multiparts = multipartData {
-            // Construct a unique boundary to separate values
-            let boundary = "Boundary-\(UUID().uuidString)"
-            request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-            request.httpBody = buildMultipartHttpBody(params: params, multiparts: multiparts, boundary: boundary)
-        }
-        return request
-    }
     
-    private func buildMultipartHttpBody(params: Params, multiparts: [MultipartData], boundary: String) -> Data {
-        // Combine all multiparts together
-        let allMultiparts: [HttpBodyConvertible] = [params] + multiparts
-        let boundaryEnding = "--\(boundary)--".data(using: .utf8)!
+        if let httpBody {
+            let boundary = "Boundary-\(UUID().uuidString)"
+            request.setValue(httpBody.header(for: boundary), forHTTPHeaderField: "Content-Type")
+            request.httpBody = httpBody.body(for: boundary)
+        }
         
-        // Convert multiparts to boundary-seperated Data and combine them
-        return allMultiparts
-            .map { (multipart: HttpBodyConvertible) -> Data in
-                return multipart.buildHttpBodyPart(boundary: boundary)
-            }
-            .reduce(Data.init(), +)
-            + boundaryEnding
+        return request
     }
     
     public func urlSession(_ session: URLSession,
@@ -250,9 +207,4 @@ extension CharacterSet {
         allowed.remove(charactersIn: "\(generalDelimitersToEncode)\(subDelimitersToEncode)")
         return allowed
     }()
-}
-
-public enum ParameterEncoding {
-    case urlEncoded
-    case json
 }
