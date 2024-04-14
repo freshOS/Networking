@@ -135,27 +135,24 @@ public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
     
     private func getURLWithParams() -> String {
         let urlString = baseURL + route
-        if params.isEmpty { return urlString }
-        guard let url = URL(string: urlString) else {
+        guard !params.isEmpty, let url = URL(string: urlString) else {
             return urlString
         }
-        if var urlComponents = URLComponents(url: url ,resolvingAgainstBaseURL: false) {
-            var queryItems = urlComponents.queryItems ?? [URLQueryItem]()
-            params.forEach { param in
-                // arrayParam[] syntax
-                if let array = param.value as? [CustomStringConvertible] {
-                    array.forEach {
-                        queryItems.append(URLQueryItem(name: "\(param.key)[]", value: "\($0)"))
-                    }
-                }
-                queryItems.append(URLQueryItem(name: param.key, value: "\(param.value)"))
-            }
-            urlComponents.queryItems = queryItems
-            return urlComponents.url?.absoluteString ?? urlString
+
+        guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            return urlString
         }
-        return urlString
+
+        urlComponents.queryItems = params.map { key, value in
+            URLQueryItem(name: key, value: "\(value)")
+        }
+
+        let query = params.asPercentEncodedString()
+        urlComponents.percentEncodedQuery = query
+
+        return urlComponents.url?.absoluteString ?? urlString
     }
-    
+
     internal func buildURLRequest() -> URLRequest? {
         var urlString = baseURL + route
         if httpMethod == .get {
