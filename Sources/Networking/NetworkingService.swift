@@ -18,215 +18,215 @@ public extension NetworkingService {
     
     // Data
     
-    func get(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        network.get(route, params: params)
-    }
-    
-    func post(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        network.post(route, params: params)
-    }
-    
-    func post(_ route: String, body: Encodable) -> AnyPublisher<Data, Error> {
-        network.post(route, body: body)
-    }
-    
-    func put(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        network.put(route, params: params)
-    }
-    
-    func patch(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        network.patch(route, params: params)
-    }
-    
-    func patch(_ route: String, body: Encodable) -> AnyPublisher<Data, Error> {
-        network.patch(route, body: body)
-    }
-    
-    func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        network.delete(route, params: params)
-    }
-    
-    // Void
-    
-    func get(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
-        network.get(route, params: params)
-    }
-    
-    func post(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
-        network.post(route, params: params)
-    }
-    
-    func post(_ route: String, body: Encodable) -> AnyPublisher<Void, Error> {
-        network.post(route, body: body)
-    }
-    
-    func put(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
-        network.put(route, params: params)
-    }
-    
-    func patch(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
-        network.patch(route, params: params)
-    }
-    
-    func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
-        network.delete(route, params: params)
-    }
-    
-    // JSON
-    
-    func get(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
-        network.get(route, params: params)
-    }
-    
-    func post(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
-        network.post(route, params: params)
-    }
-    
-    func post(_ route: String, body: Encodable) -> AnyPublisher<Any, Error> {
-        network.post(route, body: body)
-    }
-    
-    func put(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
-        network.put(route, params: params)
-    }
-    
-    func patch(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
-        network.patch(route, params: params)
-    }
-    
-    func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
-        network.delete(route, params: params)
-    }
-    
-    // Decodable
-    
-    func get<T: Decodable>(_ route: String,
-                                         params: Params = Params(),
-                                         keypath: String? = nil) -> AnyPublisher<T, Error> {
-        network.get(route, params: params, keypath: keypath)
-    }
-    
-    func post<T: Decodable>(_ route: String,
-                                          params: Params = Params(),
-                                          keypath: String? = nil) -> AnyPublisher<T, Error> {
-        network.post(route, params: params, keypath: keypath)
-    }
-    
-    func put<T: Decodable>(_ route: String,
-                                         params: Params = Params(),
-                                         keypath: String? = nil) -> AnyPublisher<T, Error> {
-        network.put(route, params: params, keypath: keypath)
-    }
-    
-    func patch<T: Decodable>(_ route: String,
-                                           params: Params = Params(),
-                                           keypath: String? = nil) -> AnyPublisher<T, Error> {
-        network.patch(route, params: params, keypath: keypath)
-    }
-    
-    func delete<T: Decodable>(_ route: String,
-                                            params: Params = Params(),
-                                            keypath: String? = nil) -> AnyPublisher<T, Error> {
-        network.delete(route, params: params, keypath: keypath)
-    }
-    
-    // Array Decodable
-    
-    func get<T: Decodable>(_ route: String,
-                           params: Params = Params(),
-                           keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
-        network.get(route, params: params, keypath: keypath)
-    }
-    
-    func post<T: Decodable>(_ route: String,
-                           params: Params = Params(),
-                           keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
-        network.post(route, params: params, keypath: keypath)
-    }
-    
-    func put<T: Decodable>(_ route: String,
-                           params: Params = Params(),
-                           keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
-        network.put(route, params: params, keypath: keypath)
-    }
-    
-    func patch<T: Decodable>(_ route: String,
-                           params: Params = Params(),
-                           keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
-        network.patch(route, params: params, keypath: keypath)
-    }
-    
-    func delete<T: Decodable>(_ route: String,
-                           params: Params = Params(),
-                           keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
-        network.delete(route, params: params, keypath: keypath)
-    }
-    
-    // NetworkingJSONDecodable
-    
-    func get<T: NetworkingJSONDecodable>(_ route: String,
-                                         params: Params = Params(),
-                                         keypath: String? = nil) -> AnyPublisher<T, Error> {
-        network.get(route, params: params, keypath: keypath)
-    }
-    
-    func post<T: NetworkingJSONDecodable>(_ route: String,
-                                          params: Params = Params(),
-                                          keypath: String? = nil) -> AnyPublisher<T, Error> {
-        network.post(route, params: params, keypath: keypath)
-    }
-    
-    func put<T: NetworkingJSONDecodable>(_ route: String,
-                                         params: Params = Params(),
-                                         keypath: String? = nil) -> AnyPublisher<T, Error> {
-        network.put(route, params: params, keypath: keypath)
-    }
-    
-    func patch<T: NetworkingJSONDecodable>(_ route: String,
-                                           params: Params = Params(),
-                                           keypath: String? = nil) -> AnyPublisher<T, Error> {
-        network.patch(route, params: params, keypath: keypath)
-    }
-    
-    func delete<T: NetworkingJSONDecodable>(_ route: String,
-                                            params: Params = Params(),
-                                            keypath: String? = nil) -> AnyPublisher<T, Error> {
-        network.delete(route, params: params, keypath: keypath)
-    }
-    
-    
-    
-    // Array NetworkingJSONDecodable
-    
-    func get<T: NetworkingJSONDecodable>(_ route: String,
-                                         params: Params = Params(),
-                                         keypath: String? = nil) -> AnyPublisher<[T], Error> {
-        network.get(route, params: params, keypath: keypath)
-    }
-    
-    func post<T: NetworkingJSONDecodable>(_ route: String,
-                                          params: Params = Params(),
-                                          keypath: String? = nil) -> AnyPublisher<[T], Error> {
-        network.post(route, params: params, keypath: keypath)
-    }
-    
-    func put<T: NetworkingJSONDecodable>(_ route: String,
-                                         params: Params = Params(),
-                                         keypath: String? = nil) -> AnyPublisher<[T], Error> {
-        network.put(route, params: params, keypath: keypath)
-    }
-    
-    func patch<T: NetworkingJSONDecodable>(_ route: String,
-                                           params: Params = Params(),
-                                           keypath: String? = nil) -> AnyPublisher<[T], Error> {
-        network.patch(route, params: params, keypath: keypath)
-    }
-    
-    func delete<T: NetworkingJSONDecodable>(_ route: String,
-                                            params: Params = Params(),
-                                            keypath: String? = nil) -> AnyPublisher<[T], Error> {
-        network.delete(route, params: params, keypath: keypath)
-    }
+//    func get(_ route: String, params: Params = Params()) async -> AnyPublisher<Data, Error> {
+//        network.get(route, params: params)
+//    }
+//    
+//    func post(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
+//        network.post(route, params: params)
+//    }
+//    
+//    func post(_ route: String, body: Encodable) -> AnyPublisher<Data, Error> {
+//        network.post(route, body: body)
+//    }
+//    
+//    func put(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
+//        network.put(route, params: params)
+//    }
+//    
+//    func patch(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
+//        network.patch(route, params: params)
+//    }
+//    
+//    func patch(_ route: String, body: Encodable) -> AnyPublisher<Data, Error> {
+//        network.patch(route, body: body)
+//    }
+//    
+//    func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
+//        network.delete(route, params: params)
+//    }
+//    
+//    // Void
+//    
+//    func get(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
+//        network.get(route, params: params)
+//    }
+//    
+//    func post(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
+//        network.post(route, params: params)
+//    }
+//    
+//    func post(_ route: String, body: Encodable) -> AnyPublisher<Void, Error> {
+//        network.post(route, body: body)
+//    }
+//    
+//    func put(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
+//        network.put(route, params: params)
+//    }
+//    
+//    func patch(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
+//        network.patch(route, params: params)
+//    }
+//    
+//    func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
+//        network.delete(route, params: params)
+//    }
+//    
+//    // JSON
+//    
+//    func get(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
+//        network.get(route, params: params)
+//    }
+//    
+//    func post(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
+//        network.post(route, params: params)
+//    }
+//    
+//    func post(_ route: String, body: Encodable) -> AnyPublisher<Any, Error> {
+//        network.post(route, body: body)
+//    }
+//    
+//    func put(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
+//        network.put(route, params: params)
+//    }
+//    
+//    func patch(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
+//        network.patch(route, params: params)
+//    }
+//    
+//    func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
+//        network.delete(route, params: params)
+//    }
+//    
+//    // Decodable
+//    
+//    func get<T: Decodable>(_ route: String,
+//                                         params: Params = Params(),
+//                                         keypath: String? = nil) -> AnyPublisher<T, Error> {
+//        network.get(route, params: params, keypath: keypath)
+//    }
+//    
+//    func post<T: Decodable>(_ route: String,
+//                                          params: Params = Params(),
+//                                          keypath: String? = nil) -> AnyPublisher<T, Error> {
+//        network.post(route, params: params, keypath: keypath)
+//    }
+//    
+//    func put<T: Decodable>(_ route: String,
+//                                         params: Params = Params(),
+//                                         keypath: String? = nil) -> AnyPublisher<T, Error> {
+//        network.put(route, params: params, keypath: keypath)
+//    }
+//    
+//    func patch<T: Decodable>(_ route: String,
+//                                           params: Params = Params(),
+//                                           keypath: String? = nil) -> AnyPublisher<T, Error> {
+//        network.patch(route, params: params, keypath: keypath)
+//    }
+//    
+//    func delete<T: Decodable>(_ route: String,
+//                                            params: Params = Params(),
+//                                            keypath: String? = nil) -> AnyPublisher<T, Error> {
+//        network.delete(route, params: params, keypath: keypath)
+//    }
+//    
+//    // Array Decodable
+//    
+//    func get<T: Decodable>(_ route: String,
+//                           params: Params = Params(),
+//                           keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
+//        network.get(route, params: params, keypath: keypath)
+//    }
+//    
+//    func post<T: Decodable>(_ route: String,
+//                           params: Params = Params(),
+//                           keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
+//        network.post(route, params: params, keypath: keypath)
+//    }
+//    
+//    func put<T: Decodable>(_ route: String,
+//                           params: Params = Params(),
+//                           keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
+//        network.put(route, params: params, keypath: keypath)
+//    }
+//    
+//    func patch<T: Decodable>(_ route: String,
+//                           params: Params = Params(),
+//                           keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
+//        network.patch(route, params: params, keypath: keypath)
+//    }
+//    
+//    func delete<T: Decodable>(_ route: String,
+//                           params: Params = Params(),
+//                           keypath: String? = nil) -> AnyPublisher<T, Error> where T: Collection {
+//        network.delete(route, params: params, keypath: keypath)
+//    }
+//    
+//    // NetworkingJSONDecodable
+//    
+//    func get<T: NetworkingJSONDecodable>(_ route: String,
+//                                         params: Params = Params(),
+//                                         keypath: String? = nil) -> AnyPublisher<T, Error> {
+//        network.get(route, params: params, keypath: keypath)
+//    }
+//    
+//    func post<T: NetworkingJSONDecodable>(_ route: String,
+//                                          params: Params = Params(),
+//                                          keypath: String? = nil) -> AnyPublisher<T, Error> {
+//        network.post(route, params: params, keypath: keypath)
+//    }
+//    
+//    func put<T: NetworkingJSONDecodable>(_ route: String,
+//                                         params: Params = Params(),
+//                                         keypath: String? = nil) -> AnyPublisher<T, Error> {
+//        network.put(route, params: params, keypath: keypath)
+//    }
+//    
+//    func patch<T: NetworkingJSONDecodable>(_ route: String,
+//                                           params: Params = Params(),
+//                                           keypath: String? = nil) -> AnyPublisher<T, Error> {
+//        network.patch(route, params: params, keypath: keypath)
+//    }
+//    
+//    func delete<T: NetworkingJSONDecodable>(_ route: String,
+//                                            params: Params = Params(),
+//                                            keypath: String? = nil) -> AnyPublisher<T, Error> {
+//        network.delete(route, params: params, keypath: keypath)
+//    }
+//    
+//    
+//    
+//    // Array NetworkingJSONDecodable
+//    
+//    func get<T: NetworkingJSONDecodable>(_ route: String,
+//                                         params: Params = Params(),
+//                                         keypath: String? = nil) -> AnyPublisher<[T], Error> {
+//        network.get(route, params: params, keypath: keypath)
+//    }
+//    
+//    func post<T: NetworkingJSONDecodable>(_ route: String,
+//                                          params: Params = Params(),
+//                                          keypath: String? = nil) -> AnyPublisher<[T], Error> {
+//        network.post(route, params: params, keypath: keypath)
+//    }
+//    
+//    func put<T: NetworkingJSONDecodable>(_ route: String,
+//                                         params: Params = Params(),
+//                                         keypath: String? = nil) -> AnyPublisher<[T], Error> {
+//        network.put(route, params: params, keypath: keypath)
+//    }
+//    
+//    func patch<T: NetworkingJSONDecodable>(_ route: String,
+//                                           params: Params = Params(),
+//                                           keypath: String? = nil) -> AnyPublisher<[T], Error> {
+//        network.patch(route, params: params, keypath: keypath)
+//    }
+//    
+//    func delete<T: NetworkingJSONDecodable>(_ route: String,
+//                                            params: Params = Params(),
+//                                            keypath: String? = nil) -> AnyPublisher<[T], Error> {
+//        network.delete(route, params: params, keypath: keypath)
+//    }
 }
 
 // Async
@@ -242,7 +242,7 @@ public extension NetworkingService {
         try await network.post(route, params: params)
     }
     
-    func post(_ route: String, body: Encodable) async throws -> Data {
+    func post(_ route: String, body: Encodable & Sendable) async throws -> Data {
         try await network.post(route, body: body)
     }
 
@@ -268,7 +268,7 @@ public extension NetworkingService {
         return try await network.post(route, params: params)
     }
     
-    func post(_ route: String, body: Encodable) async throws {
+    func post(_ route: String, body: Encodable & Sendable) async throws {
         return try await network.post(route, body: body)
     }
 
@@ -286,65 +286,82 @@ public extension NetworkingService {
 
     // JSON
 
-    func get(_ route: String, params: Params = Params()) async throws -> Any {
+    func get(_ route: String, params: Params = Params()) async throws -> JSON {
         try await network.get(route, params: params)
     }
 
-    func post(_ route: String, params: Params = Params()) async throws -> Any {
+    func post(_ route: String, params: Params = Params()) async throws -> JSON {
         try await network.post(route, params: params)
     }
     
-    func post(_ route: String, body: Encodable) async throws -> Any {
+    func post(_ route: String, body: Encodable & Sendable) async throws -> JSON {
         try await network.post(route, body: body)
     }
 
-    func put(_ route: String, params: Params = Params()) async throws -> Any {
+    func put(_ route: String, params: Params = Params()) async throws -> JSON {
         try await network.put(route, params: params)
     }
 
-    func patch(_ route: String, params: Params = Params()) async throws -> Any {
+    func patch(_ route: String, params: Params = Params()) async throws -> JSON {
         try await network.patch(route, params: params)
     }
 
-    func delete(_ route: String, params: Params = Params()) async throws -> Any {
+    func delete(_ route: String, params: Params = Params()) async throws -> JSON {
         try await network.delete(route, params: params)
     }
 
     // Decodable
 
-    func get<T: Decodable>(_ route: String,
+    func get<T: Decodable & Sendable>(_ route: String,
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T {
         try await network.get(route, params: params, keypath: keypath)
     }
+    
+//    func get<T: Sendable, U:JSONModel<T> & Sendable>(_ route: String,
+//                           params: Params = Params(),
+//                           keypath: String? = nil,
+//                                                      decodeVia: U.Type) async throws -> T {
+//        
+//        let mod :U = try await network.get(route, params: params, keypath: keypath)
+//        return mod.toModel()
+//    }
+    
+//    func get<T: HasJSONModel>(_ route: String,
+//                           params: Params = Params(),
+//                              keypath: String? = nil) async throws -> T where T.ENCODE: Sendable {
+//        let foo: T.ENCODE = try await get(route, params: params, keypath: keypath)
+//        return foo.toModel()
+//    }
 
-    func post<T: Decodable>(_ route: String,
+
+    func post<T: Decodable & Sendable>(_ route: String,
                                           params: Params = Params(),
                                           keypath: String? = nil) async throws -> T {
         try await network.post(route, params: params, keypath: keypath)
     }
     
-    func post<T: Decodable>(_ route: String, body: Encodable) async throws -> T {
+    func post<T: Decodable & Sendable>(_ route: String, body: Encodable & Sendable) async throws -> T {
         try await network.post(route, body: body)
     }
     
-    func put<T: Decodable>(_ route: String,
+    func put<T: Decodable & Sendable>(_ route: String,
                                          params: Params = Params(),
                                          keypath: String? = nil) async throws -> T {
         try await network.put(route, params: params, keypath: keypath)
     }
 
-    func patch<T: Decodable>(_ route: String,
+    func patch<T: Decodable & Sendable>(_ route: String,
                                            params: Params = Params(),
                                            keypath: String? = nil) async throws -> T {
         try await network.patch(route, params: params, keypath: keypath)
     }
     
-    func patch<T: Decodable>(_ route: String, body: Encodable) async throws -> T {
+    func patch<T: Decodable & Sendable>(_ route: String, body: Encodable & Sendable) async throws -> T {
         try await network.patch(route, body: body)
     }
 
-    func delete<T: Decodable>(_ route: String,
+    func delete<T: Decodable & Sendable>(_ route: String,
                                             params: Params = Params(),
                                             keypath: String? = nil) async throws -> T {
         try await network.delete(route, params: params, keypath: keypath)
@@ -352,31 +369,31 @@ public extension NetworkingService {
 
     // Array Decodable
 
-    func get<T: Decodable>(_ route: String,
+    func get<T: Decodable & Sendable>(_ route: String,
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T where T: Collection {
         try await network.get(route, params: params, keypath: keypath)
     }
 
-    func post<T: Decodable>(_ route: String,
+    func post<T: Decodable & Sendable>(_ route: String,
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T where T: Collection {
         try await network.post(route, params: params, keypath: keypath)
     }
 
-    func put<T: Decodable>(_ route: String,
+    func put<T: Decodable & Sendable>(_ route: String,
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T where T: Collection {
         try await network.put(route, params: params, keypath: keypath)
     }
 
-    func patch<T: Decodable>(_ route: String,
+    func patch<T: Decodable & Sendable>(_ route: String,
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T where T: Collection {
         try await network.patch(route, params: params, keypath: keypath)
     }
 
-    func delete<T: Decodable>(_ route: String,
+    func delete<T: Decodable & Sendable>(_ route: String,
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T where T: Collection {
         try await network.delete(route, params: params, keypath: keypath)

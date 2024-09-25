@@ -32,24 +32,45 @@ public extension NetworkingClient {
     func post(_ route: String,
               params: Params = Params(),
               multipartData: [MultipartData]) -> AnyPublisher<(Data?, Progress), Error> {
-        let req = request(.post, route, params: params)
-        req.multipartData = multipartData
-        return req.uploadPublisher()
+        let req = NetworkingRequest(
+            method: .post,
+            url: baseURL + route,
+            parameterEncoding: parameterEncoding,
+            params: params,
+            encodableBody: nil,
+            headers: headers,
+            multipartData: multipartData,
+            timeout: timeout)
+        return uploadPublisher(request: req)
     }
 
     func put(_ route: String,
              params: Params = Params(),
              multipartData: [MultipartData]) -> AnyPublisher<(Data?, Progress), Error> {
-        let req = request(.put, route, params: params)
-        req.multipartData = multipartData
-        return req.uploadPublisher()
+        let req = NetworkingRequest(
+            method: .put,
+            url: baseURL + route,
+            parameterEncoding: parameterEncoding,
+            params: params,
+            encodableBody: nil,
+            headers: headers,
+            multipartData: multipartData,
+            timeout: timeout)
+        return uploadPublisher(request: req)
     }
 
     func patch(_ route: String,
                params: Params = Params(),
                multipartData: [MultipartData]) -> AnyPublisher<(Data?, Progress), Error> {
-        let req = request(.patch, route, params: params)
-        req.multipartData = multipartData
-        return req.uploadPublisher()
+        let req = NetworkingRequest(
+            method: .patch,
+            url: baseURL + route,
+            parameterEncoding: parameterEncoding,
+            params: params,
+            encodableBody: nil,
+            headers: headers,
+            multipartData: multipartData,
+            timeout: timeout)
+        return uploadPublisher(request: req)
     }
 }

@@ -138,7 +138,7 @@ public extension NetworkingClient {
     func get<T: Decodable>(_ route: String,
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T {
-        let json: Any = try await get(route, params: params)
+        let json: JSON = try await get(route, params: params)
         let model:T = try self.toModel(json, keypath: keypath)
         return model
     }
@@ -147,14 +147,14 @@ public extension NetworkingClient {
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T where T: Collection {
         let keypath = keypath ?? defaultCollectionParsingKeyPath
-        let json: Any = try await get(route, params: params)
+        let json: JSON = try await get(route, params: params)
         return try self.toModel(json, keypath: keypath)
     }
     
     func post<T: Decodable>(_ route: String,
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T {
-        let json: Any = try await post(route, params: params)
+        let json: JSON = try await post(route, params: params)
         return try self.toModel(json, keypath: keypath)
     }
     
@@ -162,7 +162,7 @@ public extension NetworkingClient {
                                           body: Encodable,
                                           keypath: String? = nil
     ) async throws -> T {
-        let json: Any = try await post(route, body: body)
+        let json: JSON = try await post(route, body: body)
         return try self.toModel(json, keypath: keypath)
     }
     
@@ -170,14 +170,14 @@ public extension NetworkingClient {
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T where T: Collection {
         let keypath = keypath ?? defaultCollectionParsingKeyPath
-        let json: Any = try await post(route, params: params)
+        let json: JSON = try await post(route, params: params)
         return try self.toModel(json, keypath: keypath)
     }
     
     func put<T: Decodable>(_ route: String,
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T {
-        let json: Any = try await put(route, params: params)
+        let json: JSON = try await put(route, params: params)
         return try self.toModel(json, keypath: keypath)
     }
     
@@ -185,14 +185,14 @@ public extension NetworkingClient {
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T where T: Collection {
         let keypath = keypath ?? defaultCollectionParsingKeyPath
-        let json: Any = try await put(route, params: params)
+        let json: JSON = try await put(route, params: params)
         return try self.toModel(json, keypath: keypath)
     }
     
     func patch<T: Decodable>(_ route: String,
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T {
-        let json: Any = try await patch(route, params: params)
+        let json: JSON = try await patch(route, params: params)
         return try self.toModel(json, keypath: keypath)
     }
     
@@ -200,7 +200,7 @@ public extension NetworkingClient {
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T where T: Collection {
         let keypath = keypath ?? defaultCollectionParsingKeyPath
-        let json: Any = try await patch(route, params: params)
+        let json: JSON = try await patch(route, params: params)
         return try self.toModel(json, keypath: keypath)
     }
     
@@ -208,14 +208,14 @@ public extension NetworkingClient {
                                           body: Encodable,
                                           keypath: String? = nil
     ) async throws -> T {
-        let json: Any = try await patch(route, body: body)
+        let json: JSON = try await patch(route, body: body)
         return try self.toModel(json, keypath: keypath)
     }
     
     func delete<T: Decodable>(_ route: String,
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T {
-        let json: Any = try await delete(route, params: params)
+        let json: JSON = try await delete(route, params: params)
         return try self.toModel(json, keypath: keypath)
     }
     
@@ -223,7 +223,7 @@ public extension NetworkingClient {
                            params: Params = Params(),
                            keypath: String? = nil) async throws -> T where T: Collection {
         let keypath = keypath ?? defaultCollectionParsingKeyPath
-        let json: Any = try await delete(route, params: params)
+        let json: JSON = try await delete(route, params: params)
         return try self.toModel(json, keypath: keypath)
     }
 }

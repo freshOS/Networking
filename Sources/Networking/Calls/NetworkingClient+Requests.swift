@@ -34,28 +34,15 @@ public extension NetworkingClient {
                           _ route: String,
                           params: Params = Params()
     ) -> NetworkingRequest {
-        let req = NetworkingRequest()
-        req.httpMethod             = httpMethod
-        req.route                = route
-        req.params               = params
-        
-        let updateRequest = { [weak req, weak self] in
-            guard let self = self else { return }
-            req?.baseURL              = self.baseURL
-            req?.logLevel             = self.logLevel
-            req?.headers              = self.headers
-            req?.parameterEncoding    = self.parameterEncoding
-            req?.sessionConfiguration = self.sessionConfiguration
-            req?.timeout              = self.timeout
-        }
-        updateRequest()
-        req.requestRetrier = { [weak self] in
-            self?.requestRetrier?($0, $1)?
-                .handleEvents(receiveOutput: { _ in
-                    updateRequest()
-                })
-                .eraseToAnyPublisher()
-        }
+        let req = NetworkingRequest(
+            method: httpMethod,
+            url: baseURL + route,
+            parameterEncoding: parameterEncoding,
+            params: params,
+            encodableBody: nil,
+            headers: headers,
+            multipartData: nil,
+            timeout: timeout)
         return req
     }
     
@@ -64,29 +51,18 @@ public extension NetworkingClient {
                           params: Params = Params(),
                           encodableBody: Encodable? = nil
     ) -> NetworkingRequest {
-        let req = NetworkingRequest()
-        req.httpMethod             = httpMethod
-        req.route                = route
-        req.params               = Params()
-        req.encodableBody      = encodableBody
-        
-        let updateRequest = { [weak req, weak self] in
-            guard let self = self else { return }
-            req?.baseURL              = self.baseURL
-            req?.logLevel             = self.logLevel
-            req?.headers              = self.headers
-            req?.parameterEncoding    = self.parameterEncoding
-            req?.sessionConfiguration = self.sessionConfiguration
-            req?.timeout              = self.timeout
-        }
-        updateRequest()
-        req.requestRetrier = { [weak self] in
-            self?.requestRetrier?($0, $1)?
-                .handleEvents(receiveOutput: { _ in
-                    updateRequest()
-                })
-                .eraseToAnyPublisher()
-        }
+        let req = NetworkingRequest(
+            method: httpMethod,
+            url: baseURL + route,
+            parameterEncoding: parameterEncoding,
+            params: params,
+            encodableBody: encodableBody,
+            headers: headers,
+            multipartData: nil,
+            timeout: timeout)
         return req
     }
 }
+
+
+// TODO handle retries

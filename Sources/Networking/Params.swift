@@ -7,7 +7,7 @@
 
 import Foundation
 
-public typealias Params = [String: CustomStringConvertible]
+public typealias Params = [String: CustomStringConvertible & Sendable]
     
 extension Params {
     public func asPercentEncodedString(parentKey: String? = nil) -> String {
