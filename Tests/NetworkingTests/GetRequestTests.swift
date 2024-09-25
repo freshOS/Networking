@@ -12,8 +12,7 @@ import Combine
 @testable
 import Networking
 
-@Suite
-
+@Suite(.serialized)
 struct GetRequestTests {
     
     private let network = NetworkingClient(baseURL: "https://mocked.com")
@@ -48,27 +47,29 @@ struct GetRequestTests {
 //        .store(in: &cancellables)
 //        waitForExpectations(timeout: 0.1)
 //    }
-//    
-//    func testGETVoidAsyncWorks() async throws {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        { "response": "OK" }
-//        """
-//        let _:Void = try await network.get("/users")
-//        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "GET")
-//        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-//    }
-//    
-//    func testGETVoidAsyncWithURLParams() async throws {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        { "response": "OK" }
-//        """
-//        
-//        let _:Void = try await network.get("/users", params: ["search" : "lion"])
-//        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "GET")
-//        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users?search=lion")
-//    }
+//
+    @Test
+    func GETVoidAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        { "response": "OK" }
+        """
+        let _:Void = try await network.get("/users")
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "GET")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
+    }
+    
+    @Test
+    func GETVoidAsyncWithURLParams() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        { "response": "OK" }
+        """
+        
+        let _:Void = try await network.get("/users", params: ["search" : "lion"])
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "GET")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users?search=lion")
+    }
 //    
 //    func testGETDataWorks() {
 //        MockingURLProtocol.mockedResponse =
@@ -212,21 +213,22 @@ struct GetRequestTests {
 //        .store(in: &cancellables)
 //        waitForExpectations(timeout: 0.1)
 //    }
-////    
-//    func testGETNetworkingJSONDecodableAsyncWorks() async throws {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        {
-//            "firstname":"John",
-//            "lastname":"Doe",
-//        }
-//        """
-//        let userJSON: UserJSON = try await network.get("/posts/1")
-//        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "GET")
-//        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/posts/1")
-//        XCTAssertEqual(userJSON.firstname, "John")
-//        XCTAssertEqual(userJSON.lastname, "Doe")
-//    }
+////
+    @Test
+    func GETNetworkingJSONDecodableAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        {
+            "firstname":"John",
+            "lastname":"Doe",
+        }
+        """
+        let userJSON: UserJSON = try await network.get("/posts/1")
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "GET")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/posts/1")
+        #expect(userJSON.firstname == "John")
+        #expect(userJSON.lastname == "Doe")
+    }
     
 //    func testGETArrayOfDecodableWorks() {
 //        MockingURLProtocol.mockedResponse =
@@ -264,29 +266,30 @@ struct GetRequestTests {
 //        .store(in: &cancellables)
 //        waitForExpectations(timeout: 0.1)
 //    }
-//    
-//    func testGETArrayOfDecodableAsyncWorks() async throws {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        [
-//            {
-//                "firstname":"John",
-//                "lastname":"Doe"
-//            },
-//            {
-//                "firstname":"Jimmy",
-//                "lastname":"Punchline"
-//            }
-//        ]
-//        """
-//        let users: [UserJSON] = try await network.get("/users")
-//        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "GET")
-//        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-//        XCTAssertEqual(users[0].firstname, "John")
-//        XCTAssertEqual(users[0].lastname, "Doe")
-//        XCTAssertEqual(users[1].firstname, "Jimmy")
-//        XCTAssertEqual(users[1].lastname, "Punchline")
-//    }
+//
+    @Test
+    func GETArrayOfDecodableAsyncWorks() async throws {
+        MockingURLProtocol.mockedResponse =
+        """
+        [
+            {
+                "firstname":"John",
+                "lastname":"Doe"
+            },
+            {
+                "firstname":"Jimmy",
+                "lastname":"Punchline"
+            }
+        ]
+        """
+        let users: [UserJSON] = try await network.get("/users")
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "GET")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
+        #expect(users[0].firstname == "John")
+        #expect(users[0].lastname == "Doe")
+        #expect(users[1].firstname == "Jimmy")
+        #expect(users[1].lastname == "Punchline")
+    }
 //    
 //    
 //    func testGETArrayOfDecodableWithKeypathWorks() {
