@@ -12,3 +12,4 @@ let package = Package(
         .testTarget(name: "NetworkingTests", dependencies: ["Networking"])
     ]
 )
+// TODO handle retries

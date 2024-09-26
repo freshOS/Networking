@@ -1,9 +1,9 @@
 import Foundation
-import Combine
+//import Combine
 
 actor NetworkingClientURLSessionDelegate: NSObject, URLSessionDelegate {
     
-    let progressPublisher = PassthroughSubject<Progress, Error>()
+//    let progressPublisher = PassthroughSubject<Progress, Error>()
     
     public func urlSession(_ session: URLSession,
                            task: URLSessionTask,
@@ -12,11 +12,11 @@ actor NetworkingClientURLSessionDelegate: NSObject, URLSessionDelegate {
                            totalBytesExpectedToSend: Int64) {
         let progress = Progress(totalUnitCount: totalBytesExpectedToSend)
         progress.completedUnitCount = totalBytesSent
-        progressPublisher.send(progress)
+//        progressPublisher.send(progress)
     }
 }
 
-public typealias NetworkRequestRetrier = (_ request: URLRequest, _ error: Error) -> AnyPublisher<Void, Error>?
+// public typealias NetworkRequestRetrier = (_ request: URLRequest, _ error: Error) -> AnyPublisher<Void, Error>?
 
 public actor NetworkingClient {
     /**
@@ -31,7 +31,7 @@ public actor NetworkingClient {
     public var parameterEncoding = ParameterEncoding.urlEncoded
     public var timeout: TimeInterval?
     public var sessionConfiguration = URLSessionConfiguration.default
-    public var requestRetrier: NetworkRequestRetrier?
+//    public var requestRetrier: NetworkRequestRetrier?
     public var jsonDecoderFactory: (() -> JSONDecoder)?
 
     let sessionDelegate = NetworkingClientURLSessionDelegate()
@@ -108,8 +108,4 @@ public actor NetworkingClient {
         }
         return json.value
     }
-}
-
-extension NetworkingClient {
-    
 }

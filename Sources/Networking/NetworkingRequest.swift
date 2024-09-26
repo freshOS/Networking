@@ -6,11 +6,6 @@
 //
 
 import Foundation
-@preconcurrency import Combine
-
-
-
-
 
 public struct NetworkingRequest {
     let method: HTTPMethod
@@ -22,137 +17,13 @@ public struct NetworkingRequest {
     let multipartData: [MultipartData]?
     let timeout: TimeInterval?
     let maxRetryCount = 3
-//    var logLevel: NetworkingLogLevel {
-//        get { return logger.logLevel }
-//        set { logger.logLevel = newValue }
-//    }
 }
 
-extension NetworkingClient {
-    
-    public func uploadPublisher(request: NetworkingRequest) -> AnyPublisher<(Data?, Progress), Error> {
-        
-        guard let urlRequest = request.buildURLRequest() else {
-            return Fail(error: NetworkingError.unableToParseRequest as Error)
-                .eraseToAnyPublisher()
-        }
-        logger.log(request: urlRequest)
-
-        let urlSession = URLSession(configuration: sessionConfiguration, delegate: sessionDelegate, delegateQueue: nil)
-        let callPublisher: AnyPublisher<(Data?, Progress), Error> = urlSession.dataTaskPublisher(for: urlRequest)
-            .tryMap { (data: Data, response: URLResponse) -> Data in
-                self.logger.log(response: response, data: data)
-                if let httpURLResponse = response as? HTTPURLResponse {
-                    if !(200...299 ~= httpURLResponse.statusCode) {
-                        var error = NetworkingError(errorCode: httpURLResponse.statusCode)
-                        if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
-                            error.jsonPayload = JSON(jsonObject: json)
-                        }
-                        throw error
-                    }
-                }
-                return data
-            }.mapError { error -> NetworkingError in
-                return NetworkingError(error: error)
-            }.map { data -> (Data?, Progress) in
-                return (data, Progress())
-            }.eraseToAnyPublisher()
-        
-        return callPublisher
-            .eraseToAnyPublisher()
-        // Todo put back progress
-//
-//        let progressPublisher2: AnyPublisher<(Data?, Progress), Error> = sessionDelegate.progressPublisher
-//            .map { progress -> (Data?, Progress) in
-//                return (nil, progress)
-//            }.eraseToAnyPublisher()
-//        
-//        return Publishers.Merge(callPublisher, progressPublisher2)
-//            .receive(on: DispatchQueue.main)
-//            .eraseToAnyPublisher()
-    }
-
-    public func publisher(request: NetworkingRequest) -> AnyPublisher<Data, Error> {
-        publisher(request: request, retryCount: request.maxRetryCount)
-    }
-
-    private func publisher(request: NetworkingRequest, retryCount: Int) -> AnyPublisher<Data, Error> {
-        guard let urlRequest = request.buildURLRequest() else {
-            return Fail(error: NetworkingError.unableToParseRequest as Error)
-                .eraseToAnyPublisher()
-        }
-        logger.log(request: urlRequest)
-
-        let urlSession = URLSession(configuration: sessionConfiguration, delegate: sessionDelegate, delegateQueue: nil)
-        return urlSession.dataTaskPublisher(for: urlRequest)
-            .tryMap { (data: Data, response: URLResponse) -> Data in
-                self.logger.log(response: response, data: data)
-                if let httpURLResponse = response as? HTTPURLResponse {
-                    if !(200...299 ~= httpURLResponse.statusCode) {
-                        var error = NetworkingError(errorCode: httpURLResponse.statusCode)
-                        if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
-                            error.jsonPayload = JSON(jsonObject: json)
-                        }
-                        throw error
-                    }
-                }
-                return data
-            }
-        // TODO fix retry
-//            .tryCatch({ [weak self, urlRequest] error -> AnyPublisher<Data, Error> in
-//                guard
-//                    let self = self,
-//                    retryCount > 1,
-//                    let retryPublisher = self.requestRetrier?(urlRequest, error)
-//                else {
-//                    throw error
-//                }
-//                return retryPublisher
-//                    .flatMap { _ -> AnyPublisher<Data, Error> in
-//                        self.publisher(request: request, retryCount: retryCount - 1)
-//                    }
-//                    .eraseToAnyPublisher()
-//            })
-            .mapError { error -> NetworkingError in
-                return NetworkingError(error: error)
-            }.receive(on: DispatchQueue.main).eraseToAnyPublisher()
-    }
-    
-    func execute(request: NetworkingRequest) async throws -> Data {
-        guard let urlRequest = request.buildURLRequest() else {
-            throw NetworkingError.unableToParseRequest
-        }
-        logger.log(request: urlRequest)
-        let urlSession = URLSession(configuration: sessionConfiguration, delegate: sessionDelegate, delegateQueue: nil)
-        let (data, response) = try await urlSession.data(for: urlRequest)
-        logger.log(response: response, data: data)
-        if let httpURLResponse = response as? HTTPURLResponse, !(200...299 ~= httpURLResponse.statusCode) {
-            var error = NetworkingError(errorCode: httpURLResponse.statusCode)
-            if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
-                error.jsonPayload = JSON(jsonObject: json)
-            }
-            throw error
-        }
-        return data
-    }
-}
-
-// Thansks to https://stackoverflow.com/questions/26364914/http-request-in-swift-with-post-method
-extension CharacterSet {
-    static let urlQueryValueAllowed: CharacterSet = {
-        let generalDelimitersToEncode = ":#[]@" // does not include "?" or "/" due to RFC 3986 - Section 3.4
-        let subDelimitersToEncode = "!$&'()*+,;="
-        var allowed = CharacterSet.urlQueryAllowed
-        allowed.remove(charactersIn: "\(generalDelimitersToEncode)\(subDelimitersToEncode)")
-        return allowed
-    }()
-}
 
 public enum ParameterEncoding {
     case urlEncoded
     case json
 }
-
 
 extension NetworkingRequest {
     internal func buildURLRequest() -> URLRequest? {
@@ -250,4 +121,16 @@ extension NetworkingRequest {
             .reduce(Data.init(), +)
             + boundaryEnding
     }
+}
+
+
+// Thansks to https://stackoverflow.com/questions/26364914/http-request-in-swift-with-post-method
+extension CharacterSet {
+    static let urlQueryValueAllowed: CharacterSet = {
+        let generalDelimitersToEncode = ":#[]@" // does not include "?" or "/" due to RFC 3986 - Section 3.4
+        let subDelimitersToEncode = "!$&'()*+,;="
+        var allowed = CharacterSet.urlQueryAllowed
+        allowed.remove(charactersIn: "\(generalDelimitersToEncode)\(subDelimitersToEncode)")
+        return allowed
+    }()
 }
