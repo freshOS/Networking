@@ -8,6 +8,13 @@
 import Foundation
 
 public extension NetworkingClient {
+    
+    func get(_ route: String, params: Params = Params()) async throws -> Any {
+        let req = request(.get, route, params: params)
+        let data = try await execute(request: req)
+        let json = try JSONSerialization.jsonObject(with: data, options: [])
+        return json
+    }
 
     func get(_ route: String, params: Params = Params()) async throws -> JSON {
         let req = request(.get, route, params: params)
@@ -35,6 +42,13 @@ public extension NetworkingClient {
         let data = try await execute(request: req)
         let json = try JSONSerialization.jsonObject(with: data, options: [])
         return JSON(jsonObject: json)
+    }
+    
+    func patch(_ route: String, params: Params = Params()) async throws -> Any {
+        let req = request(.patch, route, params: params)
+        let data = try await execute(request: req)
+        let json = try JSONSerialization.jsonObject(with: data, options: [])
+        return json
     }
     
     func patch(_ route: String, params: Params = Params()) async throws -> JSON {

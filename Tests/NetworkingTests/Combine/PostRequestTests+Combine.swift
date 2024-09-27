@@ -1,44 +1,45 @@
+////
+////  PostRequestTests.swift
+////  
+////
+////  Created by Sacha DSO on 12/04/2022.
+////
 //
-//  PutRequestTests.swift
+//import Foundation
+//import XCTest
+//import Combine
+//
+//@testable
+//import Networking
 //
 //
-//  Created by Sacha DSO on 12/04/2022.
+//class PostRequestTests: XCTestCase {
+//    
+//    private let network = NetworkingClient(baseURL: "https://mocked.com")
+//    private var cancellables = Set<AnyCancellable>()
 //
-
-import Foundation
-import XCTest
-import Combine
-
-@testable
-import Networking
-
-class PutRequestTests: XCTestCase {
-    
-    private let network = NetworkingClient(baseURL: "https://mocked.com")
-    private var cancellables = Set<AnyCancellable>()
-
-    override func setUpWithError() throws {
-        network.sessionConfiguration.protocolClasses = [MockingURLProtocol.self]
-    }
-    
-    override func tearDownWithError() throws {
-        MockingURLProtocol.mockedResponse = ""
-        MockingURLProtocol.currentRequest = nil
-    }
-
-//    func testPUTVoidWorks() {
+//    override func setUpWithError() throws {
+//        network.sessionConfiguration.protocolClasses = [MockingURLProtocol.self]
+//    }
+//    
+//    override func tearDownWithError() throws {
+//        MockingURLProtocol.mockedResponse = ""
+//        MockingURLProtocol.currentRequest = nil
+//    }
+//
+//    func testPOSTVoidWorks() {
 //        MockingURLProtocol.mockedResponse =
 //        """
 //        { "response": "OK" }
 //        """
 //        let expectationWorks = expectation(description: "Call works")
 //        let expectationFinished = expectation(description: "Finished")
-//        network.put("/users").sink { completion in
+//        network.post("/users").sink { completion in
 //            switch completion {
 //            case .failure(_):
 //                XCTFail()
 //            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
+//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "POST")
 //                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
 //                expectationFinished.fulfill()
 //            }
@@ -48,30 +49,20 @@ class PutRequestTests: XCTestCase {
 //        .store(in: &cancellables)
 //        waitForExpectations(timeout: 0.1)
 //    }
-    
-    func testPUTVoidAsyncWorks() async throws {
-        MockingURLProtocol.mockedResponse =
-        """
-        { "response": "OK" }
-        """
-        let _: Void = try await network.put("/users")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-    }
-    
-//    func testPUTDataWorks() {
+//    
+//    func testPOSTDataWorks() {
 //        MockingURLProtocol.mockedResponse =
 //        """
 //        { "response": "OK" }
 //        """
 //        let expectationWorks = expectation(description: "ReceiveValue called")
 //        let expectationFinished = expectation(description: "Finished called")
-//        network.put("/users").sink { completion in
+//        network.post("/users").sink { completion in
 //            switch completion {
 //            case .failure:
 //                XCTFail()
 //            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
+//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "POST")
 //                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
 //                expectationFinished.fulfill()
 //            }
@@ -82,31 +73,20 @@ class PutRequestTests: XCTestCase {
 //        .store(in: &cancellables)
 //        waitForExpectations(timeout: 0.1)
 //    }
-    
-    func testPUTDataAsyncWorks() async throws {
-        MockingURLProtocol.mockedResponse =
-        """
-        { "response": "OK" }
-        """
-        let data: Data = try await network.put("/users")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-        XCTAssertEqual(data, MockingURLProtocol.mockedResponse.data(using: String.Encoding.utf8))
-    }
 //    
-//    func testPUTJSONWorks() {
+//    func testPOSTJSONWorks() {
 //        MockingURLProtocol.mockedResponse =
 //        """
 //        {"response":"OK"}
 //        """
 //        let expectationWorks = expectation(description: "ReceiveValue called")
 //        let expectationFinished = expectation(description: "Finished called")
-//        network.put("/users").sink { completion in
+//        network.post("/users").sink { completion in
 //            switch completion {
 //            case .failure:
 //                XCTFail()
 //            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
+//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "POST")
 //                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
 //                expectationFinished.fulfill()
 //            }
@@ -123,24 +103,8 @@ class PutRequestTests: XCTestCase {
 //        .store(in: &cancellables)
 //        waitForExpectations(timeout: 0.1)
 //    }
-    
-    func testPUTJSONAsyncWorks() async throws {
-        MockingURLProtocol.mockedResponse =
-        """
-        {"response":"OK"}
-        """
-        let json: Any = try await network.put("/users")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-        let data =  try? JSONSerialization.data(withJSONObject: json, options: [])
-        let expectedResponseData =
-        """
-        {"response":"OK"}
-        """.data(using: String.Encoding.utf8)
-            XCTAssertEqual(data, expectedResponseData)
-    }
 //    
-//    func testPUTNetworkingJSONDecodableWorks() {
+//    func testPOSTNetworkingJSONDecodableWorks() {
 //        MockingURLProtocol.mockedResponse =
 //        """
 //        {
@@ -150,13 +114,13 @@ class PutRequestTests: XCTestCase {
 //        """
 //        let expectationWorks = expectation(description: "ReceiveValue called")
 //        let expectationFinished = expectation(description: "Finished called")
-//        network.put("/posts/1")
+//        network.post("/posts/1")
 //            .sink { completion in
 //            switch completion {
 //            case .failure:
 //                XCTFail()
 //            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
+//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "POST")
 //                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/posts/1")
 //                expectationFinished.fulfill()
 //            }
@@ -169,7 +133,7 @@ class PutRequestTests: XCTestCase {
 //        waitForExpectations(timeout: 0.1)
 //    }
 //    
-//    func testPUTDecodableWorks() {
+//    func testPOSTDecodableWorks() {
 //        MockingURLProtocol.mockedResponse =
 //        """
 //        {
@@ -179,13 +143,13 @@ class PutRequestTests: XCTestCase {
 //        """
 //        let expectationWorks = expectation(description: "ReceiveValue called")
 //        let expectationFinished = expectation(description: "Finished called")
-//        network.put("/users/1")
+//        network.post("/users/1")
 //            .sink { completion in
 //            switch completion {
 //            case .failure:
 //                XCTFail()
 //            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
+//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "POST")
 //                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users/1")
 //                expectationFinished.fulfill()
 //            }
@@ -197,23 +161,8 @@ class PutRequestTests: XCTestCase {
 //        .store(in: &cancellables)
 //        waitForExpectations(timeout: 0.1)
 //    }
-    
-    func testPUTDecodableAsyncWorks() async throws {
-        MockingURLProtocol.mockedResponse =
-        """
-        {
-            "firstname":"John",
-            "lastname":"Doe",
-        }
-        """
-        let user: UserJSON = try await network.put("/users/1")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users/1")
-        XCTAssertEqual(user.firstname, "John")
-        XCTAssertEqual(user.lastname, "Doe")
-    }
-    
-//    func testPUTArrayOfDecodableWorks() {
+//    
+//    func testPOSTArrayOfDecodableWorks() {
 //        MockingURLProtocol.mockedResponse =
 //        """
 //        [
@@ -229,13 +178,13 @@ class PutRequestTests: XCTestCase {
 //        """
 //        let expectationWorks = expectation(description: "ReceiveValue called")
 //        let expectationFinished = expectation(description: "Finished called")
-//        network.put("/users")
+//        network.post("/users")
 //            .sink { completion in
 //            switch completion {
 //            case .failure:
 //                XCTFail()
 //            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
+//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "POST")
 //                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
 //                expectationFinished.fulfill()
 //            }
@@ -249,31 +198,8 @@ class PutRequestTests: XCTestCase {
 //        .store(in: &cancellables)
 //        waitForExpectations(timeout: 0.1)
 //    }
-    
-    func testPUTArrayOfDecodableAsyncWorks() async throws {
-        MockingURLProtocol.mockedResponse =
-        """
-        [
-            {
-                "firstname":"John",
-                "lastname":"Doe"
-            },
-            {
-                "firstname":"Jimmy",
-                "lastname":"Punchline"
-            }
-        ]
-        """
-        let users: [UserJSON] = try await network.put("/users")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-        XCTAssertEqual(users[0].firstname, "John")
-        XCTAssertEqual(users[0].lastname, "Doe")
-        XCTAssertEqual(users[1].firstname, "Jimmy")
-        XCTAssertEqual(users[1].lastname, "Punchline")
-    }
-
-//    func testPUTArrayOfDecodableWithKeypathWorks() {
+//    
+//    func testPOSTArrayOfDecodableWithKeypathWorks() {
 //        MockingURLProtocol.mockedResponse =
 //        """
 //        {
@@ -292,13 +218,13 @@ class PutRequestTests: XCTestCase {
 //        """
 //        let expectationWorks = expectation(description: "ReceiveValue called")
 //        let expectationFinished = expectation(description: "Finished called")
-//        network.put("/users", keypath: "users")
+//        network.post("/users", keypath: "users")
 //            .sink { completion in
 //            switch completion {
 //            case .failure:
 //                XCTFail()
 //            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PUT")
+//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "POST")
 //                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
 //                expectationFinished.fulfill()
 //            }
@@ -312,5 +238,36 @@ class PutRequestTests: XCTestCase {
 //        .store(in: &cancellables)
 //        waitForExpectations(timeout: 0.1)
 //    }
-
-}
+//
+//    func testPOSTDataEncodableWorks() {
+//        MockingURLProtocol.mockedResponse =
+//        """
+//        { "response": "OK" }
+//        """
+//        let expectationWorks = expectation(description: "ReceiveValue called")
+//        let expectationFinished = expectation(description: "Finished called")
+//        
+//        let creds = Credentials(username: "Alan", password: "Turing")
+//        network.post("/users", body: creds).sink { completion in
+//            switch completion {
+//            case .failure:
+//                XCTFail()
+//            case .finished:
+//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "POST")
+//                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+//                
+//                let body = MockingURLProtocol.currentRequest?.httpBodyStreamAsDictionary()
+//                XCTAssertEqual(body?["username"] as? String, "Alan")
+//                XCTAssertEqual(body?["password"] as? String, "Turing")
+//                
+//                expectationFinished.fulfill()
+//            }
+//        } receiveValue: { (data: Data) in
+//            XCTAssertEqual(data, MockingURLProtocol.mockedResponse.data(using: String.Encoding.utf8))
+//            expectationWorks.fulfill()
+//        }
+//        .store(in: &cancellables)
+//        waitForExpectations(timeout: 0.1)
+//    }
+//
+//}

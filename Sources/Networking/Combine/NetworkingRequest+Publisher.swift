@@ -6,7 +6,7 @@
 //
 
 import Foundation
-@preconcurrency import Combine
+import Combine
 
 
 extension NetworkingClient {

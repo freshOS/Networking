@@ -25,7 +25,7 @@ public struct JSON: Sendable, CustomStringConvertible {
         }
     }
     
-    var value: Any {
+    public var value: Any {
         return array ?? dictionary ?? ""
     }
     

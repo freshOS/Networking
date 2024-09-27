@@ -18,7 +18,7 @@ actor NetworkingClientURLSessionDelegate: NSObject, URLSessionDelegate {
 
 // public typealias NetworkRequestRetrier = (_ request: URLRequest, _ error: Error) -> AnyPublisher<Void, Error>?
 
-public actor NetworkingClient {
+public class NetworkingClient {
     /**
         Instead of using the same keypath for every call eg: "collection",
         this enables to use a default keypath for parsing collections.
