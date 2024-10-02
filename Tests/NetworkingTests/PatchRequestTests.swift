@@ -6,60 +6,61 @@
 //
 
 import Foundation
-import XCTest
+import Testing
 import Networking
 
-class PatchRequestTests: XCTestCase {
+@Suite
+struct PatchRequestTests {
     
     private let network = NetworkingClient(baseURL: "https://mocked.com")
 
-    override func setUpWithError() throws {
+    init() {
         network.sessionConfiguration.protocolClasses = [MockingURLProtocol.self]
     }
-    
-    override func tearDownWithError() throws {
-        MockingURLProtocol.mockedResponse = ""
-        MockingURLProtocol.currentRequest = nil
-    }
 
-    func testPATCHVoidAsyncWorks() async throws {
+
+    @Test
+    func PATCHVoidAsyncWorks() async throws {
         MockingURLProtocol.mockedResponse =
         """
         { "response": "OK" }
         """
         let _:Void = try await network.patch("/users")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PATCH")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "PATCH")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
     }
     
-    func testPATCHDataAsyncWorks() async throws {
+    @Test
+    func PATCHDataAsyncWorks() async throws {
         MockingURLProtocol.mockedResponse =
         """
         { "response": "OK" }
         """
         let data: Data = try await network.patch("/users")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PATCH")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-        XCTAssertEqual(data, MockingURLProtocol.mockedResponse.data(using: String.Encoding.utf8))
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "PATCH")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
+        #expect(data == MockingURLProtocol.mockedResponse.data(using: String.Encoding.utf8))
     }
     
-    func testPATCHJSONAsyncWorks() async throws {
+    @Test
+    func PATCHJSONAsyncWorks() async throws {
         MockingURLProtocol.mockedResponse =
         """
         {"response":"OK"}
         """
         let json: Any = try await network.patch("/users")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PATCH")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "PATCH")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
         let data =  try? JSONSerialization.data(withJSONObject: json, options: [])
         let expectedResponseData =
         """
         {"response":"OK"}
         """.data(using: String.Encoding.utf8)
-        XCTAssertEqual(data, expectedResponseData)
+        #expect(data == expectedResponseData)
     }
     
-    func testPATCHDecodableAsyncWorks() async throws {
+    @Test
+    func PATCHDecodableAsyncWorks() async throws {
         MockingURLProtocol.mockedResponse =
         """
         {
@@ -68,13 +69,14 @@ class PatchRequestTests: XCTestCase {
         }
         """
         let user: UserJSON = try await network.patch("/users/1")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PATCH")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users/1")
-        XCTAssertEqual(user.firstname, "John")
-        XCTAssertEqual(user.lastname, "Doe")
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "PATCH")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users/1")
+        #expect(user.firstname == "John")
+        #expect(user.lastname == "Doe")
     }
 
-    func testPATCHArrayOfDecodableAsyncWorks() async throws {
+    @Test
+    func PATCHArrayOfDecodableAsyncWorks() async throws {
         MockingURLProtocol.mockedResponse =
         """
         [
@@ -89,11 +91,11 @@ class PatchRequestTests: XCTestCase {
         ]
         """
         let users: [UserJSON] = try await network.patch("/users")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "PATCH")
-        XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-        XCTAssertEqual(users[0].firstname, "John")
-        XCTAssertEqual(users[0].lastname, "Doe")
-        XCTAssertEqual(users[1].firstname, "Jimmy")
-        XCTAssertEqual(users[1].lastname, "Punchline")
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "PATCH")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
+        #expect(users[0].firstname == "John")
+        #expect(users[0].lastname == "Doe")
+        #expect(users[1].firstname == "Jimmy")
+        #expect(users[1].lastname == "Punchline")
     }
 }
