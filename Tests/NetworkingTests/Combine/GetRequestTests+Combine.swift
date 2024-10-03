@@ -108,141 +108,141 @@ class GetRequestCombineTests {
         
         #expect(data == expectedResponseData)
     }
-//
-//    func testGETNetworkingJSONDecodableWorks() {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        {
-//            "title":"Hello",
-//            "content":"World",
-//        }
-//        """
-//        let expectationWorks = expectation(description: "ReceiveValue called")
-//        let expectationFinished = expectation(description: "Finished called")
-//        network.get("/posts/1")
-//            .sink { completion in
-//            switch completion {
-//            case .failure:
-//                XCTFail()
-//            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "GET")
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/posts/1")
-//                expectationFinished.fulfill()
-//            }
-//        } receiveValue: { (post: Post) in
-//            XCTAssertEqual(post.title, "Hello")
-//            XCTAssertEqual(post.content, "World")
-//            expectationWorks.fulfill()
-//        }
-//        .store(in: &cancellables)
-//        waitForExpectations(timeout: 0.1)
-//    }
+
+    @Test
+    func GETNetworkingJSONDecodableWorks() async {
+        MockingURLProtocol.mockedResponse =
+        """
+        {
+            "title":"Hello",
+            "content":"World",
+        }
+        """
+        let post = await withCheckedContinuation { continuation in
+            network.get("/posts/1")
+                .sink { completion in
+                    switch completion {
+                    case .failure:
+                        Issue.record("failure")
+                    case .finished:
+                        print("finished")
+                    }
+                } receiveValue: { (post: Post) in
+                    continuation.resume(returning: post)
+                }
+                .store(in: &cancellables)
+        }
+        #expect(post.title == "Hello")
+        #expect(post.content == "World")
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "GET")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/posts/1")
+    }
     
-//    func testGETDecodableWorks() {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        {
-//            "firstname":"John",
-//            "lastname":"Doe",
-//        }
-//        """
-//        let expectationWorks = expectation(description: "ReceiveValue called")
-//        let expectationFinished = expectation(description: "Finished called")
-//        network.get("/users/1")
-//            .sink { completion in
-//            switch completion {
-//            case .failure:
-//                XCTFail()
-//            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "GET")
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users/1")
-//                expectationFinished.fulfill()
-//            }
-//        } receiveValue: { (userJSON: UserJSON) in
-//            XCTAssertEqual(userJSON.firstname, "John")
-//            XCTAssertEqual(userJSON.lastname, "Doe")
-//            expectationWorks.fulfill()
-//        }
-//        .store(in: &cancellables)
-//        waitForExpectations(timeout: 0.1)
-//    }
-//    func testGETArrayOfDecodableWorks() {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        [
-//            {
-//                "firstname":"John",
-//                "lastname":"Doe"
-//            },
-//            {
-//                "firstname":"Jimmy",
-//                "lastname":"Punchline"
-//            }
-//        ]
-//        """
-//        let expectationWorks = expectation(description: "ReceiveValue called")
-//        let expectationFinished = expectation(description: "Finished called")
-//        network.get("/users")
-//            .sink { completion in
-//            switch completion {
-//            case .failure:
-//                XCTFail()
-//            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "GET")
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-//                expectationFinished.fulfill()
-//            }
-//        } receiveValue: { (userJSON: [UserJSON]) in
-//            XCTAssertEqual(userJSON[0].firstname, "John")
-//            XCTAssertEqual(userJSON[0].lastname, "Doe")
-//            XCTAssertEqual(userJSON[1].firstname, "Jimmy")
-//            XCTAssertEqual(userJSON[1].lastname, "Punchline")
-//            expectationWorks.fulfill()
-//        }
-//        .store(in: &cancellables)
-//        waitForExpectations(timeout: 0.1)
-//    }
-//
-//    
-//    
-//    func testGETArrayOfDecodableWithKeypathWorks() {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        {
-//        "users" :
-//            [
-//                {
-//                    "firstname":"John",
-//                    "lastname":"Doe"
-//                },
-//                {
-//                    "firstname":"Jimmy",
-//                    "lastname":"Punchline"
-//                }
-//            ]
-//        }
-//        """
-//        let expectationWorks = expectation(description: "ReceiveValue called")
-//        let expectationFinished = expectation(description: "Finished called")
-//        network.get("/users", keypath: "users")
-//            .sink { completion in
-//            switch completion {
-//            case .failure:
-//                XCTFail()
-//            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "GET")
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-//                expectationFinished.fulfill()
-//            }
-//        } receiveValue: { (userJSON: [UserJSON]) in
-//            XCTAssertEqual(userJSON[0].firstname, "John")
-//            XCTAssertEqual(userJSON[0].lastname, "Doe")
-//            XCTAssertEqual(userJSON[1].firstname, "Jimmy")
-//            XCTAssertEqual(userJSON[1].lastname, "Punchline")
-//            expectationWorks.fulfill()
-//        }
-//        .store(in: &cancellables)
-//        waitForExpectations(timeout: 0.1)
-//    }
+    @Test
+    func GETDecodableWorks() async {
+        MockingURLProtocol.mockedResponse =
+        """
+        {
+            "firstname":"John",
+            "lastname":"Doe",
+        }
+        """
+        let userJSON = await withCheckedContinuation { continuation in
+            network.get("/users/1")
+                .sink { completion in
+                    switch completion {
+                    case .failure:
+                        Issue.record("failure")
+                    case .finished:
+                        print("finished")
+                    }
+                } receiveValue: { (userJSON: UserJSON) in
+                    continuation.resume(returning: userJSON)
+                }
+                .store(in: &cancellables)
+        }
+        #expect(userJSON.firstname == "John")
+        #expect(userJSON.lastname == "Doe")
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "GET")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users/1")
+    }
+    
+    @Test
+    func GETArrayOfDecodableWorks() async {
+        MockingURLProtocol.mockedResponse =
+        """
+        [
+            {
+                "firstname":"John",
+                "lastname":"Doe"
+            },
+            {
+                "firstname":"Jimmy",
+                "lastname":"Punchline"
+            }
+        ]
+        """
+        let userJSON = await withCheckedContinuation { continuation in
+            network.get("/users")
+                .sink { completion in
+                    switch completion {
+                    case .failure:
+                        Issue.record("failure")
+                    case .finished:
+                        print("finished")
+                    }
+                } receiveValue: { (userJSON: [UserJSON]) in
+                    continuation.resume(returning: userJSON)
+                }
+                .store(in: &cancellables)
+        }
+        #expect(userJSON[0].firstname == "John")
+        #expect(userJSON[0].lastname == "Doe")
+        #expect(userJSON[1].firstname == "Jimmy")
+        #expect(userJSON[1].lastname == "Punchline")
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "GET")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
+        
+    }
+
+    @Test
+    func GETArrayOfDecodableWithKeypathWorks() async {
+        MockingURLProtocol.mockedResponse =
+        """
+        {
+        "users" :
+            [
+                {
+                    "firstname":"John",
+                    "lastname":"Doe"
+                },
+                {
+                    "firstname":"Jimmy",
+                    "lastname":"Punchline"
+                }
+            ]
+        }
+        """
+        let userJSON = await withCheckedContinuation { continuation in
+            network.get("/users", keypath: "users")
+                .sink { completion in
+                    switch completion {
+                    case .failure:
+                        Issue.record("failure")
+                    case .finished:
+                        print("finished")
+                    }
+                } receiveValue: { (userJSON: [UserJSON]) in
+                    continuation.resume(returning: userJSON)
+                }
+                .store(in: &cancellables)
+        }
+        #expect(userJSON[0].firstname == "John")
+        #expect(userJSON[0].lastname == "Doe")
+        #expect(userJSON[1].firstname == "Jimmy")
+        #expect(userJSON[1].lastname == "Punchline")
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "GET")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
+    }
 }
 
