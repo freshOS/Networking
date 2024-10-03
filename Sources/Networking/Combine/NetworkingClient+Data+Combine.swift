@@ -11,30 +11,30 @@ import Combine
 public extension NetworkingClient {
 
     func get(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        publisher(request: request(.get, route, params: params))
+        publisher(request: createRequest(.get, route, params: params))
     }
 
     func post(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        publisher(request: request(.post, route, params: params))
+        publisher(request: createRequest(.post, route, params: params))
     }
     
     func post(_ route: String, body: Encodable) -> AnyPublisher<Data, Error> {
-        publisher(request: request(.post, route, encodableBody: body))
+        publisher(request: createRequest(.post, route, encodableBody: body))
     }
 
     func put(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        publisher(request: request(.put, route, params: params))
+        publisher(request: createRequest(.put, route, params: params))
     }
 
     func patch(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        publisher(request: request(.patch, route, params: params))
+        publisher(request: createRequest(.patch, route, params: params))
     }
     
     func patch(_ route: String, body: Encodable) -> AnyPublisher<Data, Error> {
-        publisher(request: request(.patch, route, encodableBody: body))
+        publisher(request: createRequest(.patch, route, encodableBody: body))
     }
 
     func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        publisher(request: request(.delete, route, params: params))
+        publisher(request: createRequest(.delete, route, params: params))
     }
 }

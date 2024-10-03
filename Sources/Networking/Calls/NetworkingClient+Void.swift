@@ -10,32 +10,27 @@ import Foundation
 public extension NetworkingClient {
 
     func get(_ route: String, params: Params = Params()) async throws {
-        let req = request(.get, route, params: params)
-        _ = try await execute(request: req)
+        _ = try await request(.get, route: route, params: params)
     }
     
     func post(_ route: String, params: Params = Params()) async throws {
-        let req = request(.post, route, params: params)
-        _ = try await execute(request: req)
+        _ = try await request(.post, route: route, params: params)
     }
     
     func post(_ route: String, body: Encodable) async throws {
-        let req = request(.post, route, encodableBody: body)
+        let req = createRequest(.post, route, encodableBody: body)
         _ = try await execute(request: req)
     }
     
     func put(_ route: String, params: Params = Params()) async throws {
-        let req = request(.put, route, params: params)
-        _ = try await execute(request: req)
+        _ = try await request(.put, route: route, params: params)
     }
     
     func patch(_ route: String, params: Params = Params()) async throws {
-        let req = request(.patch, route, params: params)
-        _ = try await execute(request: req)
+        _ = try await request(.patch, route: route, params: params)
     }
     
     func delete(_ route: String, params: Params = Params()) async throws {
-        let req = request(.delete, route, params: params)
-        _ = try await execute(request: req)
+        _ = try await request(.delete, route: route, params: params)
     }
 }
