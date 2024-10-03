@@ -8,7 +8,7 @@ struct NetworkingTests {
     func badURLDoesntCrash() async {
         let client = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
         do {
-            let json: JSON = try await client.get("/forge a bad url")
+            let _: JSON = try await client.get("/forge a bad url")
         } catch {
             if let e = error as? NetworkingError, e.status == .unableToParseRequest {
                 print("OK")

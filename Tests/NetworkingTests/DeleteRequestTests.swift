@@ -14,8 +14,8 @@ struct DeleteRequestTests {
     
     private let network = NetworkingClient(baseURL: "https://mocked.com")
 
-    init() async {
-        await network.sessionConfiguration.protocolClasses = [MockingURLProtocol.self]
+    init() {
+        network.sessionConfiguration.protocolClasses = [MockingURLProtocol.self]
     }
     
     @Test

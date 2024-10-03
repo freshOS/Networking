@@ -6,99 +6,97 @@
 //
 
 import Testing
+import Combine
 import Foundation
 import Networking
 
-@Suite
-struct DeleteRequestCombineTests {
+@Suite(.serialized)
+class DeleteRequestCombineTests {
     
-//    private let network = NetworkingClient(baseURL: "https://mocked.com")
-////    private var cancellables = Set<AnyCancellable>()
-//
-//    init() {
-//        network.sessionConfiguration.protocolClasses = [MockingURLProtocol.self]
-//    }
-//    
-//    override func tearDownWithError() throws {
-//        MockingURLProtocol.mockedResponse = ""
-//        MockingURLProtocol.currentRequest = nil
-//    }
+    private let network = NetworkingClient(baseURL: "https://mocked.com")
+    private var cancellables = Set<AnyCancellable>()
 
-//    func testDELETEVoidWorks() {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        { "response": "OK" }
-//        """
-//        let expectationWorks = expectation(description: "Call works")
-//        let expectationFinished = expectation(description: "Finished")
-//        network.delete("/users").sink { completion in
-//            switch completion {
-//            case .failure(_):
-//                XCTFail()
-//            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "DELETE")
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-//                expectationFinished.fulfill()
-//            }
-//        } receiveValue: { () in
-//            expectationWorks.fulfill()
-//        }
-//        .store(in: &cancellables)
-//        waitForExpectations(timeout: 0.1)
-//    }
-//
-//    func testDELETEDataWorks() {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        { "response": "OK" }
-//        """
-//        let expectationWorks = expectation(description: "ReceiveValue called")
-//        let expectationFinished = expectation(description: "Finished called")
-//        network.delete("/users").sink { completion in
-//            switch completion {
-//            case .failure:
-//                XCTFail()
-//            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "DELETE")
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-//                expectationFinished.fulfill()
-//            }
-//        } receiveValue: { (data: Data) in
-//            XCTAssertEqual(data, MockingURLProtocol.mockedResponse.data(using: String.Encoding.utf8))
-//            expectationWorks.fulfill()
-//        }
-//        .store(in: &cancellables)
-//        waitForExpectations(timeout: 0.1)
-//    }
-//    func testDELETEJSONWorks() {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        {"response":"OK"}
-//        """
-//        let expectationWorks = expectation(description: "ReceiveValue called")
-//        let expectationFinished = expectation(description: "Finished called")
-//        network.delete("/users").sink { completion in
-//            switch completion {
-//            case .failure:
-//                XCTFail()
-//            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "DELETE")
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-//                expectationFinished.fulfill()
-//            }
-//        } receiveValue: { (json: Any) in
-//            let data =  try? JSONSerialization.data(withJSONObject: json, options: [])
-//            let expectedResponseData =
-//            """
-//            {"response":"OK"}
-//            """.data(using: String.Encoding.utf8)
-//
-//            XCTAssertEqual(data, expectedResponseData)
-//            expectationWorks.fulfill()
-//        }
-//        .store(in: &cancellables)
-//        waitForExpectations(timeout: 0.1)
-//    }
+    init() {
+        network.sessionConfiguration.protocolClasses = [MockingURLProtocol.self]
+    }
+
+    @Test
+    func DELETEVoidWorks() async {
+        MockingURLProtocol.mockedResponse =
+        """
+        { "response": "OK" }
+        """
+        _ = await withCheckedContinuation { continuation in
+            network.delete("/users").sink { completion in
+                switch completion {
+                case .failure(_):
+                    Issue.record("failure")
+                case .finished:
+                    print("finished")
+                }
+            } receiveValue: { () in
+                continuation.resume(returning: ())
+            }
+            .store(in: &cancellables)
+        }
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "DELETE")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
+    }
+
+    @Test
+    func DELETEDataWorks() async {
+        MockingURLProtocol.mockedResponse =
+        """
+        { "response": "OK" }
+        """
+        let result = await withCheckedContinuation { continuation in
+            network.delete("/users").sink { completion in
+                switch completion {
+                case .failure:
+                    Issue.record("failure")
+                case .finished:
+                    print("finished")
+                }
+            } receiveValue: { (data: Data) in
+                continuation.resume(returning: data)
+            }
+            .store(in: &cancellables)
+        }
+        #expect(result != nil)
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "DELETE")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
+    }
+    
+    @Test
+    func DELETEJSONWorks() async {
+        MockingURLProtocol.mockedResponse =
+        """
+        {"response":"OK"}
+        """
+        let result = await withCheckedContinuation { continuation in
+            network.delete("/users").sink { completion in
+                switch completion {
+                case .failure:
+                    Issue.record("failure")
+                case .finished:
+                    print("finished")
+                }
+            } receiveValue: { (json: Sendable) in
+                continuation.resume(returning: json)
+            }
+            .store(in: &cancellables)
+        }
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "DELETE")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
+        let data =  try? JSONSerialization.data(withJSONObject: result, options: [])
+        let expectedResponseData =
+        """
+        {"response":"OK"}
+        """.data(using: String.Encoding.utf8)
+        
+        #expect(data == expectedResponseData)
+    }
+    
 //    func testDELETENetworkingJSONDecodableWorks() {
 //        MockingURLProtocol.mockedResponse =
 //        """

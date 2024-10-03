@@ -11,7 +11,7 @@ import Combine
 public extension NetworkingClient {
     
     func get(_ route: String, params: Params = Params()) -> AnyPublisher<Sendable, Error> {
-        get(route, params: params).toJSONAny()
+        get(route, params: params).toJSONSendable()
     }
 
     func get(_ route: String, params: Params = Params()) -> AnyPublisher<JSON, Error> {
@@ -37,6 +37,10 @@ public extension NetworkingClient {
     func patch(_ route: String, body: Encodable) -> AnyPublisher<JSON, Error> {
         patch(route, body: body).toJSON()
     }
+    
+    func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Sendable, Error> {
+        delete(route, params: params).toJSONSendable()
+    }
 
     func delete(_ route: String, params: Params = Params()) -> AnyPublisher<JSON, Error> {
         delete(route, params: params).toJSON()
@@ -55,7 +59,7 @@ extension Publisher where Output == Data {
         }.eraseToAnyPublisher()
     }
     
-    public func toJSONAny() -> AnyPublisher<Sendable, Error> {
+    public func toJSONSendable() -> AnyPublisher<Sendable, Error> {
          tryMap { data -> Any in
              let json = try JSONSerialization.jsonObject(with: data, options: [])
              return json
