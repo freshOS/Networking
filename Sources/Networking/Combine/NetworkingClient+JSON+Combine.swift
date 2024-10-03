@@ -9,6 +9,10 @@ import Foundation
 import Combine
 
 public extension NetworkingClient {
+    
+    func get(_ route: String, params: Params = Params()) -> AnyPublisher<Sendable, Error> {
+        get(route, params: params).toJSONAny()
+    }
 
     func get(_ route: String, params: Params = Params()) -> AnyPublisher<JSON, Error> {
         get(route, params: params).toJSON()
@@ -48,6 +52,13 @@ extension Publisher where Output == Data {
          tryMap { data -> JSON in
              let json = try JSONSerialization.jsonObject(with: data, options: [])
              return JSON(jsonObject: json)
+        }.eraseToAnyPublisher()
+    }
+    
+    public func toJSONAny() -> AnyPublisher<Sendable, Error> {
+         tryMap { data -> Any in
+             let json = try JSONSerialization.jsonObject(with: data, options: [])
+             return json
         }.eraseToAnyPublisher()
     }
 }

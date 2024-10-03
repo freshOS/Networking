@@ -12,4 +12,10 @@ let package = Package(
         .testTarget(name: "NetworkingTests", dependencies: ["Networking"])
     ]
 )
+
+
 // TODO handle retries
+// Amy -> Use plain Sendable for json over JSON
+// Put back Combine tests
+// try out in real app (Swift 6)
+

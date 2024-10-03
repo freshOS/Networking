@@ -13,95 +13,101 @@ import Combine
 import Networking
 
 @Suite(.serialized)
-struct GetRequestCombineTests {
+class GetRequestCombineTests {
     
     private let network = NetworkingClient(baseURL: "https://mocked.com")
     private var cancellables = Set<AnyCancellable>()
 
-    init() async {
-        await network.sessionConfiguration.protocolClasses = [MockingURLProtocol.self]
+    init() {
+        network.sessionConfiguration.protocolClasses = [MockingURLProtocol.self]
     }
-//    
-//    override func tearDownWithError() throws {
-//        MockingURLProtocol.mockedResponse = ""
-//        MockingURLProtocol.currentRequest = nil
-//    }
-//    
-//    func testGETVoidWorks() {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        { "response": "OK" }
-//        """
-//        let expectationWorks = expectation(description: "Call works")
-//        let expectationFinished = expectation(description: "Finished")
-//        network.get("/users").sink { completion in
-//            switch completion {
-//            case .failure(_):
-//                XCTFail()
-//            case .finished:
-//                expectationFinished.fulfill()
-//            }
-//        } receiveValue: { () in
-//            expectationWorks.fulfill()
-//        }
-//        .store(in: &cancellables)
-//        waitForExpectations(timeout: 0.1)
-//    }
-//
-//    
-//    func testGETDataWorks() {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        { "response": "OK" }
-//        """
-//        let expectationWorks = expectation(description: "ReceiveValue called")
-//        let expectationFinished = expectation(description: "Finished called")
-//        network.get("/users").sink { completion in
-//            switch completion {
-//            case .failure:
-//                XCTFail()
-//            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "GET")
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-//                expectationFinished.fulfill()
-//                
-//            }
-//        } receiveValue: { (data: Data) in
-//            XCTAssertEqual(data, MockingURLProtocol.mockedResponse.data(using: String.Encoding.utf8))
-//            expectationWorks.fulfill()
-//        }
-//        .store(in: &cancellables)
-//        waitForExpectations(timeout: 0.1)
-//    }
-//    func testGETJSONWorks() {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        {"response":"OK"}
-//        """
-//        let expectationWorks = expectation(description: "ReceiveValue called")
-//        let expectationFinished = expectation(description: "Finished called")
-//        network.get("/users").sink { completion in
-//            switch completion {
-//            case .failure:
-//                XCTFail()
-//            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "GET")
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-//                expectationFinished.fulfill()
-//            }
-//        } receiveValue: { (json: Any) in
-//            let data = try? JSONSerialization.data(withJSONObject: json, options: [])
-//            let expectedResponseData =
-//            """
-//            {"response":"OK"}
-//            """.data(using: String.Encoding.utf8)
-//
-//            XCTAssertEqual(data, expectedResponseData)
-//            expectationWorks.fulfill()
-//        }
-//        .store(in: &cancellables)
-//        waitForExpectations(timeout: 0.1)
-//    }
+
+    @Test
+    func GETVoidPublisher() async {
+        MockingURLProtocol.mockedResponse =
+        """
+        { "response": "OK" }
+        """
+        
+        let result = await withCheckedContinuation { continuation in
+            network.get("/users").sink { completion in
+                switch completion {
+                case .failure(_):
+                    Issue.record("Call failed")
+                case .finished:
+                    continuation.resume(returning: "done")
+                }
+            } receiveValue: { () in
+                
+            }
+            .store(in: &cancellables)
+        }
+        #expect(result == "done")
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "GET")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
+        
+    }
+    
+    @Test
+    func GETDataPublisher() async {
+        MockingURLProtocol.mockedResponse =
+        """
+        { "response": "OK" }
+        """
+        let result = await withCheckedContinuation { continuation in
+            network.get("/users").sink { completion in
+                switch completion {
+                case .failure:
+                    Issue.record("failure")
+                case .finished:
+                    print("finished")
+                }
+            } receiveValue: { (data: Data) in
+                continuation.resume(returning: data)
+            }
+            .store(in: &cancellables)
+        }
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "GET")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
+        #expect(result == MockingURLProtocol.mockedResponse.data(using: String.Encoding.utf8))
+        
+    }
+    
+    func foo() -> AnyPublisher<Sendable, Error> {
+        return network.get("/users")
+    }
+    
+    @Test
+    func GETJSONPublisher() async {
+        MockingURLProtocol.mockedResponse =
+        """
+        {"response":"OK"}
+        """
+
+        let result = await withCheckedContinuation { continuation in
+            network.get("/users").sink { completion in
+                switch completion {
+                case .failure:
+                    Issue.record("failure")
+                case .finished:
+                    print("finished")
+                }
+            } receiveValue: { (json: Sendable) in
+                continuation.resume(returning: json)
+            }
+            .store(in: &cancellables)
+        }
+        
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "GET")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
+        let data = try? JSONSerialization.data(withJSONObject: result, options: [])
+        let expectedResponseData =
+        """
+        {"response":"OK"}
+        """.data(using: String.Encoding.utf8)
+        
+        #expect(data == expectedResponseData)
+    }
 //
 //    func testGETNetworkingJSONDecodableWorks() {
 //        MockingURLProtocol.mockedResponse =
