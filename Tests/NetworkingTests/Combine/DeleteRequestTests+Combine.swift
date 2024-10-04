@@ -26,19 +26,8 @@ class DeleteRequestCombineTests {
         """
         { "response": "OK" }
         """
-        _ = await withCheckedContinuation { continuation in
-            network.delete("/users").sink { completion in
-                switch completion {
-                case .failure(_):
-                    Issue.record("failure")
-                case .finished:
-                    print("finished")
-                }
-            } receiveValue: { () in
-                continuation.resume(returning: ())
-            }
-            .store(in: &cancellables)
-        }
+        
+        let void: Void = await testHelper(network.delete("/users"))
         #expect(MockingURLProtocol.currentRequest?.httpMethod == "DELETE")
         #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
     }
@@ -49,20 +38,8 @@ class DeleteRequestCombineTests {
         """
         { "response": "OK" }
         """
-        let result = await withCheckedContinuation { continuation in
-            network.delete("/users").sink { completion in
-                switch completion {
-                case .failure:
-                    Issue.record("failure")
-                case .finished:
-                    print("finished")
-                }
-            } receiveValue: { (data: Data) in
-                continuation.resume(returning: data)
-            }
-            .store(in: &cancellables)
-        }
-        #expect(result != nil)
+        let data: Data = await testHelper(network.delete("/users"))
+        #expect(data != nil)
         #expect(MockingURLProtocol.currentRequest?.httpMethod == "DELETE")
         #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
     }
@@ -73,163 +50,114 @@ class DeleteRequestCombineTests {
         """
         {"response":"OK"}
         """
-        let result = await withCheckedContinuation { continuation in
-            network.delete("/users").sink { completion in
-                switch completion {
-                case .failure:
-                    Issue.record("failure")
-                case .finished:
-                    print("finished")
-                }
-            } receiveValue: { (json: Sendable) in
-                continuation.resume(returning: json)
-            }
-            .store(in: &cancellables)
-        }
+        let json: JSON = await testHelper(network.delete("/users"))
         #expect(MockingURLProtocol.currentRequest?.httpMethod == "DELETE")
         #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
-        let data =  try? JSONSerialization.data(withJSONObject: result, options: [])
+        let data =  try? JSONSerialization.data(withJSONObject: json.value, options: [])
         let expectedResponseData =
         """
         {"response":"OK"}
         """.data(using: String.Encoding.utf8)
-        
         #expect(data == expectedResponseData)
     }
+    // Todo put back Sendable version
     
-//    func testDELETENetworkingJSONDecodableWorks() {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        {
-//            "title":"Hello",
-//            "content":"World",
-//        }
-//        """
-//        let expectationWorks = expectation(description: "ReceiveValue called")
-//        let expectationFinished = expectation(description: "Finished called")
-//        network.delete("/posts/1")
-//            .sink { completion in
-//            switch completion {
-//            case .failure:
-//                XCTFail()
-//            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "DELETE")
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/posts/1")
-//                expectationFinished.fulfill()
-//            }
-//        } receiveValue: { (post: Post) in
-//            XCTAssertEqual(post.title, "Hello")
-//            XCTAssertEqual(post.content, "World")
-//            expectationWorks.fulfill()
-//        }
-//        .store(in: &cancellables)
-//        waitForExpectations(timeout: 0.1)
-//    }
+    @Test
+    func testDELETENetworkingJSONDecodableWorks() async {
+        MockingURLProtocol.mockedResponse =
+        """
+        {
+            "title":"Hello",
+            "content":"World",
+        }
+        """
+        let post: Post = await testHelper(network.delete("/posts/1"))
+        #expect(post.title == "Hello")
+        #expect(post.content == "World")
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "DELETE")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/posts/1")
+    }
     
-//    func testDELETEDecodableWorks() {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        {
-//            "firstname":"John",
-//            "lastname":"Doe",
-//        }
-//        """
-//        let expectationWorks = expectation(description: "ReceiveValue called")
-//        let expectationFinished = expectation(description: "Finished called")
-//        network.delete("/users/1")
-//            .sink { completion in
-//            switch completion {
-//            case .failure:
-//                XCTFail()
-//            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "DELETE")
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users/1")
-//                expectationFinished.fulfill()
-//            }
-//        } receiveValue: { (userJSON: UserJSON) in
-//            XCTAssertEqual(userJSON.firstname, "John")
-//            XCTAssertEqual(userJSON.lastname, "Doe")
-//            expectationWorks.fulfill()
-//        }
-//        .store(in: &cancellables)
-//        waitForExpectations(timeout: 0.1)
-//    }
-//
-//    func testDELETEArrayOfDecodableWorks() {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        [
-//            {
-//                "firstname":"John",
-//                "lastname":"Doe"
-//            },
-//            {
-//                "firstname":"Jimmy",
-//                "lastname":"Punchline"
-//            }
-//        ]
-//        """
-//        let expectationWorks = expectation(description: "ReceiveValue called")
-//        let expectationFinished = expectation(description: "Finished called")
-//        network.delete("/users")
-//            .sink { completion in
-//            switch completion {
-//            case .failure:
-//                XCTFail()
-//            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "DELETE")
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-//                expectationFinished.fulfill()
-//            }
-//        } receiveValue: { (userJSON: [UserJSON]) in
-//            XCTAssertEqual(userJSON[0].firstname, "John")
-//            XCTAssertEqual(userJSON[0].lastname, "Doe")
-//            XCTAssertEqual(userJSON[1].firstname, "Jimmy")
-//            XCTAssertEqual(userJSON[1].lastname, "Punchline")
-//            expectationWorks.fulfill()
-//        }
-//        .store(in: &cancellables)
-//        waitForExpectations(timeout: 0.1)
-//    }
+    @Test
+    func testDELETEDecodableWorks() async {
+        MockingURLProtocol.mockedResponse =
+        """
+        {
+            "firstname":"John",
+            "lastname":"Doe",
+        }
+        """
+        let userJSON: UserJSON = await testHelper(network.delete("/users/1"))
+        #expect(userJSON.firstname == "John")
+        #expect(userJSON.lastname == "Doe")
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "DELETE")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users/1")
+    }
 
-//    func testDELETEArrayOfDecodableWithKeypathWorks() {
-//        MockingURLProtocol.mockedResponse =
-//        """
-//        {
-//        "users" :
-//            [
-//                {
-//                    "firstname":"John",
-//                    "lastname":"Doe"
-//                },
-//                {
-//                    "firstname":"Jimmy",
-//                    "lastname":"Punchline"
-//                }
-//            ]
-//        }
-//        """
-//        let expectationWorks = expectation(description: "ReceiveValue called")
-//        let expectationFinished = expectation(description: "Finished called")
-//        network.delete("/users", keypath: "users")
-//            .sink { completion in
-//            switch completion {
-//            case .failure:
-//                XCTFail()
-//            case .finished:
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.httpMethod, "DELETE")
-//                XCTAssertEqual(MockingURLProtocol.currentRequest?.url?.absoluteString, "https://mocked.com/users")
-//                expectationFinished.fulfill()
-//            }
-//        } receiveValue: { (userJSON: [UserJSON]) in
-//            XCTAssertEqual(userJSON[0].firstname, "John")
-//            XCTAssertEqual(userJSON[0].lastname, "Doe")
-//            XCTAssertEqual(userJSON[1].firstname, "Jimmy")
-//            XCTAssertEqual(userJSON[1].lastname, "Punchline")
-//            expectationWorks.fulfill()
-//        }
-//        .store(in: &cancellables)
-//        waitForExpectations(timeout: 0.1)
-//    }
+    @Test
+    func testDELETEArrayOfDecodableWorks() async {
+        MockingURLProtocol.mockedResponse =
+        """
+        [
+            {
+                "firstname":"John",
+                "lastname":"Doe"
+            },
+            {
+                "firstname":"Jimmy",
+                "lastname":"Punchline"
+            }
+        ]
+        """
+        let userJSON: [UserJSON] = await testHelper(network.delete("/users"))
+        #expect(userJSON[0].firstname == "John")
+        #expect(userJSON[0].lastname == "Doe")
+        #expect(userJSON[1].firstname == "Jimmy")
+        #expect(userJSON[1].lastname == "Punchline")
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "DELETE")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
+    }
 
+    @Test
+    func testDELETEArrayOfDecodableWithKeypathWorks() async {
+        MockingURLProtocol.mockedResponse =
+        """
+        {
+        "users" :
+            [
+                {
+                    "firstname":"John",
+                    "lastname":"Doe"
+                },
+                {
+                    "firstname":"Jimmy",
+                    "lastname":"Punchline"
+                }
+            ]
+        }
+        """
+        let userJSON: [UserJSON] = await testHelper(network.delete("/users", keypath: "users"))
+        #expect(userJSON[0].firstname == "John")
+        #expect(userJSON[0].lastname == "Doe")
+        #expect(userJSON[1].firstname == "Jimmy")
+        #expect(userJSON[1].lastname == "Punchline")
+        #expect(MockingURLProtocol.currentRequest?.httpMethod == "DELETE")
+        #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
+    }
+    
+    func testHelper<T: Sendable>(_ publisher: AnyPublisher<T, Error>) async -> T {
+        return await withCheckedContinuation { continuation in
+            publisher.sink { completion in
+                switch completion {
+                case .failure(_):
+                    Issue.record("failure")
+                case .finished:
+                    print("finished")
+                }
+            } receiveValue: { x in
+                continuation.resume(returning: x)
+            }
+            .store(in: &cancellables)
+        }
+    }
 }
