@@ -14,7 +14,7 @@ public struct NetworkingRequest {
     let params: Params
     let encodableBody: Encodable?
     let headers: [String: String]
-    let multipartData: [MultipartData]?
+    var multipartData: [MultipartData]?
     let timeout: TimeInterval?
     let maxRetryCount = 3
 }
