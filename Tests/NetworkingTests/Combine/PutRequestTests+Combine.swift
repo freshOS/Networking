@@ -12,7 +12,7 @@ import Combine
 @testable
 import Networking
 
-@Suite
+@Suite(.serialized)
 class PutRequestCombineTests {
     
     private let network = NetworkingClient(baseURL: "https://mocked.com")

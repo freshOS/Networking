@@ -27,7 +27,7 @@ class DeleteRequestCombineTests {
         { "response": "OK" }
         """
         
-        let void: Void = await testHelper(network.delete("/users"))
+        let _: Void = await testHelper(network.delete("/users"))
         #expect(MockingURLProtocol.currentRequest?.httpMethod == "DELETE")
         #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
     }
