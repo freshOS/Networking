@@ -33,7 +33,7 @@ public extension NetworkingClient {
     }
     
     func post<T: Decodable>(_ route: String,
-                                          body: Encodable,
+                                          body: Encodable & Sendable,
                                           keypath: String? = nil
     ) async throws -> T {
         let json: JSON = try await post(route, body: body)
@@ -79,7 +79,7 @@ public extension NetworkingClient {
     }
     
     func patch<T: Decodable>(_ route: String,
-                                          body: Encodable,
+                                          body: Encodable & Sendable,
                                           keypath: String? = nil
     ) async throws -> T {
         let json: JSON = try await patch(route, body: body)

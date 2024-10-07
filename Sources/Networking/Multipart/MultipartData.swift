@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct MultipartData {
+public struct MultipartData: Sendable {
     let name: String
     let fileData: Data
     let fileName: String

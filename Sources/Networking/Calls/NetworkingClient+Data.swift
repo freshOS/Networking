@@ -17,7 +17,7 @@ public extension NetworkingClient {
         try await request(.post, route: route, params: params)
     }
     
-    func post(_ route: String, body: Encodable) async throws -> Data {
+    func post(_ route: String, body: Encodable & Sendable) async throws -> Data {
         try await execute(request: createRequest(.post, route, encodableBody: body))
     }
     
@@ -38,3 +38,5 @@ public extension NetworkingClient {
     }
     
 }
+
+// Todo execute(request)

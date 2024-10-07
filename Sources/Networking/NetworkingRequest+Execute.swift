@@ -9,7 +9,7 @@ import Foundation
 
 extension NetworkingClient {
     
-    func execute(request: NetworkingRequest) async throws -> Data {
+    public func execute(request: NetworkingRequest) async throws -> Data {
         guard let urlRequest = request.buildURLRequest() else {
             throw NetworkingError.unableToParseRequest
         }

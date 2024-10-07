@@ -7,12 +7,12 @@
 
 import Foundation
 
-public struct NetworkingRequest {
+public struct NetworkingRequest: Sendable {
     let method: HTTPMethod
     let url: String
     let parameterEncoding: ParameterEncoding
-    let params: Params
-    let encodableBody: Encodable?
+    public var params: Params
+    public var encodableBody: (Encodable & Sendable)?
     let headers: [String: String]
     var multipartData: [MultipartData]?
     let timeout: TimeInterval?
@@ -20,7 +20,7 @@ public struct NetworkingRequest {
 }
 
 
-public enum ParameterEncoding {
+public enum ParameterEncoding: Sendable {
     case urlEncoded
     case json
 }

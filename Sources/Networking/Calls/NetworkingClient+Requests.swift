@@ -48,7 +48,7 @@ public extension NetworkingClient {
     internal func createRequest(_ httpMethod: HTTPMethod,
                           _ route: String,
                           params: Params = Params(),
-                          encodableBody: Encodable? = nil
+                          encodableBody: (Encodable & Sendable)? = nil
     ) -> NetworkingRequest {
         let req = NetworkingRequest(
             method: httpMethod,
