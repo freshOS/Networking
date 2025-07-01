@@ -33,6 +33,8 @@ public class NetworkingClient {
     public var sessionConfiguration = URLSessionConfiguration.default
 //    public var requestRetrier: NetworkRequestRetrier?
     public var jsonDecoderFactory: (() -> JSONDecoder)?
+    public var beforeRequest: () async throws -> Void = {}
+    public var mapError: (Error) -> Error = { $0 }
 
     let sessionDelegate = NetworkingClientURLSessionDelegate()
     /**

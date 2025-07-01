@@ -34,9 +34,12 @@ public extension NetworkingClient {
     }
     
     func request(_ httpMethod: HTTPMethod, route: String, params: Params = Params()) async throws -> Data {
-        try await execute(request: createRequest(httpMethod, route, params: params))
+        try await beforeRequest()
+        let request = createRequest(httpMethod, route, params: params)
+        do {
+            return try await execute(request: request)
+        } catch {
+            throw mapError(error)
+        }
     }
-    
 }
-
-// Todo execute(request)
