@@ -18,7 +18,7 @@ public extension NetworkingClient {
     }
     
     func post(_ route: String, body: Encodable & Sendable) async throws -> Data {
-        try await execute(request: createRequest(.post, route, encodableBody: body))
+        try await request(.post, route: route, body: body)
     }
     
     func put(_ route: String, params: Params = Params()) async throws -> Data {
@@ -33,9 +33,9 @@ public extension NetworkingClient {
         try await request(.delete, route: route, params: params)
     }
     
-    func request(_ httpMethod: HTTPMethod, route: String, params: Params = Params()) async throws -> Data {
-        try await beforeRequest()
-        let request = createRequest(httpMethod, route, params: params)
+    func request(_ httpMethod: HTTPMethod, route: String, params: Params = Params(), body: (Encodable & Sendable)? = nil) async throws -> Data {
+        try await beforeRequest(self)
+        let request = createRequest(httpMethod, route, params: params, body: body)
         do {
             return try await execute(request: request)
         } catch {

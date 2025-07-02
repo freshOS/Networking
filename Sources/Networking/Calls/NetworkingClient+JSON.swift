@@ -26,8 +26,7 @@ public extension NetworkingClient {
     }
     
     func post(_ route: String, body: Encodable & Sendable) async throws -> JSON {
-        let req = createRequest(.post, route, encodableBody: body)
-        let data = try await execute(request: req)
+        let data = try await  request(.post, route: route, body: body)
         let json = try JSONSerialization.jsonObject(with: data, options: [])
         return JSON(jsonObject: json)
     }
@@ -49,8 +48,7 @@ public extension NetworkingClient {
     }
     
     func patch(_ route: String, body: Encodable & Sendable) async throws -> JSON {
-        let req = createRequest(.patch, route, encodableBody: body)
-        let data = try await execute(request: req)
+        let data = try await  request(.patch, route: route, body: body)
         let json = try JSONSerialization.jsonObject(with: data, options: [])
         return JSON(jsonObject: json)
     }

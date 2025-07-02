@@ -7,12 +7,10 @@
 
 import Foundation
 
-class NetworkingLogger {
+struct NetworkingLogger {
 
-    var logLevel = NetworkingLogLevel.off
-
-    func log(request: URLRequest) {
-        guard logLevel != .off else {
+	func log(request: URLRequest, level: NetworkingLogLevel) {
+        guard level != .off else {
             return
         }
         if let method = request.httpMethod,
@@ -22,19 +20,19 @@ class NetworkingLogger {
             logBody(request)
 
         }
-        if logLevel == .debug {
+        if level == .debug {
             logCurl(request)
         }
     }
 
-    func log(response: URLResponse, data: Data) {
-        guard logLevel != .off else {
+    func log(response: URLResponse, data: Data, level: NetworkingLogLevel) {
+        guard level != .off else {
             return
         }
         if let response = response as? HTTPURLResponse {
             logStatusCodeAndURL(response)
         }
-        if logLevel == .debug {
+        if level == .debug {
             print(String(decoding: data, as: UTF8.self))
         }
     }

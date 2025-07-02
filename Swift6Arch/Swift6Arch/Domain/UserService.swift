@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct UserService {
+actor UserService {
     
     let userRepository: UserRepository
     init(userRepository: UserRepository) {

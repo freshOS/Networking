@@ -18,7 +18,7 @@ actor NetworkingClientURLSessionDelegate: NSObject, URLSessionDelegate {
 
 // public typealias NetworkRequestRetrier = (_ request: URLRequest, _ error: Error) -> AnyPublisher<Void, Error>?
 
-public class NetworkingClient {
+public actor NetworkingClient {
     /**
         Instead of using the same keypath for every call eg: "collection",
         this enables to use a default keypath for parsing collections.
@@ -33,7 +33,7 @@ public class NetworkingClient {
     public var sessionConfiguration = URLSessionConfiguration.default
 //    public var requestRetrier: NetworkRequestRetrier?
     public var jsonDecoderFactory: (() -> JSONDecoder)?
-    public var beforeRequest: () async throws -> Void = {}
+    public var beforeRequest: (NetworkingClient) async throws -> Void = { _ in }
     public var mapError: (Error) -> Error = { $0 }
 
     let sessionDelegate = NetworkingClientURLSessionDelegate()
@@ -42,10 +42,7 @@ public class NetworkingClient {
         Values Available are .None, Calls and CallsAndResponses.
         Default is None
     */
-    public var logLevel: NetworkingLogLevel {
-        get { return logger.logLevel }
-        set { logger.logLevel = newValue }
-    }
+    public var logLevel = NetworkingLogLevel.off
 
     internal let logger = NetworkingLogger()
 
@@ -53,7 +50,25 @@ public class NetworkingClient {
         self.baseURL = baseURL
         self.timeout = timeout
     }
-    
+
+    public init(
+        baseURL: String,
+        headers: [String: String] = [String: String](),
+        parameterEncoding: ParameterEncoding = .urlEncoded,
+        logLevel: NetworkingLogLevel = .off,
+        jsonDecoderFactory: (() -> JSONDecoder)? = nil,
+        beforeRequest: @escaping (NetworkingClient) async throws -> Void = { _ in },
+        mapError: @escaping (Error) -> Error = { $0 }) {
+            self.baseURL = baseURL
+            self.headers = headers
+            self.parameterEncoding = parameterEncoding
+            self.logLevel = logLevel
+            self.timeout = nil
+            self.jsonDecoderFactory = jsonDecoderFactory
+            self.beforeRequest = beforeRequest
+            self.mapError = mapError
+        }
+
     public func toModel<T: NetworkingJSONDecodable>(_ json: JSON, keypath: String? = nil) throws -> T {
         do {
             let data = resourceData(from: json, keypath: keypath)

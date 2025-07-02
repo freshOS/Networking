@@ -17,12 +17,12 @@ extension NetworkingClient {
             return Fail(error: NetworkingError.unableToParseRequest as Error)
                 .eraseToAnyPublisher()
         }
-        logger.log(request: urlRequest)
+        logger.log(request: urlRequest, level: logLevel)
 
         let urlSession = URLSession(configuration: sessionConfiguration, delegate: sessionDelegate, delegateQueue: nil)
         let callPublisher: AnyPublisher<(Data?, Progress), Error> = urlSession.dataTaskPublisher(for: urlRequest)
             .tryMap { (data: Data, response: URLResponse) -> Data in
-                self.logger.log(response: response, data: data)
+                self.logger.log(response: response, data: data, level: self.logLevel)
                 if let httpURLResponse = response as? HTTPURLResponse {
                     if !(200...299 ~= httpURLResponse.statusCode) {
                         var error = NetworkingError(errorCode: httpURLResponse.statusCode)
@@ -62,12 +62,12 @@ extension NetworkingClient {
             return Fail(error: NetworkingError.unableToParseRequest as Error)
                 .eraseToAnyPublisher()
         }
-        logger.log(request: urlRequest)
+        logger.log(request: urlRequest, level: logLevel)
 
         let urlSession = URLSession(configuration: sessionConfiguration, delegate: sessionDelegate, delegateQueue: nil)
         return urlSession.dataTaskPublisher(for: urlRequest)
             .tryMap { (data: Data, response: URLResponse) -> Data in
-                self.logger.log(response: response, data: data)
+                self.logger.log(response: response, data: data, level: self.logLevel)
                 if let httpURLResponse = response as? HTTPURLResponse {
                     if !(200...299 ~= httpURLResponse.statusCode) {
                         var error = NetworkingError(errorCode: httpURLResponse.statusCode)

@@ -21,7 +21,7 @@ class ContentViewModel {
     }
     
     func fetchUser() {
-        Task { @MainActor [userService] in
+        Task {
             do {
                 isLoading = true
                 let fetchedUser = try await userService.fetchCurrentUser()

@@ -14,8 +14,8 @@ struct PatchRequestTests {
     
     private let network = NetworkingClient(baseURL: "https://mocked.com")
 
-    init() {
-        network.sessionConfiguration.protocolClasses = [MockingURLProtocol.self]
+    init() async {
+        await network.sessionConfiguration.protocolClasses = [MockingURLProtocol.self]
     }
 
 
@@ -48,10 +48,10 @@ struct PatchRequestTests {
         """
         {"response":"OK"}
         """
-        let json: Any = try await network.patch("/users")
+        let json: JSON = try await network.patch("/users")
         #expect(MockingURLProtocol.currentRequest?.httpMethod == "PATCH")
         #expect(MockingURLProtocol.currentRequest?.url?.absoluteString == "https://mocked.com/users")
-        let data =  try? JSONSerialization.data(withJSONObject: json, options: [])
+        let data =  try? JSONSerialization.data(withJSONObject: json.value, options: [])
         let expectedResponseData =
         """
         {"response":"OK"}

@@ -70,9 +70,9 @@ public extension NetworkingService {
 
     // JSON
     
-    func get(_ route: String, params: Params = Params()) async throws -> Any {
-        try await network.get(route, params: params)
-    }
+//    func get(_ route: String, params: Params = Params()) async throws -> Any {
+//        try await network.get(route, params: params)
+//    }
 
     func get(_ route: String, params: Params = Params()) async throws -> JSON {
         try await network.get(route, params: params)
@@ -90,9 +90,9 @@ public extension NetworkingService {
         try await network.put(route, params: params)
     }
     
-    func patch(_ route: String, params: Params = Params()) async throws -> Any {
-        try await network.patch(route, params: params)
-    }
+//    func patch(_ route: String, params: Params = Params()) async throws -> Any {
+//        try await network.patch(route, params: params)
+//    }
 
     func patch(_ route: String, params: Params = Params()) async throws -> JSON {
         try await network.patch(route, params: params)

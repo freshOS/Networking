@@ -40,8 +40,8 @@ struct PutRequestTests {
     
     private let api = FakeAPI()
 
-    init() {
-        network.sessionConfiguration.protocolClasses = [MockingURLProtocol.self]
+    init() async {
+        await network.sessionConfiguration.protocolClasses = [MockingURLProtocol.self]
     }
     
     @Test

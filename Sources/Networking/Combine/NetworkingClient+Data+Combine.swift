@@ -19,7 +19,7 @@ public extension NetworkingClient {
     }
     
     func post(_ route: String, body: Encodable & Sendable) -> AnyPublisher<Data, Error> {
-        publisher(request: createRequest(.post, route, encodableBody: body))
+        publisher(request: createRequest(.post, route, body: body))
     }
 
     func put(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
@@ -31,7 +31,7 @@ public extension NetworkingClient {
     }
     
     func patch(_ route: String, body: Encodable & Sendable) -> AnyPublisher<Data, Error> {
-        publisher(request: createRequest(.patch, route, encodableBody: body))
+        publisher(request: createRequest(.patch, route, body: body))
     }
 
     func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {

@@ -18,8 +18,7 @@ public extension NetworkingClient {
     }
     
     func post(_ route: String, body: Encodable & Sendable) async throws {
-        let req = createRequest(.post, route, encodableBody: body)
-        _ = try await execute(request: req)
+        _ = try await request(.post, route: route, body: body)
     }
     
     func put(_ route: String, params: Params = Params()) async throws {

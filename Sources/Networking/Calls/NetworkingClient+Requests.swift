@@ -28,34 +28,18 @@ public extension NetworkingClient {
     func deleteRequest(_ route: String, params: Params = Params()) -> NetworkingRequest {
         createRequest(.delete, route, params: params)
     }
-
-    internal func createRequest(_ httpMethod: HTTPMethod,
-                          _ route: String,
-                          params: Params = Params()
-    ) -> NetworkingRequest {
-        let req = NetworkingRequest(
-            method: httpMethod,
-            url: baseURL + route,
-            parameterEncoding: parameterEncoding,
-            params: params,
-            encodableBody: nil,
-            headers: headers,
-            multipartData: nil,
-            timeout: timeout)
-        return req
-    }
     
     internal func createRequest(_ httpMethod: HTTPMethod,
                           _ route: String,
                           params: Params = Params(),
-                          encodableBody: (Encodable & Sendable)? = nil
+                          body: (Encodable & Sendable)? = nil
     ) -> NetworkingRequest {
         let req = NetworkingRequest(
             method: httpMethod,
             url: baseURL + route,
             parameterEncoding: parameterEncoding,
             params: params,
-            encodableBody: encodableBody,
+            encodableBody: body,
             headers: headers,
             multipartData: nil,
             timeout: timeout)

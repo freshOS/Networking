@@ -28,7 +28,7 @@ final class MultipartRequestTests {
                                           mimeType: "text/plain")
 
         // Construct request
-        var request = baseClient.createRequest(.post, route, params: params)
+        var request = await baseClient.createRequest(.post, route, params: params)
         request.multipartData = [multipartData]
 
         if let urlRequest = request.buildURLRequest(),
@@ -58,7 +58,7 @@ final class MultipartRequestTests {
                                           mimeType: "text/plain")
 
         // Construct request
-        var request = baseClient.createRequest(.post, route, params: params)
+        var request = await baseClient.createRequest(.post, route, params: params)
         request.multipartData = [multipartData]
 
         if let urlRequest = request.buildURLRequest(),
@@ -95,7 +95,7 @@ final class MultipartRequestTests {
         ]
 
         // Construct request
-        var request = baseClient.createRequest(.post, route, params: params)
+        var request = await baseClient.createRequest(.post, route, params: params)
         request.multipartData = multipartData
 
         if let urlRequest = request.buildURLRequest(),

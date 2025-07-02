@@ -14,8 +14,8 @@ struct GetRequestTests {
     
     private let network = NetworkingClient(baseURL: "https://mocked.com")
 
-    init() {
-        network.sessionConfiguration.protocolClasses = [MockingURLProtocol.self]
+    init() async {
+        await network.sessionConfiguration.protocolClasses = [MockingURLProtocol.self]
     }
     
     @Test
