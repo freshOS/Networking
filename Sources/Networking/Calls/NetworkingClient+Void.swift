@@ -6,82 +6,30 @@
 //
 
 import Foundation
-import Combine
-
-public extension NetworkingClient {
-
-    func get(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
-        get(route, params: params)
-            .map { (data: Data) -> Void in () }
-            .eraseToAnyPublisher()
-    }
-
-    func post(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
-        post(route, params: params)
-            .map { (data: Data) -> Void in () }
-        .eraseToAnyPublisher()
-    }
-    
-    func post(_ route: String, body: Encodable) -> AnyPublisher<Void, Error> {
-        post(route, body: body)
-            .map { (data: Data) -> Void in () }
-        .eraseToAnyPublisher()
-    }
-
-    func put(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
-        put(route, params: params)
-            .map { (data: Data) -> Void in () }
-            .eraseToAnyPublisher()
-    }
-    
-    func patch(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
-        patch(route, params: params)
-            .map { (data: Data) -> Void in () }
-            .eraseToAnyPublisher()
-    }
-    
-    func patch(_ route: String, body: Encodable) -> AnyPublisher<Void, Error> {
-        patch(route, body: body)
-            .map { (data: Data) -> Void in () }
-        .eraseToAnyPublisher()
-    }
-
-    func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Void, Error> {
-        delete(route, params: params)
-            .map { (data: Data) -> Void in () }
-            .eraseToAnyPublisher()
-    }
-}
 
 public extension NetworkingClient {
 
     func get(_ route: String, params: Params = Params()) async throws {
-        let req = request(.get, route, params: params)
-        _ = try await req.execute()
+        _ = try await request(.get, route: route, params: params)
     }
     
     func post(_ route: String, params: Params = Params()) async throws {
-        let req = request(.post, route, params: params)
-        _ = try await req.execute()
+        _ = try await request(.post, route: route, params: params)
     }
     
-    func post(_ route: String, body: Encodable) async throws {
-        let req = request(.post, route, encodableBody: body)
-        _ = try await req.execute()
+    func post(_ route: String, body: Encodable & Sendable) async throws {
+        _ = try await request(.post, route: route, body: body)
     }
     
     func put(_ route: String, params: Params = Params()) async throws {
-        let req = request(.put, route, params: params)
-        _ = try await req.execute()
+        _ = try await request(.put, route: route, params: params)
     }
     
     func patch(_ route: String, params: Params = Params()) async throws {
-        let req = request(.patch, route, params: params)
-        _ = try await req.execute()
+        _ = try await request(.patch, route: route, params: params)
     }
     
     func delete(_ route: String, params: Params = Params()) async throws {
-        let req = request(.delete, route, params: params)
-        _ = try await req.execute()
+        _ = try await request(.delete, route: route, params: params)
     }
 }

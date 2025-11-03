@@ -6,62 +6,40 @@
 //
 
 import Foundation
-import Combine
-
-public extension NetworkingClient {
-
-    func get(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        request(.get, route, params: params).publisher()
-    }
-
-    func post(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        request(.post, route, params: params).publisher()
-    }
-    
-    func post(_ route: String, body: Encodable) -> AnyPublisher<Data, Error> {
-        request(.post, route, encodableBody: body).publisher()
-    }
-
-    func put(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        request(.put, route, params: params).publisher()
-    }
-
-    func patch(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        request(.patch, route, params: params).publisher()
-    }
-    
-    func patch(_ route: String, body: Encodable) -> AnyPublisher<Data, Error> {
-        request(.patch, route, encodableBody: body).publisher()
-    }
-
-    func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Data, Error> {
-        request(.delete, route, params: params).publisher()
-    }
-}
 
 public extension NetworkingClient {
 
     func get(_ route: String, params: Params = Params()) async throws -> Data {
-        try await request(.get, route, params: params).execute()
+        try await request(.get, route: route, params: params)
     }
     
     func post(_ route: String, params: Params = Params()) async throws -> Data {
-        try await request(.post, route, params: params).execute()
+        try await request(.post, route: route, params: params)
     }
     
-    func post(_ route: String, body: Encodable) async throws -> Data {
-        try await request(.post, route, encodableBody: body).execute()
+    func post(_ route: String, body: Encodable & Sendable) async throws -> Data {
+        try await request(.post, route: route, body: body)
     }
     
     func put(_ route: String, params: Params = Params()) async throws -> Data {
-        try await request(.put, route, params: params).execute()
+        try await request(.put, route: route, params: params)
     }
     
     func patch(_ route: String, params: Params = Params()) async throws -> Data {
-        try await request(.patch, route, params: params).execute()
+        try await request(.patch, route: route, params: params)
     }
     
     func delete(_ route: String, params: Params = Params()) async throws -> Data {
-        try await request(.delete, route, params: params).execute()
+        try await request(.delete, route: route, params: params)
+    }
+    
+    func request(_ httpMethod: HTTPMethod, route: String, params: Params = Params(), body: (Encodable & Sendable)? = nil) async throws -> Data {
+        try await beforeRequest(self)
+        let request = createRequest(httpMethod, route, params: params, body: body)
+        do {
+            return try await execute(request: request)
+        } catch {
+            throw mapError(error)
+        }
     }
 }

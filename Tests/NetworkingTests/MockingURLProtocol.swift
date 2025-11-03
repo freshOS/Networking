@@ -9,8 +9,8 @@ import Foundation
 
 class MockingURLProtocol: URLProtocol {
     
-    static var mockedResponse = ""
-    static var currentRequest: URLRequest?
+    nonisolated(unsafe) static var mockedResponse = ""
+    nonisolated(unsafe) static var currentRequest: URLRequest?
     
     override class func canInit(with request: URLRequest) -> Bool {
         currentRequest = request
@@ -23,11 +23,11 @@ class MockingURLProtocol: URLProtocol {
     
     override func startLoading() {
         let data = MockingURLProtocol.mockedResponse.data(using: String.Encoding.utf8)
-        DispatchQueue.global(qos: .default).async {
+//        DispatchQueue.global(qos: .default).async {
             self.client?.urlProtocol(self, didLoad: data!)
             self.client?.urlProtocol(self, didReceive: URLResponse(), cacheStoragePolicy: URLCache.StoragePolicy.allowed)
             self.client?.urlProtocolDidFinishLoading(self)
-        }
+//        }
     }
     
     override func stopLoading() { }

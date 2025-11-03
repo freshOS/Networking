@@ -6,90 +6,57 @@
 //
 
 import Foundation
-import Combine
 
 public extension NetworkingClient {
-
-    func get(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
-        get(route, params: params).toJSON()
-    }
-
-    func post(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
-        post(route, params: params).toJSON()
-    }
     
-    func post(_ route: String, body: Encodable) -> AnyPublisher<Any, Error> {
-        post(route, body: body).toJSON()
-    }
-
-    func put(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
-        put(route, params: params).toJSON()
-    }
-
-    func patch(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
-        patch(route, params: params).toJSON()
-    }
-    
-    func patch(_ route: String, body: Encodable) -> AnyPublisher<Any, Error> {
-        patch(route, body: body).toJSON()
-    }
-
-    func delete(_ route: String, params: Params = Params()) -> AnyPublisher<Any, Error> {
-        delete(route, params: params).toJSON()
-    }
-}
-
-public extension NetworkingClient {
-
     func get(_ route: String, params: Params = Params()) async throws -> Any {
-        let req = request(.get, route, params: params)
-        let data = try await req.execute()
-        return try JSONSerialization.jsonObject(with: data, options: [])
+        let data = try await request(.get, route: route, params: params)
+        let json = try JSONSerialization.jsonObject(with: data, options: [])
+        return json
+    }
+
+    func get(_ route: String, params: Params = Params()) async throws -> JSON {
+        return JSON(jsonObject: try await get(route, params: params))
     }
     
-    func post(_ route: String, params: Params = Params()) async throws -> Any {
-        let req = request(.post, route, params: params)
-        let data = try await req.execute()
-        return try JSONSerialization.jsonObject(with: data, options: [])
+    func post(_ route: String, params: Params = Params()) async throws -> JSON {
+        let data = try await request(.post, route: route, params: params)
+        let json = try JSONSerialization.jsonObject(with: data, options: [])
+        return JSON(jsonObject: json)
     }
     
-    func post(_ route: String, body: Encodable) async throws -> Any {
-        let req = request(.post, route, encodableBody: body)
-        let data = try await req.execute()
-        return try JSONSerialization.jsonObject(with: data, options: [])
+    func post(_ route: String, body: Encodable & Sendable) async throws -> JSON {
+        let data = try await  request(.post, route: route, body: body)
+        let json = try JSONSerialization.jsonObject(with: data, options: [])
+        return JSON(jsonObject: json)
     }
     
-    func put(_ route: String, params: Params = Params()) async throws -> Any {
-        let req = request(.put, route, params: params)
-        let data = try await req.execute()
-        return try JSONSerialization.jsonObject(with: data, options: [])
+    func put(_ route: String, params: Params = Params()) async throws -> JSON {
+        let data = try await request(.put, route: route, params: params)
+        let json = try JSONSerialization.jsonObject(with: data, options: [])
+        return JSON(jsonObject: json)
     }
     
     func patch(_ route: String, params: Params = Params()) async throws -> Any {
-        let req = request(.patch, route, params: params)
-        let data = try await req.execute()
-        return try JSONSerialization.jsonObject(with: data, options: [])
+        let data = try await request(.patch, route: route, params: params)
+        let json = try JSONSerialization.jsonObject(with: data, options: [])
+        return json
     }
     
-    func patch(_ route: String, body: Encodable) async throws -> Any {
-        let req = request(.patch, route, encodableBody: body)
-        let data = try await req.execute()
-        return try JSONSerialization.jsonObject(with: data, options: [])
+    func patch(_ route: String, params: Params = Params()) async throws -> JSON {
+        return JSON(jsonObject: try await patch(route, params: params))
     }
     
-    func delete(_ route: String, params: Params = Params()) async throws -> Any {
-        let req = request(.delete, route, params: params)
-        let data = try await req.execute()
-        return try JSONSerialization.jsonObject(with: data, options: [])
+    func patch(_ route: String, body: Encodable & Sendable) async throws -> JSON {
+        let data = try await  request(.patch, route: route, body: body)
+        let json = try JSONSerialization.jsonObject(with: data, options: [])
+        return JSON(jsonObject: json)
+    }
+    
+    func delete(_ route: String, params: Params = Params()) async throws -> JSON {
+        let data = try await request(.delete, route: route, params: params)
+        let json = try JSONSerialization.jsonObject(with: data, options: [])
+        return JSON(jsonObject: json)
     }
 }
 
-// Data to JSON
-extension Publisher where Output == Data {
-
-    public func toJSON() -> AnyPublisher<Any, Error> {
-         tryMap { data -> Any in
-            return try JSONSerialization.jsonObject(with: data, options: [])
-        }.eraseToAnyPublisher()
-    }
-}

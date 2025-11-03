@@ -6,159 +6,29 @@
 //
 
 import Foundation
-import Combine
 
-public typealias NetworkRequestRetrier = (_ request: URLRequest, _ error: Error) -> AnyPublisher<Void, Error>?
-
-public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
-    
-    var parameterEncoding = ParameterEncoding.urlEncoded
-    var baseURL = ""
-    var route = ""
-    var httpMethod = HTTPMethod.get
-    public var params = Params()
-    public var encodableBody: Encodable?
-    var headers = [String: String]()
+public struct NetworkingRequest: Sendable {
+    let method: HTTPMethod
+    let url: String
+    let parameterEncoding: ParameterEncoding
+    public var params: Params
+    public var encodableBody: (Encodable & Sendable)?
+    let headers: [String: String]
     var multipartData: [MultipartData]?
-    var logLevel: NetworkingLogLevel {
-        get { return logger.logLevel }
-        set { logger.logLevel = newValue }
-    }
-    private let logger = NetworkingLogger()
-    var timeout: TimeInterval?
-    let progressPublisher = PassthroughSubject<Progress, Error>()
-    var sessionConfiguration: URLSessionConfiguration?
-    var requestRetrier: NetworkRequestRetrier?
-    private let maxRetryCount = 3
+    let timeout: TimeInterval?
+    let maxRetryCount = 3
+}
 
-    public func uploadPublisher() -> AnyPublisher<(Data?, Progress), Error> {
-        
-        guard let urlRequest = buildURLRequest() else {
-            return Fail(error: NetworkingError.unableToParseRequest as Error)
-                .eraseToAnyPublisher()
-        }
-        logger.log(request: urlRequest)
 
-        let config = sessionConfiguration ?? URLSessionConfiguration.default
-        let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
-        let callPublisher: AnyPublisher<(Data?, Progress), Error> = urlSession.dataTaskPublisher(for: urlRequest)
-            .tryMap { (data: Data, response: URLResponse) -> Data in
-                self.logger.log(response: response, data: data)
-                if let httpURLResponse = response as? HTTPURLResponse {
-                    if !(200...299 ~= httpURLResponse.statusCode) {
-                        var error = NetworkingError(errorCode: httpURLResponse.statusCode)
-                        if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
-                            error.jsonPayload = json
-                        }
-                        throw error
-                    }
-                }
-                return data
-            }.mapError { error -> NetworkingError in
-                return NetworkingError(error: error)
-            }.map { data -> (Data?, Progress) in
-                return (data, Progress())
-            }.eraseToAnyPublisher()
-        
-        let progressPublisher2: AnyPublisher<(Data?, Progress), Error> = progressPublisher
-            .map { progress -> (Data?, Progress) in
-                return (nil, progress)
-            }.eraseToAnyPublisher()
-        
-        return Publishers.Merge(callPublisher, progressPublisher2)
-            .receive(on: DispatchQueue.main).eraseToAnyPublisher()
-    }
+public enum ParameterEncoding: Sendable {
+    case urlEncoded
+    case json
+}
 
-    public func publisher() -> AnyPublisher<Data, Error> {
-        publisher(retryCount: maxRetryCount)
-    }
-
-    private func publisher(retryCount: Int) -> AnyPublisher<Data, Error> {
-        guard let urlRequest = buildURLRequest() else {
-            return Fail(error: NetworkingError.unableToParseRequest as Error)
-                .eraseToAnyPublisher()
-        }
-        logger.log(request: urlRequest)
-
-        let config = sessionConfiguration ?? URLSessionConfiguration.default
-        let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
-        return urlSession.dataTaskPublisher(for: urlRequest)
-            .tryMap { (data: Data, response: URLResponse) -> Data in
-                self.logger.log(response: response, data: data)
-                if let httpURLResponse = response as? HTTPURLResponse {
-                    if !(200...299 ~= httpURLResponse.statusCode) {
-                        var error = NetworkingError(errorCode: httpURLResponse.statusCode)
-                        if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
-                            error.jsonPayload = json
-                        }
-                        throw error
-                    }
-                }
-                return data
-            }.tryCatch({ [weak self, urlRequest] error -> AnyPublisher<Data, Error> in
-                guard
-                    let self = self,
-                    retryCount > 1,
-                    let retryPublisher = self.requestRetrier?(urlRequest, error)
-                else {
-                    throw error
-                }
-                return retryPublisher
-                    .flatMap { _ -> AnyPublisher<Data, Error> in
-                        self.publisher(retryCount: retryCount - 1)
-                    }
-                    .eraseToAnyPublisher()
-            }).mapError { error -> NetworkingError in
-                return NetworkingError(error: error)
-            }.receive(on: DispatchQueue.main).eraseToAnyPublisher()
-    }
-    
-    func execute() async throws -> Data {
-        guard let urlRequest = buildURLRequest() else {
-            throw NetworkingError.unableToParseRequest
-        }
-        logger.log(request: urlRequest)
-        let config = sessionConfiguration ?? URLSessionConfiguration.default
-        let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
-        let (data, response) = try await urlSession.data(for: urlRequest)
-        self.logger.log(response: response, data: data)
-        if let httpURLResponse = response as? HTTPURLResponse, !(200...299 ~= httpURLResponse.statusCode) {
-            var error = NetworkingError(errorCode: httpURLResponse.statusCode)
-            if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
-                error.jsonPayload = json
-            }
-            throw error
-        }
-        return data
-        
-    }
-    
-    private func getURLWithParams() -> String {
-        let urlString = baseURL + route
-        if params.isEmpty { return urlString }
-        guard let url = URL(string: urlString) else {
-            return urlString
-        }
-        if var urlComponents = URLComponents(url: url ,resolvingAgainstBaseURL: false) {
-            var queryItems = urlComponents.queryItems ?? [URLQueryItem]()
-            params.forEach { param in
-                // arrayParam[] syntax
-                if let array = param.value as? [CustomStringConvertible] {
-                    array.forEach {
-                        queryItems.append(URLQueryItem(name: "\(param.key)[]", value: "\($0)"))
-                    }
-                }
-                queryItems.append(URLQueryItem(name: param.key, value: "\(param.value)"))
-            }
-            urlComponents.queryItems = queryItems
-            return urlComponents.url?.absoluteString ?? urlString
-        }
-        return urlString
-    }
-    
+extension NetworkingRequest {
     internal func buildURLRequest() -> URLRequest? {
-        var urlString = baseURL + route
-        if httpMethod == .get {
+        var urlString = url
+        if method == .get {
             urlString = getURLWithParams()
         }
         
@@ -167,7 +37,7 @@ public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
         }
         var request = URLRequest(url: url)
         
-        if httpMethod != .get && multipartData == nil {
+        if method != .get && multipartData == nil {
             switch parameterEncoding {
             case .urlEncoded:
                 request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -176,7 +46,7 @@ public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
             }
         }
         
-        request.httpMethod = httpMethod.rawValue
+        request.httpMethod = method.rawValue
         for (key, value) in headers {
             request.setValue(value, forHTTPHeaderField: key)
         }
@@ -185,7 +55,7 @@ public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
             request.timeoutInterval = timeout
         }
         
-        if httpMethod != .get && multipartData == nil {
+        if method != .get && multipartData == nil {
             if let encodableBody {
                 let jsonEncoder = JSONEncoder()
                 do {
@@ -215,6 +85,29 @@ public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
         return request
     }
     
+    private func getURLWithParams() -> String {
+        let urlString = url
+        if params.isEmpty { return urlString }
+        guard let url = URL(string: urlString) else {
+            return urlString
+        }
+        if var urlComponents = URLComponents(url: url ,resolvingAgainstBaseURL: false) {
+            var queryItems = urlComponents.queryItems ?? [URLQueryItem]()
+            params.forEach { param in
+                // arrayParam[] syntax
+                if let array = param.value as? [CustomStringConvertible] {
+                    array.forEach {
+                        queryItems.append(URLQueryItem(name: "\(param.key)[]", value: "\($0)"))
+                    }
+                }
+                queryItems.append(URLQueryItem(name: param.key, value: "\(param.value)"))
+            }
+            urlComponents.queryItems = queryItems
+            return urlComponents.url?.absoluteString ?? urlString
+        }
+        return urlString
+    }
+    
     private func buildMultipartHttpBody(params: Params, multiparts: [MultipartData], boundary: String) -> Data {
         // Combine all multiparts together
         let allMultiparts: [HttpBodyConvertible] = [params] + multiparts
@@ -228,18 +121,8 @@ public class NetworkingRequest: NSObject, URLSessionTaskDelegate {
             .reduce(Data.init(), +)
             + boundaryEnding
     }
-    
-    public func urlSession(_ session: URLSession,
-                           task: URLSessionTask,
-                           didSendBodyData bytesSent: Int64,
-                           totalBytesSent: Int64,
-                           totalBytesExpectedToSend: Int64) {
-        let progress = Progress(totalUnitCount: totalBytesExpectedToSend)
-        progress.completedUnitCount = totalBytesSent
-        progressPublisher.send(progress)
-    }
-
 }
+
 
 // Thansks to https://stackoverflow.com/questions/26364914/http-request-in-swift-with-post-method
 extension CharacterSet {
@@ -250,9 +133,4 @@ extension CharacterSet {
         allowed.remove(charactersIn: "\(generalDelimitersToEncode)\(subDelimitersToEncode)")
         return allowed
     }()
-}
-
-public enum ParameterEncoding {
-    case urlEncoded
-    case json
 }

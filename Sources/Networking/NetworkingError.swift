@@ -9,7 +9,7 @@ import Foundation
 
 public struct NetworkingError: Error, LocalizedError {
     
-    public enum Status: Int {
+    public enum Status: Int, Sendable {
         case unknown                        = -1
         case networkUnreachable             = 0
         
@@ -144,7 +144,7 @@ public struct NetworkingError: Error, LocalizedError {
     
     public var status: Status
     public var code: Int { return status.rawValue }
-    public var jsonPayload: Any?
+    public var jsonPayload: JSON?
     
     public init(errorCode: Int) {
         self.status = Status(rawValue: errorCode) ?? .unknown
