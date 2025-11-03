@@ -7,12 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		639F73972CAE0DF1008287D5 /* Networking in Frameworks */ = {isa = PBXBuildFile; productRef = 639F73962CAE0DF1008287D5 /* Networking */; };
+		99EBF98F2EB8C43700C95827 /* Networking in Frameworks */ = {isa = PBXBuildFile; productRef = 99EBF98E2EB8C43700C95827 /* Networking */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		639F73832CAE084D008287D5 /* Swift6Arch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Swift6Arch.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		639F73942CAE0864008287D5 /* Networking */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Networking; path = /Users/sacha.durand/Projects/Networking; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -28,7 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				639F73972CAE0DF1008287D5 /* Networking in Frameworks */,
+				99EBF98F2EB8C43700C95827 /* Networking in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -38,7 +37,6 @@
 		639F737A2CAE084D008287D5 = {
 			isa = PBXGroup;
 			children = (
-				639F73942CAE0864008287D5 /* Networking */,
 				639F73852CAE084D008287D5 /* Swift6Arch */,
 				639F73842CAE084D008287D5 /* Products */,
 			);
@@ -72,7 +70,7 @@
 			);
 			name = Swift6Arch;
 			packageProductDependencies = (
-				639F73962CAE0DF1008287D5 /* Networking */,
+				99EBF98E2EB8C43700C95827 /* Networking */,
 			);
 			productName = Swift6Arch;
 			productReference = 639F73832CAE084D008287D5 /* Swift6Arch.app */;
@@ -86,7 +84,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1600;
-				LastUpgradeCheck = 1600;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					639F73822CAE084D008287D5 = {
 						CreatedOnToolsVersion = 16.0;
@@ -103,7 +101,7 @@
 			mainGroup = 639F737A2CAE084D008287D5;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				639F73952CAE0DF0008287D5 /* XCRemoteSwiftPackageReference "Networking" */,
+				99EBF98D2EB8C43700C95827 /* XCLocalSwiftPackageReference "../../Networking" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 639F73842CAE084D008287D5 /* Products */;
@@ -194,6 +192,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 6.0;
@@ -251,6 +250,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_VERSION = 6.0;
 				VALIDATE_PRODUCT = YES;
@@ -279,6 +279,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sacha.Swift6Arch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -307,6 +308,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sacha.Swift6Arch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -336,21 +338,16 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		639F73952CAE0DF0008287D5 /* XCRemoteSwiftPackageReference "Networking" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/freshOS/Networking";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.3;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		99EBF98D2EB8C43700C95827 /* XCLocalSwiftPackageReference "../../Networking" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../Networking;
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		639F73962CAE0DF1008287D5 /* Networking */ = {
+		99EBF98E2EB8C43700C95827 /* Networking */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 639F73952CAE0DF0008287D5 /* XCRemoteSwiftPackageReference "Networking" */;
 			productName = Networking;
 		};
 /* End XCSwiftPackageProductDependency section */

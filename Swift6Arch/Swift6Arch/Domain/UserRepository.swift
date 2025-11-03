@@ -7,6 +7,6 @@
 
 import Foundation
 
-protocol UserRepository {
+protocol UserRepository: Sendable {
     func fetchCurrentUser() async throws -> User
 }

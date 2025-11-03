@@ -10,6 +10,7 @@ import Foundation
 actor UserService {
     
     let userRepository: UserRepository
+	
     init(userRepository: UserRepository) {
         self.userRepository = userRepository
     }

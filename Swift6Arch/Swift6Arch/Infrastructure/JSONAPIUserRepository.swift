@@ -8,12 +8,16 @@
 import Foundation
 import Networking
 
-struct JSONAPIUserRepository: UserRepository {
+struct JSONAPIUserRepository: UserRepository, NetworkingService {
     
-    let network = NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")
+	let network: NetworkingClient
+	
+	init(client: NetworkingClient) {
+		self.network = client
+	}
     
     func fetchCurrentUser() async throws -> User {
-        let userJSON: UserJSON = try await network.get("/users/1")
+        let userJSON: UserJSON = try await get("/users/1")
         return User(name: userJSON.name)
     }
 }

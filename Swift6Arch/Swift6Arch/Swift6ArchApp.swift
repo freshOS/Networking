@@ -6,14 +6,15 @@
 //
 
 import SwiftUI
+import Networking
 
 
 @main
 struct Swift6ArchApp: App {
-    let userService = UserService(userRepository: JSONAPIUserRepository())
+	let userService = UserService(userRepository: JSONAPIUserRepository(client: NetworkingClient(baseURL: "https://jsonplaceholder.typicode.com")))
     var body: some Scene {
         WindowGroup {
             ContentComponent(userService: userService)
-        }
+		}
     }
 }
